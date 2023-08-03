@@ -1,0 +1,51 @@
+// Shop Form
+.edit-form-wrapper {
+    padding: 20px;
+    min-width: 400px;
+}
+.form-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-align: center;
+}
+.shop-update-btn {
+    width: 100%;
+    border-radius: 6px;
+    height: 40px;
+    margin-top: 15px;
+}
+// Staff Form
+
+.form-header {
+}
+.form-body {
+    display: flex;
+}
+
+.name-input {
+    flex: 1;
+}
+
+.workplace-select {
+    border-color: var(--primary-color);
+    height: 48.6px;
+    padding: 0 8px;
+    font-weight: 700;
+    margin-left: 12px;
+    margin-bottom: 6px;
+    font-size: 1.8rem;
+    color: #888;
+}
+.half-width {
+    width: 48%;
+}
+
+.form-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: end;
+    .confirm-btn {
+        margin-left: 10px;
+    }
+}

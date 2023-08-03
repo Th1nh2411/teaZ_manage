@@ -1,0 +1,72 @@
+.wrapper {
+    min-width: 100px;
+    padding: 6px 16px;
+    font-size: 1.6rem;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background-color: white;
+    border: 1px solid transparent;
+    color: var(--text-color);
+    border: 1px solid rgba(22, 24, 35, 0.12);
+    font-weight: 600;
+    transition: all 0.2s ease-in-out;
+    overflow: hidden;
+    .title {
+        z-index: 10;
+        font-weight: 800;
+    }
+    &:hover {
+        opacity: 0.8;
+    }
+    // + .wrapper {
+    //     margin-left: 8px;
+    // }
+    &.disable {
+        pointer-events: none;
+        opacity: 0.5;
+    }
+}
+.wrapper + .wrapper {
+    margin-left: 10px;
+}
+.rounded {
+    border-radius: 99999px;
+    &:hover {
+        border-color: rgba(22, 24, 35, 0.2);
+    }
+}
+.primary {
+    text-decoration: none;
+    background-color: var(--primary-color);
+    color: white;
+}
+.outline {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    &:hover {
+        border-color: var(--primary-color);
+        background-color: rgba(254, 44, 85, 0.06);
+    }
+}
+.small {
+    padding: 2px 16px;
+    min-width: 106px;
+    min-height: 34px;
+}
+.large {
+    padding: 12px 16px;
+    min-width: 136px;
+}
+.icon {
+    font-size: 2rem;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+}
+.icon + .title,
+.title + .icon {
+    margin-left: 8px;
+}

@@ -1,0 +1,129 @@
+.input-container {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    font-weight: 700;
+    z-index: 1;
+    margin-bottom: 6px;
+    border: 1px solid var(--primary-color);
+    &.error {
+        margin-bottom: 35px;
+    }
+    &.error input:focus {
+        border: 1px solid red !important;
+    }
+    &.error input:focus ~ span:before,
+    &.error input:focus ~ span:after,
+    &.error input:focus ~ span i:before,
+    &.error input:focus ~ span i:after {
+        background-color: red !important;
+    }
+    input {
+        padding: 10px 12px;
+        transition: 0.4s;
+        color: var(--secondary-color);
+        font-size: 1.8rem;
+        font-weight: 600;
+        font-weight: 700;
+    }
+
+    input:focus {
+        outline: none;
+    }
+    .hasValue {
+        padding: 18px 12px 2px;
+    }
+    input ~ span:before,
+    input ~ span:after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0;
+        height: 1px;
+        background-color: var(--secondary-color);
+        transition: 0.2s;
+    }
+
+    input ~ span:after {
+        top: auto;
+        bottom: 0;
+        left: auto;
+        right: 0;
+    }
+
+    input ~ span i:before,
+    input ~ span i:after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 1px;
+        height: 0;
+        background-color: var(--secondary-color);
+        transition: 0.4s;
+    }
+
+    input ~ span i:after {
+        left: auto;
+        right: 0;
+        top: auto;
+        bottom: 0;
+    }
+
+    input:focus ~ span:before,
+    input:focus ~ span:after {
+        width: 100%;
+        transition: 0.2s;
+    }
+
+    input:focus ~ span i:before,
+    input:focus ~ span i:after {
+        height: 100%;
+        transition: 0.4s;
+    }
+
+    input ~ p {
+        position: absolute;
+        left: 18px;
+        top: 12px;
+        color: #aaa;
+        transition: 0.2s;
+        letter-spacing: 0.5px;
+        font-size: 1.8rem;
+        pointer-events: none;
+    }
+
+    .hasValue ~ p {
+        top: 3px;
+        left: 12px;
+        font-size: 1.3rem;
+        color: var(--secondary-color);
+        transition: 0.2s;
+        color: #a8a8a8;
+    }
+    .unit {
+        display: none;
+        position: absolute;
+        bottom: 3px;
+        right: 10px;
+        // font-size: 1.4rem;
+        color: var(--secondary-color);
+        transition: 0.2s;
+        color: #a8a8a8;
+        pointer-events: none;
+    }
+    .hasValue ~ .unit {
+        display: block;
+    }
+    input:not(:focus) ~ p {
+        color: #aaa;
+    }
+    .error-message {
+        color: red;
+        font-size: 1.3rem;
+        position: absolute;
+        bottom: -24px;
+        left: 0;
+    }
+}

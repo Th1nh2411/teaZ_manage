@@ -1,0 +1,55 @@
+// Shop Form
+.edit-form-wrapper {
+    padding: 20px;
+    min-width: 400px;
+}
+.form-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-align: center;
+}
+.shop-update-btn {
+    width: 100%;
+    border-radius: 6px;
+    height: 40px;
+    margin-top: 15px;
+}
+// Staff Form
+
+.form-header {
+}
+.form-body {
+    display: flex;
+}
+.form-img-wrapper {
+    position: relative;
+    padding: 30px;
+    width: fit-content;
+    border-radius: 8px;
+    background-color: #c1e4d2;
+    margin-right: 20px;
+}
+.form-img {
+    width: 220px;
+    object-fit: contain;
+}
+.form-info {
+    max-width: 400px;
+}
+.item-price-wrapper {
+    display: flex;
+    justify-content: space-between;
+    .price-input {
+        width: 48%;
+    }
+}
+
+.form-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: end;
+    .confirm-btn {
+        margin-left: 10px;
+    }
+}

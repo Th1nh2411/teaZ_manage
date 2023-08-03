@@ -1,0 +1,173 @@
+.wrapper {
+}
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.header-actions {
+    display: flex;
+    align-items: center;
+    margin: 0 20px;
+}
+.header-title {
+    font-size: 2rem;
+    font-weight: 600;
+}
+.header-calendar {
+}
+.content-wrapper {
+    background-color: #fff;
+    box-shadow: 0 1px 2px rgba(56, 65, 74, 0.15);
+    border-radius: 4px;
+    margin-top: 10px;
+}
+.content-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(204, 204, 204, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.content-title {
+    font-weight: 600;
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    .icon {
+        color: var(--primary-color);
+        margin-right: 8px;
+        margin-top: -2px;
+    }
+    .icon.warning {
+        color: #dea043fc;
+    }
+    .icon.highlight {
+        color: #4452da;
+    }
+}
+.content-subtitle {
+    font-weight: 600;
+    color: #555;
+}
+.content-body {
+    min-height: 300px;
+    max-height: 600px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 20px;
+}
+// Report
+.report-wrapper {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.report-info {
+    margin-left: 24px;
+    text-align: center;
+}
+.report-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #555;
+    white-space: nowrap;
+}
+.report-num {
+    font-size: 4rem;
+    font-weight: 700;
+    white-space: nowrap;
+    color: var(--primary-color);
+}
+// Product
+.product-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.product-wrapper + .product-wrapper {
+    margin-top: 15px;
+}
+.product-content {
+    display: flex;
+    align-items: center;
+}
+
+.ranking-icon {
+    margin-right: 10px;
+    flex-shrink: 0;
+    height: 26px;
+    width: 26px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 1.8rem;
+}
+.product-img-wrapper {
+    position: relative;
+    padding: 5px;
+    width: fit-content;
+    border-radius: 8px;
+    background-color: #c1e4d2;
+    margin-right: 10px;
+}
+.product-img {
+    width: 30px;
+    object-fit: contain;
+}
+.product-info {
+}
+.product-name {
+    font-weight: 700;
+    font-size: 1.8rem;
+    color: var(--primary-color);
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    overflow: hidden !important;
+}
+
+.product-price {
+    font-weight: 800;
+}
+.product-quantity {
+    font-weight: 600;
+    color: #555;
+    padding: 0 5px;
+}
+// Profit Chart
+.chart-title {
+    font-size: 3rem;
+    margin-bottom: 5px;
+    color: var(--primary-color);
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .warning-detail-icon {
+        display: flex;
+        align-items: center;
+        margin-left: 8px;
+    }
+}
+.empty-order-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 30px 0 20px;
+    .empty-order-img {
+        width: 300px;
+        object-fit: contain;
+    }
+    .empty-order-title {
+        text-align: center;
+        margin-top: 20px;
+        color: #da4453;
+        font-weight: 600;
+        font-size: 1.8rem;
+    }
+}

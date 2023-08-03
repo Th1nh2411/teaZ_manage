@@ -1,0 +1,241 @@
+@import 'normalize.css';
+
+/* vietnamese */
+@font-face {
+    font-family: 'IBM Plex Sans';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(https://fonts.gstatic.com/s/ibmplexsans/v14/zYXgKVElMYYaJe8bpLHnCwDKhd7eFb5N.woff2) format('woff2');
+    unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+1EA0-1EF9, U+20AB;
+}
+
+/* vietnamese */
+@font-face {
+    font-family: 'IBM Plex Sans';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url(https://fonts.gstatic.com/s/ibmplexsans/v14/zYX9KVElMYYaJe8bpLHnCwDKjSL9AI5sdO_q.woff2) format('woff2');
+    unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+1EA0-1EF9, U+20AB;
+}
+/* vietnamese */
+@font-face {
+    font-family: 'IBM Plex Sans';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url(https://fonts.gstatic.com/s/ibmplexsans/v14/zYX9KVElMYYaJe8bpLHnCwDKjQ76AI5sdO_q.woff2) format('woff2');
+    unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+1EA0-1EF9, U+20AB;
+}
+
+/* vietnamese */
+@font-face {
+    font-family: 'IBM Plex Sans';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url(https://fonts.gstatic.com/s/ibmplexsans/v14/zYX9KVElMYYaJe8bpLHnCwDKjWr7AI5sdO_q.woff2) format('woff2');
+    unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+1EA0-1EF9, U+20AB;
+}
+// Nunino fonts
+@font-face {
+    font-family: 'Nunito';
+    font-style: normal;
+    src: url(../../assets/fonts/Nunito-VariableFont_wght.ttf);
+}
+@font-face {
+    font-family: 'Nunito';
+    font-style: italic;
+    src: url(../../assets/fonts/Nunito-Italic-VariableFont_wght.ttf);
+}
+:root {
+    --primary-color: #0c713d;
+    --dark-primary-color: #3c6246;
+    --radial-gradient-bg: linear-gradient(45deg, #27be70 0%, #0c713d 100%);
+    --radial-gradient-bg-2: linear-gradient(45deg, #0c713d 0%, #27be70 100%);
+    --secondary-color: rgb(95, 95, 95);
+    --bg-color: #080b14;
+    --card-bg-color: #fff;
+    --default-layout-header-height: 80px;
+    --hover-color: #1f915633;
+    --default-layout-width: 1200px;
+    --default-layout-horizontal-spacer: 20px;
+    --black: #000;
+    --white: #fff;
+    --text-color: #333;
+    --sidebar-width: 250px;
+    // Search
+    --search-border-radius: 92px;
+    --search-height: 40px;
+    --search-space-height: 9px;
+}
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+html {
+    font-size: 62.5%;
+}
+
+html body {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.6rem;
+    line-height: 1.5;
+    overflow-y: overlay;
+}
+// Scroll bar
+html *::-webkit-scrollbar {
+    border-radius: 0;
+    width: 8px;
+}
+html *::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+html *::-webkit-scrollbar-track {
+    border-radius: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+button,
+input {
+    outline: none;
+    border: none;
+    font-family: 'Nunito', sans-serif;
+}
+a[href] {
+    text-decoration: none;
+}
+.mt-16 {
+    margin-top: 16px;
+}
+
+.mr-16 {
+    margin-right: 16px;
+}
+.sep {
+    &::before {
+        content: '';
+        margin: 0 10px;
+        width: 1px;
+        height: 20px;
+        border-radius: 50%;
+        background-color: #cccccc69;
+    }
+}
+// Custom tippy tool tip
+body {
+    .tippy-box {
+        text-align: center;
+        padding: 10px;
+        border-radius: 8px;
+        line-height: 2rem;
+        background-color: rgb(241, 241, 241);
+        font-weight: 700;
+        color: rgb(52, 52, 52);
+        max-width: 50px;
+        box-shadow: 0px 0px 0px 1px #0000001f;
+    }
+    .tippy-arrow {
+        // top: -8px;
+        // border-left: 8px solid transparent;
+        // border-right: 8px solid transparent;
+
+        // border-bottom: 8px solid rgb(241, 241, 241);
+    }
+}
+
+// loader
+
+.loader {
+    position: relative;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 80px auto;
+    // top: 100px;
+}
+
+.loader > span:nth-child(1) {
+    width: 42px;
+    height: 42px;
+    background: var(--dark-primary-color);
+    animation: animate 0.5s linear infinite;
+    border-radius: 3px;
+}
+
+.loader > span:nth-child(2) {
+    width: 42px;
+    height: 5px;
+    background: #000;
+    opacity: 0.1;
+    position: absolute;
+    top: 59px;
+    border-radius: 50%;
+    animation: shadow 0.5s linear infinite;
+}
+
+@keyframes loader {
+    0% {
+        left: -100px;
+    }
+    100% {
+        left: 110%;
+    }
+}
+
+@keyframes animate {
+    17% {
+        border-bottom-right-radius: 3px;
+    }
+    25% {
+        transform: translateY(9px) rotate(22.5deg);
+    }
+    50% {
+        transform: translateY(18px) scale(1, 0.9) rotate(45deg);
+        border-bottom-right-radius: 40px;
+    }
+    75% {
+        transform: translateY(9px) rotate(67.5deg);
+    }
+    100% {
+        transform: translateY(0) rotate(90deg);
+    }
+}
+
+@keyframes shadow {
+    50% {
+        transform: scale(1.2, 1);
+    }
+}
+
+// Keyframes
+
+@keyframes slideToast {
+    from {
+        opacity: 0;
+        transform: translateX(calc(100% + 32px));
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+    }
+}
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
