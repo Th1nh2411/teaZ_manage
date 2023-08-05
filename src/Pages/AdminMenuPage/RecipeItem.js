@@ -12,32 +12,33 @@ import RecipeForm from './RecipeForm';
 const cx = classNames.bind(styles);
 
 function RecipeItem({ data = {}, onClickEditRecipe = () => {} }) {
-    const [active, setActive] = useState(!data.isDel);
+    const [active, setActive] = useState(data.isActive);
     useEffect(() => {
-        setActive(!data.isDel);
+        setActive(data.isActive);
     }, [data]);
     const localStorageManage = LocalStorageManager.getInstance();
     const userRole = localStorageManage.getItem('userInfo').role;
-    const editMenuItem = async (activeValue = active) => {
+    const editMenuItem = async (activeValue) => {
         const token = localStorageManage.getItem('token');
         if (token) {
-            const results = await adminService.editRecipe(data.idRecipe, token, activeValue ? '0' : 1);
+            const results = await adminService.editRecipe(data.idRecipe, token, { isActive: activeValue });
         }
     };
 
     const handleCheckBoxActive = (e) => {
         if (e.target.checked) {
-            setActive(true);
-            editMenuItem(true);
+            setActive(1);
+            editMenuItem(1);
         } else {
-            setActive(false);
-            editMenuItem(false);
+            setActive(0);
+            editMenuItem(0);
         }
     };
 
     return (
         <>
             <div className={cx('recipe-item', { inactive: !active })}>
+                {data.discount !== 0 && <div className={cx('sale-off')}>-{100 - data.discount}%</div>}
                 <div className={cx('recipe-content')}>
                     <div className={cx('recipe-img-wrapper')}>
                         <Image src={data.image} className={cx('recipe-img')} />

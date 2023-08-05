@@ -20,27 +20,26 @@ const cx = classNames.bind(styles);
 
 function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
     const [detailRecipe, setDetailRecipe] = useState({});
-    const [nameValue, setNameValue] = useState('');
-    const [imageValue, setImageValue] = useState('');
-    const [infoValue, setInfoValue] = useState('');
-    const [priceValue, setPriceValue] = useState('');
-    const [type, setType] = useState(1);
+    const [name, setNameValue] = useState('');
+    const [image, setImageValue] = useState('');
+    const [info, setInfoValue] = useState('');
+    const [price, setPriceValue] = useState('');
+    const [discount, setDiscountValue] = useState('');
+    const [idType, setType] = useState(1);
     const [valueChange, setValueChange] = useState(false);
     const [state, dispatch] = useContext(StoreContext);
     const localStorageManage = LocalStorageManager.getInstance();
     const editMenuItem = async () => {
         const token = localStorageManage.getItem('token');
         if (token) {
-            const results = await adminService.editRecipe(
-                idRecipe,
-                token,
-                detailRecipe.isDel,
-                nameValue,
-                imageValue,
-                infoValue,
-                priceValue,
-                type,
-            );
+            const results = await adminService.editRecipe(idRecipe, token, {
+                name,
+                image,
+                info,
+                price,
+                discount,
+                idType,
+            });
             if (results && results.isSuccess) {
                 dispatch(
                     actions.setToast({
@@ -56,7 +55,7 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
     const addNewMenuItem = async () => {
         const token = localStorageManage.getItem('token');
         if (token) {
-            const results = await adminService.addRecipe(nameValue, imageValue, infoValue, priceValue, type, token);
+            const results = await adminService.addRecipe(name, image, info, price, idType, token);
             if (results && results.isSuccess) {
                 dispatch(
                     actions.setToast({
@@ -107,24 +106,24 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
     useEffect(() => {
         if (idRecipe) {
             if (
-                detailRecipe.name !== nameValue ||
-                detailRecipe.image !== imageValue ||
-                detailRecipe.info !== infoValue ||
-                detailRecipe.price !== Number(priceValue) ||
-                detailRecipe.idType !== Number(type)
+                detailRecipe.name !== name ||
+                detailRecipe.image !== image ||
+                detailRecipe.info !== info ||
+                detailRecipe.price !== Number(price) ||
+                detailRecipe.idType !== Number(idType)
             ) {
                 setValueChange(true);
             } else {
                 setValueChange(false);
             }
         } else {
-            if (nameValue !== '' || imageValue !== '' || infoValue !== '' || priceValue !== '' || type !== 1) {
+            if (name !== '' || image !== '' || info !== '' || price !== '' || idType !== 1) {
                 setValueChange(true);
             } else {
                 setValueChange(false);
             }
         }
-    }, [nameValue, priceValue, infoValue, imageValue, type]);
+    }, [name, price, info, image, idType]);
     return (
         <Modal
             handleClickOutside={() => {
@@ -143,7 +142,7 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
                             onChange={(event) => {
                                 setImageValue(event.target.value);
                             }}
-                            value={imageValue}
+                            value={image}
                             title="Đường dẫn ảnh"
                             type="text"
                         />
@@ -154,7 +153,7 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
                         onChange={(event) => {
                             setNameValue(event.target.value);
                         }}
-                        value={nameValue}
+                        value={name}
                         title="Tên món"
                         type="text"
                     />
@@ -162,44 +161,63 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
                         onChange={(event) => {
                             setInfoValue(event.target.value);
                         }}
-                        value={infoValue}
+                        value={info}
                         title="Thông tin món ăn"
                         type="text"
                     />
-                    <div className={cx('d-flex', 'justify-content-between', 'align-items-center')}>
-                        <Input
-                            className={cx('flex-grow-1')}
-                            onChange={(event) => {
-                                if (onlyNumber(event.target.value)) {
-                                    setPriceValue(event.target.value);
-                                    setValueChange(true);
-                                }
-                            }}
-                            value={priceValue}
-                            unit=".000 vnđ"
-                            title="Giá món"
-                            type="text"
-                        />
-                        <select
-                            className={cx('custom-select')}
-                            value={type}
-                            onChange={(event) => {
-                                setType(event.target.value);
-                            }}
-                        >
-                            <option value={1}>Thức uống</option>
-                            <option value={2}>Cà phê</option>
-                            <option value={3}>Trà</option>
-                            <option value={4}>Bakery</option>
-                            <option value={7}>Topping</option>
-                        </select>
-                    </div>
+                    <Row>
+                        <Col md={4}>
+                            <Input
+                                // className={cx('flex-grow-1')}
+                                onChange={(event) => {
+                                    if (onlyNumber(event.target.value)) {
+                                        setPriceValue(event.target.value);
+                                        setValueChange(true);
+                                    }
+                                }}
+                                value={price}
+                                unit=".000 vnđ"
+                                title="Giá món"
+                                type="text"
+                            />
+                        </Col>
+                        <Col md={4}>
+                            <Input
+                                // className={cx('flex-grow-1')}
+                                onChange={(event) => {
+                                    if (onlyNumber(event.target.value)) {
+                                        setPriceValue(event.target.value);
+                                        setValueChange(true);
+                                    }
+                                }}
+                                value={price}
+                                unit="%"
+                                title="Discount"
+                                type="text"
+                            />
+                        </Col>
+                        <Col md={4}>
+                            <select
+                                className={cx('custom-select')}
+                                value={idType}
+                                onChange={(event) => {
+                                    setType(event.target.value);
+                                }}
+                            >
+                                <option value={1}>Thức uống</option>
+                                <option value={2}>Cà phê</option>
+                                <option value={3}>Trà</option>
+                                <option value={4}>Bakery</option>
+                                <option value={5}>Topping</option>
+                            </select>
+                        </Col>
+                    </Row>
                     {!idRecipe && (
                         <Input
                             onChange={(event) => {
                                 setImageValue(event.target.value);
                             }}
-                            value={imageValue}
+                            value={image}
                             title="Đường dẫn ảnh"
                             type="text"
                         />

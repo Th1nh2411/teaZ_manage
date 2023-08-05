@@ -239,7 +239,6 @@ export const editRecipe = async (idRecipe, token, body) => {
     const config = {
         headers: { access_token: token },
     };
-    console.log(body);
     try {
         const res = await httpRequest.patch(`admin/editRecipe/${idRecipe}`, body, config);
         return res;
