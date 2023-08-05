@@ -13,23 +13,7 @@ export const getMenuByType = async (idType = 1, token) => {
         return error.response && error.response.data;
     }
 };
-export const editMenuItem = async (idRecipe, isActive, discount, token) => {
-    const config = {
-        headers: { access_token: token },
-    };
-    console.log(discount);
-    const body = {
-        isActive,
-        discount,
-    };
-    try {
-        const res = await httpRequest.put(`shop/editRecipeShop/${idRecipe}`, body, config);
-        return res;
-    } catch (error) {
-        console.log(error);
-        return error.response && error.response.data;
-    }
-};
+
 export const getDetailRecipe = async (idRecipe, token) => {
     const config = {
         headers: { access_token: token },

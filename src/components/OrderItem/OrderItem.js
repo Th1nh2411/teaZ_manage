@@ -8,35 +8,34 @@ import { Col, Form } from 'react-bootstrap';
 import { MdOutlineAddShoppingCart } from 'react-icons/md';
 import { useContext, useEffect, useState } from 'react';
 import LocalStorageManager from '../../utils/LocalStorageManager';
-import * as menuService from '../../services/menuService';
+import * as adminService from '../../services/adminService';
 import Tippy from '@tippyjs/react';
 import { MdOutlineInfo } from 'react-icons/md';
 import { onlyNumber, priceFormat } from '../../utils/format';
 import { StoreContext, actions } from '../../store';
-import EditItemForm from './EditItemForm';
+import DetailForm from './DetailForm';
 
 const cx = classNames.bind(styles);
 
 function OrderItem({ data = {}, onUpdateRecipe = () => {} }) {
-    const { Recipe, discount, isActive } = data;
-    const [active, setActive] = useState(isActive);
+    const [active, setActive] = useState(data.isActive);
     const [showEditForm, setShowEditForm] = useState();
     const localStorageManage = LocalStorageManager.getInstance();
     const userRole = localStorageManage.getItem('userInfo').role;
     const editMenuItem = async (activeValue = active) => {
         const token = localStorageManage.getItem('token');
         if (token) {
-            const results = await menuService.editMenuItem(Recipe.idRecipe, activeValue, discount, token);
+            const results = await adminService.editRecipe(data.idRecipe, token, { isActive: activeValue });
         }
     };
 
     const handleCheckBoxActive = (e) => {
         if (e.target.checked) {
-            setActive(true);
-            editMenuItem(true);
+            setActive(1);
+            editMenuItem(1);
         } else {
-            setActive(false);
-            editMenuItem(false);
+            setActive(0);
+            editMenuItem(0);
         }
     };
 
@@ -44,8 +43,8 @@ function OrderItem({ data = {}, onUpdateRecipe = () => {} }) {
         <>
             <div className={cx('order-item', { inactive: !active })}>
                 {showEditForm && (
-                    <EditItemForm
-                        idRecipe={Recipe.idRecipe}
+                    <DetailForm
+                        idRecipe={data.idRecipe}
                         onCloseModal={(updated) => {
                             if (updated) {
                                 onUpdateRecipe();
@@ -54,14 +53,14 @@ function OrderItem({ data = {}, onUpdateRecipe = () => {} }) {
                         }}
                     />
                 )}
-                {discount !== 0 && <div className={cx('sale-off')}>-{100 - discount}%</div>}
+                {data.discount !== 0 && <div className={cx('sale-off')}>-{100 - data.discount}%</div>}
                 <div className={cx('order-content')}>
                     <div className={cx('order-img-wrapper')}>
-                        <Image src={Recipe.image} className={cx('order-img')} />
+                        <Image src={data.image} className={cx('order-img')} />
                     </div>
                     <div className={cx('order-info')}>
-                        <div className={cx('order-name')}>{Recipe.name}</div>
-                        <div className={cx('order-price')}>{priceFormat(Recipe.price)}đ</div>
+                        <div className={cx('order-name')}>{data.name}</div>
+                        <div className={cx('order-price')}>{priceFormat(data.price)}đ</div>
                     </div>
                 </div>
                 <div className={cx('order-actions')}>

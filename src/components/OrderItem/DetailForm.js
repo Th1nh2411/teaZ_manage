@@ -9,6 +9,7 @@ import { MdOutlineAddShoppingCart } from 'react-icons/md';
 import { useContext, useEffect, useState } from 'react';
 import LocalStorageManager from '../../utils/LocalStorageManager';
 import * as menuService from '../../services/menuService';
+import * as adminService from '../../services/adminService';
 import Tippy from '@tippyjs/react';
 import { MdOutlineInfo } from 'react-icons/md';
 import { onlyNumber, priceFormat } from '../../utils/format';
@@ -16,7 +17,7 @@ import { StoreContext, actions } from '../../store';
 
 const cx = classNames.bind(styles);
 
-function EditItemForm({ idRecipe = 1, onCloseModal = () => {} }) {
+function DetailForm({ idRecipe = 1, onCloseModal = () => {} }) {
     const [detailRecipe, setDetailRecipe] = useState({});
     const [nameValue, setNameValue] = useState('');
     const [priceValue, setPriceValue] = useState('');
@@ -24,11 +25,11 @@ function EditItemForm({ idRecipe = 1, onCloseModal = () => {} }) {
     const [valueChange, setValueChange] = useState(false);
     const [state, dispatch] = useContext(StoreContext);
     const localStorageManage = LocalStorageManager.getInstance();
-    const userRole = localStorageManage.getItem('userInfo').role;
+    const userRole = state.userInfo.role;
     const editMenuItem = async () => {
         const token = localStorageManage.getItem('token');
         if (token) {
-            const results = await menuService.editMenuItem(idRecipe, detailRecipe.isActive, 100 - discountValue, token);
+            const results = await adminService.editRecipe(idRecipe, detailRecipe.isActive, 100 - discountValue, token);
         }
     };
     const getDetailRecipe = async () => {
@@ -79,7 +80,7 @@ function EditItemForm({ idRecipe = 1, onCloseModal = () => {} }) {
                 </div>
                 <div className={cx('form-info')}>
                     <Input
-                        disable={userRole !== 3}
+                        disable={userRole < 2}
                         onChange={(event) => {
                             setNameValue(event.target.value);
                             setValueChange(true);
@@ -90,7 +91,7 @@ function EditItemForm({ idRecipe = 1, onCloseModal = () => {} }) {
                     />
                     <div className={cx('item-price-wrapper')}>
                         <Input
-                            disable={userRole !== 3}
+                            disable={userRole < 2}
                             className={cx('price-input')}
                             onChange={(event) => {
                                 if (onlyNumber(event.target.value)) {
@@ -142,7 +143,7 @@ function EditItemForm({ idRecipe = 1, onCloseModal = () => {} }) {
                                 </Col>
                             ))}
                     </Row>
-                    <div className={cx('form-actions')}>
+                    {/* <div className={cx('form-actions')}>
                         {valueChange && <Button onClick={handleCancelEdit}>Hủy</Button>}
                         <Button
                             onClick={handleClickConfirm}
@@ -152,11 +153,11 @@ function EditItemForm({ idRecipe = 1, onCloseModal = () => {} }) {
                         >
                             Cập nhật
                         </Button>
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </Modal>
     );
 }
 
-export default EditItemForm;
+export default DetailForm;

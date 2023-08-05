@@ -19,6 +19,7 @@ import InvoiceList from './InvoiceList';
 const cx = classNames.bind(styles);
 
 function Home() {
+    const [state, dispatch] = useContext(StoreContext);
     const [incompleteOrders, setIncompleteOrders] = useState([]);
     const [completeOrders, setCompleteOrders] = useState([]);
     const [loading, setLoading] = useState();
@@ -48,6 +49,16 @@ function Home() {
         const token = localStorageManager.getItem('token');
         if (token) {
             const results = await orderService.completeOrder(idInvoice, token);
+            if (results) {
+                dispatch(
+                    actions.setToast({
+                        show: true,
+                        content: results.message,
+                        title: 'Huỷ đơn',
+                        type: 'info',
+                    }),
+                );
+            }
         }
         getAllOrder();
         getAllOrderInTransit();
@@ -106,12 +117,12 @@ function Home() {
                                                     </div>
                                                 </Tippy>
                                             </div>
-                                            {order.detail.map((item, index) => (
+                                            {order.products.map((item, index) => (
                                                 <div key={index} className={cx('order-item-wrapper')}>
                                                     <Image src={item.image} className={cx('order-item-img')} />
                                                     <div className={cx('order-item-info')}>
                                                         <div className={cx('order-item-name')}>
-                                                            {item.name}({item.size ? 'L' : 'M'}) x{item.quantityProduct}
+                                                            {item.name}({item.size ? 'L' : 'M'}) x{item.quantity}
                                                         </div>
                                                         <div className={cx('order-item-topping')}>
                                                             Topping :{' '}
@@ -161,12 +172,12 @@ function Home() {
                                                     </div>
                                                 </Tippy>
                                             </div>
-                                            {order.detail.map((item, index) => (
+                                            {order.products.map((item, index) => (
                                                 <div key={index} className={cx('order-item-wrapper')}>
                                                     <Image src={item.image} className={cx('order-item-img')} />
                                                     <div className={cx('order-item-info')}>
                                                         <div className={cx('order-item-name')}>
-                                                            {item.name}({item.size ? 'L' : 'M'}) x{item.quantityProduct}
+                                                            {item.name}({item.size ? 'L' : 'M'}) x{item.quantity}
                                                         </div>
                                                         <div className={cx('order-item-topping')}>
                                                             Topping :{' '}

@@ -235,18 +235,11 @@ export const addRecipe = async (name, image, info, price, idType, token) => {
         return error.response && error.response.data;
     }
 };
-export const editRecipe = async (idRecipe, token, isDel, name, image, info, price, idType) => {
+export const editRecipe = async (idRecipe, token, body) => {
     const config = {
         headers: { access_token: token },
     };
-    const body = {
-        name,
-        image,
-        info,
-        price,
-        idType,
-        isDel,
-    };
+    console.log(body);
     try {
         const res = await httpRequest.patch(`admin/editRecipe/${idRecipe}`, body, config);
         return res;

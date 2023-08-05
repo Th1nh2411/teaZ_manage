@@ -59,12 +59,12 @@ function InvoiceList() {
 
                                 <div className={cx('order-subtitle')}>Total: {priceFormat(invoice.total)}đ</div>
                             </div>
-                            {invoice.detail.map((item, index) => (
+                            {invoice.products.map((item, index) => (
                                 <div key={index} className={cx('order-item-wrapper')}>
                                     <Image src={item.image} className={cx('order-item-img')} />
                                     <div className={cx('order-item-info')}>
                                         <div className={cx('order-item-name')}>
-                                            {item.name}({item.size ? 'L' : 'M'}) x{item.quantityProduct}
+                                            {item.name}({item.size ? 'L' : 'M'}) x{item.quantity}
                                         </div>
                                         <div className={cx('order-item-topping')}>
                                             Topping :{' '}

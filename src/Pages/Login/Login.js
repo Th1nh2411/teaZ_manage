@@ -14,7 +14,7 @@ import { StoreContext, actions } from '../../store';
 const cx = classNames.bind(styles);
 const Login = ({ setAuth }) => {
     const navigate = useNavigate();
-    const [phone, setPhone] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [state, dispatch] = useContext(StoreContext);
@@ -23,16 +23,23 @@ const Login = ({ setAuth }) => {
         event.preventDefault();
 
         const getTokenApi = async () => {
-            const results = await authService.login({ phone, password });
-            if (results && results.customer && results.customer.role && results.customer.role !== 0) {
+            const results = await authService.login({ username, password });
+            if (results && results.userInfo && results.userInfo.role && results.userInfo.role !== 0) {
                 const expirationDate = dayjs().add(results.expireTime, 'second');
                 localStorageManage.setItem('token', results.token);
                 localStorageManage.setItem('expireDate', expirationDate.format());
-                localStorageManage.setItem('userInfo', results.customer);
-                dispatch(actions.setUserInfo(results.customer));
+                localStorageManage.setItem('userInfo', results.userInfo);
+                dispatch(actions.setUserInfo(results.userInfo));
+                dispatch(
+                    actions.setToast({
+                        show: true,
+                        content: 'Đăng nhập thành công',
+                        title: 'Đăng nhập',
+                    }),
+                );
                 navigate(config.routes.order);
             } else {
-                setPhone('');
+                setUsername('');
                 setPassword('');
                 setErrorMessage('Password or mail is incorrect');
             }
@@ -53,10 +60,10 @@ const Login = ({ setAuth }) => {
                     <form onSubmit={handleSubmit} className={cx('form-body')}>
                         <Input
                             onChange={(event) => {
-                                setPhone(event.target.value);
+                                setUsername(event.target.value);
                                 setErrorMessage('');
                             }}
-                            value={phone}
+                            value={username}
                             title="Nhập số điện thoại"
                         />
 
@@ -74,9 +81,9 @@ const Login = ({ setAuth }) => {
                         <Button className={cx('custom-btn')} primary type="submit">
                             Đăng nhập
                         </Button>
-                        <Link to={config.routes.forgot} className={cx('forgot-pw')}>
-                            Quên mật khẩu?
-                        </Link>
+                        {/* <Link to={config.routes.forgot} className={cx('forgot-pw')}>
+                                Quên mật khẩu?
+                            </Link> */}
                     </form>
                 </Card>
             </div>
