@@ -59,7 +59,7 @@ function SideBar({ className, sideBarShrink }) {
                     <div>
                         <MenuItem
                             title={!sideBarShrink && 'Menu'}
-                            to={userRole === 3 ? config.routes.adminMenu : config.routes.menu}
+                            to={userRole === 2 ? config.routes.adminMenu : config.routes.menu}
                             icon={<RiCake3Fill />}
                             activeIcon={<RiCake3Fill />}
                         />
@@ -82,7 +82,7 @@ function SideBar({ className, sideBarShrink }) {
                         <div>
                             <MenuItem
                                 title={!sideBarShrink && 'Thống kê'}
-                                to={userRole === 3 ? config.routes.adminReport : config.routes.report}
+                                to={config.routes.report}
                                 icon={<BsFillClipboard2DataFill />}
                                 activeIcon={<BsFillClipboard2DataFill />}
                             />
@@ -90,7 +90,7 @@ function SideBar({ className, sideBarShrink }) {
                     </Tippy>
                 )}
 
-                {userRole === 3 && (
+                {userRole === 2 && (
                     <Tippy content="Cửa hàng" placement="right" disabled={!sideBarShrink} duration={0}>
                         <div>
                             <MenuItem

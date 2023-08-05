@@ -9,6 +9,9 @@ import { StoreContext, actions } from '../../store';
 import LocalStorageManager from '../../utils/LocalStorageManager';
 import Tippy from '@tippyjs/react';
 import OrderItem from '../../components/OrderItem/OrderItem';
+import { SiBuymeacoffee, SiCakephp } from 'react-icons/si';
+import { GiCoffeeBeans } from 'react-icons/gi';
+import { TbLemon, TbPaperBag } from 'react-icons/tb';
 const cx = classNames.bind(styles);
 
 function MenuPage() {
@@ -17,6 +20,7 @@ function MenuPage() {
     const [menuType2, setMenuType2] = useState([]);
     const [menuType3, setMenuType3] = useState([]);
     const [menuType4, setMenuType4] = useState([]);
+    const [allTopping, setAllTopping] = useState();
     const localStorageManage = LocalStorageManager.getInstance();
     const getMenuDataByType = async (idType) => {
         const token = localStorageManage.getItem('token');
@@ -41,7 +45,18 @@ function MenuPage() {
         getMenuDataByType(3);
         getMenuDataByType(4);
     }, []);
-
+    const getAllTopping = async () => {
+        const token = localStorageManage.getItem('token');
+        if (token) {
+            const results = await menuService.getMenuByType(7, token);
+            if (results && results.isSuccess) {
+                setAllTopping(results.menu);
+            }
+        }
+    };
+    useEffect(() => {
+        getAllTopping();
+    }, []);
     return (
         <div className={cx('wrapper')}>
             {loading ? (
@@ -51,97 +66,71 @@ function MenuPage() {
                 </div>
             ) : (
                 <Row>
-                    {Array.from({ length: 4 }, (_, index) => (
-                        <Col md={6} key={index}>
-                            <div className={cx('content-wrapper')}>
-                                <div className={cx('content-header')}>
-                                    <div className={cx('content-title')}>
-                                        {/* <HiDocumentMinus className={cx('icon', 'warning')} /> */}
-                                        {index === 0
-                                            ? 'Thức uống'
-                                            : index === 1
-                                            ? 'Cà phê'
-                                            : index === 2
-                                            ? 'Trà'
-                                            : 'Bakery'}
-                                    </div>
-                                    <div className={cx('content-subtitle')}>
-                                        {index === 0
-                                            ? menuType1.length
-                                            : index === 1
-                                            ? menuType2.length
-                                            : index === 2
-                                            ? menuType3.length
-                                            : menuType4.length}{' '}
-                                        món
-                                    </div>
-                                </div>
-                                <div className={cx('content-body')}>
-                                    {index === 0 ? (
-                                        menuType1.length !== 0 ? (
-                                            menuType1.map((item, index) => (
-                                                <OrderItem
-                                                    onUpdateRecipe={() => getMenuDataByType(1)}
-                                                    data={item}
-                                                    key={index}
-                                                />
-                                            ))
-                                        ) : (
-                                            <div className={cx('empty-order-wrapper')}>
-                                                <Image src={images.emptyCart} className={cx('empty-order-img')} />
-                                                <div className={cx('empty-order-title')}>Chưa có món nào</div>
-                                            </div>
-                                        )
-                                    ) : index === 1 ? (
-                                        menuType2.length !== 0 ? (
-                                            menuType2.map((item, index) => (
-                                                <OrderItem
-                                                    onUpdateRecipe={() => getMenuDataByType(2)}
-                                                    data={item}
-                                                    key={index}
-                                                />
-                                            ))
-                                        ) : (
-                                            <div className={cx('empty-order-wrapper')}>
-                                                <Image src={images.emptyCart} className={cx('empty-order-img')} />
-                                                <div className={cx('empty-order-title')}>Chưa có món nào</div>
-                                            </div>
-                                        )
-                                    ) : index === 2 ? (
-                                        menuType3.length !== 0 ? (
-                                            menuType3.map((item, index) => (
-                                                <OrderItem
-                                                    onUpdateRecipe={() => getMenuDataByType(3)}
-                                                    data={item}
-                                                    key={index}
-                                                />
-                                            ))
-                                        ) : (
-                                            <div className={cx('empty-order-wrapper')}>
-                                                <Image src={images.emptyCart} className={cx('empty-order-img')} />
-                                                <div className={cx('empty-order-title')}>Chưa có món nào</div>
-                                            </div>
-                                        )
-                                    ) : menuType4.length !== 0 ? (
-                                        menuType4.map((item, index) => (
-                                            <OrderItem
-                                                onUpdateRecipe={() => getMenuDataByType(4)}
-                                                data={item}
-                                                key={index}
-                                            />
-                                        ))
-                                    ) : (
-                                        <div className={cx('empty-order-wrapper')}>
-                                            <Image src={images.emptyCart} className={cx('empty-order-img')} />
-                                            <div className={cx('empty-order-title')}>Chưa có món nào</div>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </Col>
-                    ))}
+                    <Col md={6}>
+                        <ContentWrapper
+                            titleIcon={<SiBuymeacoffee className={cx('icon')} />}
+                            menu={menuType1}
+                            title="Thức uống"
+                        />
+                    </Col>
+                    <Col md={6}>
+                        <ContentWrapper
+                            titleIcon={<GiCoffeeBeans className={cx('icon')} />}
+                            menu={menuType2}
+                            title="Cà phê"
+                        />
+                    </Col>
+                    <Col md={6}>
+                        <ContentWrapper
+                            titleIcon={<TbPaperBag className={cx('icon')} />}
+                            menu={menuType3}
+                            title="Trà túi"
+                        />
+                    </Col>
+                    <Col md={6}>
+                        <ContentWrapper
+                            titleIcon={<SiCakephp className={cx('icon')} />}
+                            menu={menuType4}
+                            title="Bakery"
+                        />
+                    </Col>
+                    <Col md={6}>
+                        <ContentWrapper
+                            titleIcon={<TbLemon className={cx('icon')} />}
+                            menu={allTopping}
+                            title="Topping"
+                        />
+                    </Col>
                 </Row>
             )}
+        </div>
+    );
+}
+function ContentWrapper({ title, titleIcon, menu }) {
+    return (
+        <div className={cx('content-wrapper')}>
+            <div className={cx('content-header')}>
+                <div className={cx('content-title')}>
+                    {/* <HiDocumentMinus className={cx('icon', 'warning')} /> */}
+                    <div className={cx('content-tab', 'active')}>
+                        {titleIcon}
+                        {title}
+                    </div>
+                </div>
+                <div className={cx('content-subtitle')}>{menu && menu.length} món</div>
+            </div>
+            <div className={cx('content-body')}>
+                <div className={cx('content-pane', 'active')}>
+                    {menu && menu.length !== 0 ? (
+                        menu.map((item, index) => <OrderItem data={item} key={index} />)
+                    ) : (
+                        <div className={cx('empty-order-wrapper')}>
+                            <Image src={images.emptyCart} className={cx('empty-order-img')} />
+                            <div className={cx('empty-order-title')}>Chưa có món nào</div>
+                        </div>
+                    )}
+                </div>
+            </div>
         </div>
     );
 }
