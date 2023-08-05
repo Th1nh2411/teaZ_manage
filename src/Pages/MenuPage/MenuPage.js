@@ -5,6 +5,7 @@ import images from '../../assets/images';
 import { Col, Row } from 'react-bootstrap';
 import { useContext, useEffect, useState } from 'react';
 import * as menuService from '../../services/menuService';
+import * as adminService from '../../services/adminService';
 import { StoreContext, actions } from '../../store';
 import LocalStorageManager from '../../utils/LocalStorageManager';
 import Tippy from '@tippyjs/react';
@@ -12,6 +13,8 @@ import OrderItem from '../../components/OrderItem/OrderItem';
 import { SiBuymeacoffee, SiCakephp } from 'react-icons/si';
 import { GiCoffeeBeans } from 'react-icons/gi';
 import { TbLemon, TbPaperBag } from 'react-icons/tb';
+import HeadlessTippy from '@tippyjs/react/headless';
+import { priceFormat } from '../../utils/format';
 const cx = classNames.bind(styles);
 
 function MenuPage() {
@@ -21,6 +24,7 @@ function MenuPage() {
     const [menuType3, setMenuType3] = useState([]);
     const [menuType4, setMenuType4] = useState([]);
     const [allTopping, setAllTopping] = useState();
+    const [listToppingByType, setListToppingByType] = useState();
     const localStorageManage = LocalStorageManager.getInstance();
     const getMenuDataByType = async (idType) => {
         const token = localStorageManage.getItem('token');
@@ -45,10 +49,19 @@ function MenuPage() {
         getMenuDataByType(3);
         getMenuDataByType(4);
     }, []);
+    const getListToppingByType = async () => {
+        const results = await adminService.getListToppingByType();
+        if (results && results.isSuccess) {
+            setListToppingByType(results.listType);
+        }
+    };
+    useEffect(() => {
+        getListToppingByType();
+    }, []);
     const getAllTopping = async () => {
         const token = localStorageManage.getItem('token');
         if (token) {
-            const results = await menuService.getMenuByType(7, token);
+            const results = await menuService.getMenuByType(5, token);
             if (results && results.isSuccess) {
                 setAllTopping(results.menu);
             }
@@ -68,6 +81,12 @@ function MenuPage() {
                 <Row>
                     <Col md={6}>
                         <ContentWrapper
+                            allTopping={allTopping || []}
+                            idType={1}
+                            onUpdateTopping={async () => await getListToppingByType()}
+                            topping={
+                                listToppingByType && listToppingByType.find((type) => type.idType === 1).listToppings
+                            }
                             titleIcon={<SiBuymeacoffee className={cx('icon')} />}
                             menu={menuType1}
                             title="Thức uống"
@@ -75,6 +94,12 @@ function MenuPage() {
                     </Col>
                     <Col md={6}>
                         <ContentWrapper
+                            allTopping={allTopping || []}
+                            idType={2}
+                            onUpdateTopping={async () => await getListToppingByType()}
+                            topping={
+                                listToppingByType && listToppingByType.find((type) => type.idType === 2).listToppings
+                            }
                             titleIcon={<GiCoffeeBeans className={cx('icon')} />}
                             menu={menuType2}
                             title="Cà phê"
@@ -82,6 +107,12 @@ function MenuPage() {
                     </Col>
                     <Col md={6}>
                         <ContentWrapper
+                            allTopping={allTopping || []}
+                            idType={3}
+                            onUpdateTopping={async () => await getListToppingByType()}
+                            topping={
+                                listToppingByType && listToppingByType.find((type) => type.idType === 3).listToppings
+                            }
                             titleIcon={<TbPaperBag className={cx('icon')} />}
                             menu={menuType3}
                             title="Trà túi"
@@ -89,6 +120,12 @@ function MenuPage() {
                     </Col>
                     <Col md={6}>
                         <ContentWrapper
+                            allTopping={allTopping || []}
+                            idType={4}
+                            onUpdateTopping={async () => await getListToppingByType()}
+                            topping={
+                                listToppingByType && listToppingByType.find((type) => type.idType === 4).listToppings
+                            }
                             titleIcon={<SiCakephp className={cx('icon')} />}
                             menu={menuType4}
                             title="Bakery"
@@ -96,6 +133,8 @@ function MenuPage() {
                     </Col>
                     <Col md={6}>
                         <ContentWrapper
+                            idType={1}
+                            onUpdateTopping={async () => await getListToppingByType()}
                             titleIcon={<TbLemon className={cx('icon')} />}
                             menu={allTopping}
                             title="Topping"
@@ -106,23 +145,56 @@ function MenuPage() {
         </div>
     );
 }
-function ContentWrapper({ title, titleIcon, menu }) {
+function ContentWrapper({ title, titleIcon, menu, topping, allTopping, idType, onUpdateTopping = () => {} }) {
+    const [tab, setTab] = useState(0);
+    const localStorageManage = LocalStorageManager.getInstance();
+    const [showAllTopping, setShowAllTopping] = useState(false);
     return (
         <div className={cx('content-wrapper')}>
             <div className={cx('content-header')}>
                 <div className={cx('content-title')}>
                     {/* <HiDocumentMinus className={cx('icon', 'warning')} /> */}
-                    <div className={cx('content-tab', 'active')}>
+                    <div className={cx('content-tab', { active: tab === 0 })} onClick={() => setTab(0)}>
                         {titleIcon}
                         {title}
                     </div>
+                    {topping && (
+                        <div className={cx('content-tab', 'extra', { active: tab === 1 })} onClick={() => setTab(1)}>
+                            Topping
+                        </div>
+                    )}
                 </div>
-                <div className={cx('content-subtitle')}>{menu && menu.length} món</div>
+                <div className={cx('content-subtitle')}>
+                    {tab === 0 ? menu && menu.length : topping && topping.length} món
+                </div>
             </div>
             <div className={cx('content-body')}>
-                <div className={cx('content-pane', 'active')}>
+                <div className={cx('content-pane', { active: tab === 0 })}>
                     {menu && menu.length !== 0 ? (
                         menu.map((item, index) => <OrderItem data={item} key={index} />)
+                    ) : (
+                        <div className={cx('empty-order-wrapper')}>
+                            <Image src={images.emptyCart} className={cx('empty-order-img')} />
+                            <div className={cx('empty-order-title')}>Chưa có món nào</div>
+                        </div>
+                    )}
+                </div>
+                <div className={cx('content-pane', { active: tab === 1 })}>
+                    {topping && topping.length !== 0 ? (
+                        topping.map((item, index) => (
+                            <div key={index} className={cx('recipe-item', { inactive: item.isDel })}>
+                                <div className={cx('recipe-content')}>
+                                    <div className={cx('recipe-img-wrapper')}>
+                                        <Image src={item.image} className={cx('recipe-img')} />
+                                    </div>
+                                    <div className={cx('recipe-info')}>
+                                        <div className={cx('recipe-name')}>{item.name}</div>
+                                        <div className={cx('recipe-price')}>{priceFormat(item.price)}đ</div>
+                                    </div>
+                                </div>
+                                <div className={cx('recipe-actions')}></div>
+                            </div>
+                        ))
                     ) : (
                         <div className={cx('empty-order-wrapper')}>
                             <Image src={images.emptyCart} className={cx('empty-order-img')} />

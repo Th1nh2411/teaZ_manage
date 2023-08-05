@@ -37,7 +37,7 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
                 image,
                 info,
                 price,
-                discount,
+                discount: 100 - discount,
                 idType,
             });
             if (results && results.isSuccess) {
@@ -55,7 +55,7 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
     const addNewMenuItem = async () => {
         const token = localStorageManage.getItem('token');
         if (token) {
-            const results = await adminService.addRecipe(name, image, info, price, idType, token);
+            const results = await adminService.addRecipe(name, image, info, price, 100 - discount, idType, token);
             if (results && results.isSuccess) {
                 dispatch(
                     actions.setToast({
@@ -78,6 +78,7 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
                 setImageValue(results.detailRecipe.image);
                 setInfoValue(results.detailRecipe.info);
                 setPriceValue(results.detailRecipe.price);
+                setDiscountValue(100 - results.detailRecipe.discount);
                 setType(results.detailRecipe.idType);
             }
         }
@@ -88,6 +89,7 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
         setImageValue(detailRecipe.image);
         setInfoValue(detailRecipe.info);
         setPriceValue(detailRecipe.price);
+        setDiscountValue(100 - detailRecipe.discount);
         setType(detailRecipe.idType);
     };
     const handleClickConfirm = (e) => {
@@ -110,6 +112,7 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
                 detailRecipe.image !== image ||
                 detailRecipe.info !== info ||
                 detailRecipe.price !== Number(price) ||
+                100 - detailRecipe.discount !== Number(discount) ||
                 detailRecipe.idType !== Number(idType)
             ) {
                 setValueChange(true);
@@ -117,13 +120,13 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
                 setValueChange(false);
             }
         } else {
-            if (name !== '' || image !== '' || info !== '' || price !== '' || idType !== 1) {
+            if (name !== '' || image !== '' || info !== '' || price !== '' || discount !== '' || idType !== 1) {
                 setValueChange(true);
             } else {
                 setValueChange(false);
             }
         }
-    }, [name, price, info, image, idType]);
+    }, [name, price, info, image, discount, idType]);
     return (
         <Modal
             handleClickOutside={() => {
@@ -164,6 +167,7 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
                         value={info}
                         title="Thông tin món ăn"
                         type="text"
+                        required={false}
                     />
                     <Row>
                         <Col md={4}>
@@ -186,11 +190,11 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
                                 // className={cx('flex-grow-1')}
                                 onChange={(event) => {
                                     if (onlyNumber(event.target.value)) {
-                                        setPriceValue(event.target.value);
+                                        setDiscountValue(event.target.value);
                                         setValueChange(true);
                                     }
                                 }}
-                                value={price}
+                                value={discount}
                                 unit="%"
                                 title="Discount"
                                 type="text"

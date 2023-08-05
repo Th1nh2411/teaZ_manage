@@ -16,6 +16,8 @@ import Input from '../../components/Input/Input';
 import { onlyNumber } from '../../utils/format';
 import IngredientForm from './IngredientForm';
 import { RiAddCircleFill } from 'react-icons/ri';
+import ImportForm from './ImportForm';
+import ExportForm from './ExportForm';
 const cx = classNames.bind(styles);
 
 function AdminIngredientPage() {
@@ -23,6 +25,8 @@ function AdminIngredientPage() {
     const [loading, setLoading] = useState();
     const [selectedIngredient, setSelectedIngredient] = useState();
     const [showIngredientForm, setShowIngredientForm] = useState();
+    const [showImportForm, setShowImportForm] = useState();
+    const [showExportForm, setShowExportForm] = useState();
     const localStorageManage = LocalStorageManager.getInstance();
     const userRole = localStorageManage.getItem('userInfo').role;
     const getIngredients = async () => {
@@ -43,6 +47,28 @@ function AdminIngredientPage() {
 
     return (
         <div className={cx('wrapper')}>
+            {showImportForm && (
+                <ImportForm
+                    selectedIngredient={selectedIngredient}
+                    onCloseModal={(update) => {
+                        if (update) {
+                            getIngredients();
+                        }
+                        setShowImportForm(false);
+                    }}
+                />
+            )}
+            {showExportForm && (
+                <ExportForm
+                    selectedIngredient={selectedIngredient}
+                    onCloseModal={(update) => {
+                        if (update) {
+                            getIngredients();
+                        }
+                        setShowExportForm(false);
+                    }}
+                />
+            )}
             {showIngredientForm && (
                 <IngredientForm
                     data={selectedIngredient}
@@ -95,14 +121,19 @@ function AdminIngredientPage() {
                                                         {ingredient.unitName}
                                                     </div>
                                                     <div className={cx('ingredient-info')}>
-                                                        <span>Sử dụng :</span>
+                                                        <span>Trạng thái :</span>
                                                         <span
                                                             className={cx({
-                                                                inactive: ingredient.isDel,
-                                                                active: !ingredient.isDel,
+                                                                inactive:
+                                                                    !ingredient.isActive || ingredient.quantity === 0,
+                                                                active: ingredient.isActive,
                                                             })}
                                                         >
-                                                            {!ingredient.isDel ? 'Đang sử dụng' : 'Không'}
+                                                            {ingredient.quantity === 0
+                                                                ? 'Hết nguyên liệu'
+                                                                : ingredient.isActive
+                                                                ? 'Đang sử dụng'
+                                                                : 'Không'}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -111,15 +142,36 @@ function AdminIngredientPage() {
                                                 <Button
                                                     disable={userRole < 2}
                                                     onClick={() => {
-                                                        setShowIngredientForm(true);
+                                                        setShowImportForm(true);
                                                         setSelectedIngredient(ingredient);
                                                     }}
                                                     primary
-                                                    rightIcon={<BiEdit />}
+                                                    rightIcon={<BiImport />}
                                                     className={cx('action')}
                                                 >
-                                                    Chỉnh sửa
+                                                    Nhập hàng
                                                 </Button>
+                                                <Button
+                                                    disable={userRole < 2}
+                                                    onClick={() => {
+                                                        setShowExportForm(true);
+                                                        setSelectedIngredient(ingredient);
+                                                    }}
+                                                    rightIcon={<BiExport />}
+                                                    className={cx('action')}
+                                                >
+                                                    Xuất hàng
+                                                </Button>
+                                                <Tippy content="Chỉnh sửa" placement="bottom" duration={0}>
+                                                    <div className={cx('edit-btn')}>
+                                                        <BiEdit
+                                                            onClick={() => {
+                                                                setShowIngredientForm(true);
+                                                                setSelectedIngredient(ingredient);
+                                                            }}
+                                                        />
+                                                    </div>
+                                                </Tippy>
                                             </div>
                                         </div>
                                     ))}

@@ -86,10 +86,9 @@
 }
 .ingredient-img-wrapper {
     position: relative;
-    padding: 10px;
     width: fit-content;
     border-radius: 8px;
-    background-color: #c1e4d2;
+
     margin-right: 15px;
 }
 .ingredient-img {
@@ -128,7 +127,9 @@
 .ingredient-actions {
     display: flex;
     align-items: center;
-    .action {
+    margin-right: 20px;
+    .action,
+    .edit-btn {
         display: flex;
         align-items: center;
         margin-left: 25px;
@@ -141,6 +142,13 @@
             cursor: pointer;
             opacity: 0.8;
         }
+    }
+    .edit-btn {
+        background-color: rgb(41, 199, 199);
+        font-size: 2rem;
+        padding: 5px;
+        border-radius: 10px;
+        color: white;
     }
 }
 // Form

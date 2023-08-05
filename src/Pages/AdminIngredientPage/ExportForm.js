@@ -1,4 +1,4 @@
-import styles from './IngredientPage.module.scss';
+import styles from './AdminIngredientPage.module.scss';
 import classNames from 'classnames/bind';
 import Button from '../../components/Button';
 import Modal from '../../components/Modal';

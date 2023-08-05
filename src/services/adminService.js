@@ -169,7 +169,7 @@ export const addIngredient = async (name, image, unitName, token) => {
         return error.response && error.response.data;
     }
 };
-export const editIngredient = async (idIngredient, token, name, image, unitName, isDel) => {
+export const editIngredient = async (idIngredient, token, name, image, unitName, isActive) => {
     const config = {
         headers: { access_token: token },
     };
@@ -177,7 +177,7 @@ export const editIngredient = async (idIngredient, token, name, image, unitName,
         name,
         image,
         unitName,
-        isDel,
+        isActive,
     };
     try {
         const res = await httpRequest.patch(`admin/editIngredient/${idIngredient}`, body, config);
@@ -216,7 +216,7 @@ export const getDetailRecipe = async (idRecipe, token) => {
         return error.response && error.response.data;
     }
 };
-export const addRecipe = async (name, image, info, price, idType, token) => {
+export const addRecipe = async (name, image, info, price, discount, idType, token) => {
     const config = {
         headers: { access_token: token },
     };
@@ -225,6 +225,7 @@ export const addRecipe = async (name, image, info, price, idType, token) => {
         image,
         info,
         price,
+        discount,
         idType,
     };
     try {
@@ -266,7 +267,7 @@ export const editIngredientFromRecipe = async (idRecipe, idIngredient, quantity,
 };
 export const getListToppingByType = async () => {
     try {
-        const res = await httpRequest.get(`admin/getListType`);
+        const res = await httpRequest.get(`shop/getListToppingByType`);
         return res;
     } catch (error) {
         console.log(error);

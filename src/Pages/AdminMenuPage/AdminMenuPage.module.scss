@@ -131,15 +131,15 @@
 }
 .recipe-img-wrapper {
     position: relative;
-    padding: 10px;
     width: fit-content;
     border-radius: 8px;
-    background-color: #c1e4d2;
+
     margin-right: 10px;
 }
 .recipe-img {
-    width: 50px;
-    object-fit: contain;
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
 }
 .recipe-info {
 }
@@ -218,7 +218,7 @@
     padding: 30px;
     width: fit-content;
     border-radius: 8px;
-    background-color: #c1e4d2;
+
     width: 240px;
     margin-bottom: 15px;
 }

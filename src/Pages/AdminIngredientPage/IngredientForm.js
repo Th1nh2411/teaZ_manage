@@ -15,7 +15,7 @@ function IngredientForm({ data, onCloseModal = () => {} }) {
     const [nameValue, setNameValue] = useState(data ? data.name : '');
     const [imageValue, setImageValue] = useState(data ? data.image : '');
     const [unitValue, setUnitValue] = useState(data ? data.unitName : 'g');
-    const [isDel, setIsDel] = useState(data ? data.isDel : 0);
+    const [isActive, setIsActive] = useState(data ? data.isActive : 1);
     const [valueChange, setValueChange] = useState(false);
     const [state, dispatch] = useContext(StoreContext);
     const localStorageManage = LocalStorageManager.getInstance();
@@ -29,7 +29,7 @@ function IngredientForm({ data, onCloseModal = () => {} }) {
                 nameValue,
                 imageValue,
                 unitValue,
-                isDel,
+                isActive,
             );
             if (results && results.isSuccess) {
                 dispatch(
@@ -73,12 +73,12 @@ function IngredientForm({ data, onCloseModal = () => {} }) {
             setNameValue(data.name);
             setImageValue(data.image);
             setUnitValue(data.unitName);
-            setIsDel(data.isDel);
+            setIsActive(data.isActive);
         } else {
             setNameValue('');
             setImageValue('');
             setUnitValue('');
-            setIsDel(0);
+            setIsActive(0);
         }
     };
     const handleClickConfirm = (e) => {
@@ -96,20 +96,21 @@ function IngredientForm({ data, onCloseModal = () => {} }) {
                 data.name !== nameValue ||
                 data.image !== imageValue ||
                 data.unitName !== unitValue ||
-                data.isDel !== Number(isDel)
+                Number(data.isActive) !== Number(isActive)
             ) {
                 setValueChange(true);
             } else {
                 setValueChange(false);
             }
         } else {
-            if (nameValue !== '' || imageValue !== '' || unitValue !== 'g' || Number(isDel) !== 0) {
+            if (nameValue !== '' || imageValue !== '' || unitValue !== 'g' || Number(isActive) !== 1) {
                 setValueChange(true);
             } else {
                 setValueChange(false);
             }
         }
-    }, [nameValue, imageValue, unitValue, isDel]);
+    }, [nameValue, imageValue, unitValue, isActive]);
+    console.log(isActive);
     return (
         <Modal
             handleClickOutside={() => {
@@ -145,13 +146,13 @@ function IngredientForm({ data, onCloseModal = () => {} }) {
                         <select
                             disabled={!data}
                             className={cx('custom-select')}
-                            value={isDel}
+                            value={Number(isActive)}
                             onChange={(event) => {
-                                setIsDel(event.target.value);
+                                setIsActive(event.target.value);
                             }}
                         >
-                            <option value={0}>active</option>
-                            <option value={1}>inactive</option>
+                            <option value={1}>active</option>
+                            <option value={0}>inactive</option>
                         </select>
                     </div>
                     <Input

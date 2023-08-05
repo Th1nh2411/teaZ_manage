@@ -14,8 +14,7 @@ import { BiImport, BiExport } from 'react-icons/bi';
 import LocalStorageManager from '../../utils/LocalStorageManager';
 import Input from '../../components/Input/Input';
 import { onlyNumber } from '../../utils/format';
-import ImportForm from './ImportForm';
-import ExportForm from './ExportForm';
+
 const cx = classNames.bind(styles);
 
 function IngredientPage() {
@@ -44,7 +43,7 @@ function IngredientPage() {
 
     return (
         <div className={cx('wrapper')}>
-            {showImportForm && (
+            {/* {showImportForm && (
                 <ImportForm
                     selectedIngredient={selectedIngredient}
                     onCloseModal={(update) => {
@@ -54,8 +53,8 @@ function IngredientPage() {
                         setShowImportForm(false);
                     }}
                 />
-            )}
-            {showExportForm && (
+            )} */}
+            {/* {showExportForm && (
                 <ExportForm
                     selectedIngredient={selectedIngredient}
                     onCloseModal={(update) => {
@@ -65,7 +64,7 @@ function IngredientPage() {
                         setShowExportForm(false);
                     }}
                 />
-            )}
+            )} */}
             {loading ? (
                 <div className={cx('loader')}>
                     <span></span>
@@ -104,7 +103,7 @@ function IngredientPage() {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className={cx('ingredient-actions')}>
+                                            {/* <div className={cx('ingredient-actions')}>
                                                 <Button
                                                     disable={userRole < 2}
                                                     onClick={() => {
@@ -128,7 +127,7 @@ function IngredientPage() {
                                                 >
                                                     Xuất hàng
                                                 </Button>
-                                            </div>
+                                            </div> */}
                                         </div>
                                     ))}
                             </div>

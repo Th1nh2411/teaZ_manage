@@ -31,14 +31,13 @@
 }
 .order-img-wrapper {
     position: relative;
-    padding: 10px;
     width: fit-content;
     border-radius: 8px;
-    background-color: #c1e4d2;
+
     margin-right: 10px;
 }
 .order-img {
-    width: 50px;
+    height: 60px;
     object-fit: contain;
 }
 .order-info {
@@ -109,7 +108,7 @@
     padding: 30px;
     width: fit-content;
     border-radius: 8px;
-    background-color: #c1e4d2;
+
     margin-right: 20px;
     height: -webkit-fill-available;
 }
