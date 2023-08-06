@@ -65,8 +65,9 @@
 .shop-img-wrapper {
     position: relative;
     .shop-img {
+        max-height: 300px;
+        object-fit: cover;
         width: 100%;
-        object-fit: contain;
     }
     .update-img-btn {
         padding: 10px;
