@@ -49,7 +49,15 @@ function Home() {
         const token = localStorageManager.getItem('token');
         if (token) {
             const results = await orderService.completeOrder(idInvoice, token);
-            if (results) {
+            if (results.isSuccess) {
+                dispatch(
+                    actions.setToast({
+                        show: true,
+                        content: 'Đã xác nhận đơn hàng',
+                        title: 'Thành công',
+                    }),
+                );
+            } else {
                 dispatch(
                     actions.setToast({
                         show: true,
@@ -67,6 +75,24 @@ function Home() {
         const token = localStorageManager.getItem('token');
         if (token) {
             const results = await orderService.completeInvoice(idInvoice, token);
+            if (results.isSuccess) {
+                dispatch(
+                    actions.setToast({
+                        show: true,
+                        content: 'Giao hàng thành công',
+                        title: 'Thành công',
+                    }),
+                );
+            } else {
+                dispatch(
+                    actions.setToast({
+                        show: true,
+                        content: results.message,
+                        title: 'Thất bại',
+                        type: 'error',
+                    }),
+                );
+            }
         }
         getAllOrderInTransit();
     };

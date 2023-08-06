@@ -1,0 +1,10 @@
+.wrapper {
+    color: green;
+    font-size: 2.4rem;
+    padding: 0px 5px;
+    line-height: 1;
+    &:hover {
+        cursor: pointer;
+        opacity: 0.9;
+    }
+}

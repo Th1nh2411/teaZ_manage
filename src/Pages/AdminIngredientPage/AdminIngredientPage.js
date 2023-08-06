@@ -97,7 +97,6 @@ function AdminIngredientPage() {
                                     Danh sách nguyên liệu
                                 </div>
                                 <div className={cx('content-subtitle')}>
-                                    {ingredients && ingredients.length} nguyên liệu{' '}
                                     <div onClick={() => setShowIngredientForm(true)} className={cx('icon')}>
                                         <RiAddCircleFill />
                                     </div>
@@ -117,7 +116,8 @@ function AdminIngredientPage() {
                                                 <div className={cx('ingredient-info')}>
                                                     <div className={cx('ingredient-name')}>{ingredient.name}</div>
                                                     <div className={cx('ingredient-info')}>
-                                                        <span>Đơn vị tính:</span>
+                                                        <span>Còn lại:</span>
+                                                        {ingredient.quantity}
                                                         {ingredient.unitName}
                                                     </div>
                                                     <div className={cx('ingredient-info')}>

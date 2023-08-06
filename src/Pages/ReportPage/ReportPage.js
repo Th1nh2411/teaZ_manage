@@ -8,7 +8,7 @@ import { useContext, useEffect, useState } from 'react';
 import * as reportService from '../../services/reportService';
 import { StoreContext, actions } from '../../store';
 import LocalStorageManager from '../../utils/LocalStorageManager';
-import { formatNumber, priceFormat, timeGap } from '../../utils/format';
+import { formatNumber, formatPrice, priceFormat, timeGap } from '../../utils/format';
 
 import Tippy from '@tippyjs/react';
 import dayjs from 'dayjs';
@@ -29,6 +29,7 @@ import OrderItem from '../../components/OrderItem';
 import ProfitTracker from './ProfitTracker';
 import IngredientTracker from './IngredientTracker';
 import Button from '../../components/Button/Button';
+import ExportFile from '../../components/ExportFile/ExportFile';
 const cx = classNames.bind(styles);
 
 function ReportPage() {
@@ -45,7 +46,7 @@ function ReportPage() {
             const results = await reportService.getReportByDate(
                 date,
                 token,
-                5,
+                10,
                 type === 1 ? 'day' : type === 2 ? 'month' : 'year',
             );
             setLoading(false);
@@ -94,7 +95,7 @@ function ReportPage() {
                                     <div className={cx('report-info')}>
                                         <div className={cx('report-title')}>Doanh thu</div>
                                         <div className={cx('report-num')}>
-                                            {formatNumber(reports ? reports.total : 0)}
+                                            {formatPrice(reports ? reports.total : 0)}
                                         </div>
                                     </div>
                                 </div>
@@ -148,7 +149,27 @@ function ReportPage() {
                                         <RankingIcon height="3rem" width="3rem" className={cx('icon')} />
                                         Các món bán chạy
                                     </div>
-                                    <div className={cx('content-subtitle')}></div>
+                                    <div className={cx('content-subtitle')}>
+                                        <ExportFile
+                                            csvData={
+                                                reports &&
+                                                reports.topNames.map((item, index) => {
+                                                    return {
+                                                        id: item.idRecipe,
+                                                        'Tên sản phẩm': item.name,
+                                                        'Số lượng bán ra': item.count,
+                                                    };
+                                                })
+                                            }
+                                            fileName={
+                                                type === 1
+                                                    ? 'TopSellProduct' + dayjs(date).format('DD/MM/YYYY')
+                                                    : type === 2
+                                                    ? 'TopSellProduct' + dayjs(date).format('MM/YYYY')
+                                                    : 'TopSellProduct' + dayjs(date).format('YYYY')
+                                            }
+                                        />
+                                    </div>
                                 </div>
                                 <div className={cx('content-body')}>
                                     {reports && reports.topNames.length ? (
@@ -193,7 +214,27 @@ function ReportPage() {
                                         <RankingIcon height="3rem" width="3rem" className={cx('icon')} />
                                         Các topping sử dụng nhiều
                                     </div>
-                                    <div className={cx('content-subtitle')}></div>
+                                    <div className={cx('content-subtitle')}>
+                                        <ExportFile
+                                            csvData={
+                                                reports &&
+                                                reports.topNames.map((item, index) => {
+                                                    return {
+                                                        id: item.idRecipe,
+                                                        'Tên topping': item.name,
+                                                        'Số lượng sử dụng': item.count,
+                                                    };
+                                                })
+                                            }
+                                            fileName={
+                                                type === 1
+                                                    ? 'TopSellTopping' + dayjs(date).format('DD/MM/YYYY')
+                                                    : type === 2
+                                                    ? 'TopSellTopping' + dayjs(date).format('MM/YYYY')
+                                                    : 'TopSellTopping' + dayjs(date).format('YYYY')
+                                            }
+                                        />
+                                    </div>
                                 </div>
                                 <div className={cx('content-body')}>
                                     {reports && reports.topToppings.length ? (

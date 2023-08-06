@@ -6,7 +6,7 @@ export const getReportByDate = async (date, token, quantity = 3, type = 'month')
         params: { quantity, type },
     };
     try {
-        const res = await httpRequest.get(`manager/reportByDate/${date}`, config);
+        const res = await httpRequest.get(`admin/reportByDate/${date}`, config);
         return res;
     } catch (error) {
         console.log(error);
@@ -19,7 +19,7 @@ export const getIngredientReportByDate = async (date, token, type = 'month') => 
         params: { type },
     };
     try {
-        const res = await httpRequest.get(`manager/detailChangeIngredientShop/${date}`, config);
+        const res = await httpRequest.get(`admin/detailChangeIngredientShop/${date}`, config);
         return res;
     } catch (error) {
         console.log(error);
@@ -31,7 +31,7 @@ export const get6PrevMonthReport = async (token) => {
         headers: { access_token: token },
     };
     try {
-        const res = await httpRequest.get(`manager/getDataForChart`, config);
+        const res = await httpRequest.get(`admin/getDataForChart`, config);
         return res;
     } catch (error) {
         console.log(error);
