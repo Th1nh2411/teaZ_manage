@@ -17,6 +17,8 @@ import { SiBuymeacoffee, SiCakephp } from 'react-icons/si';
 import RecipeForm from './RecipeForm';
 import { priceFormat } from '../../utils/format';
 import Tippy from '@tippyjs/react';
+import ExportFile from '../../components/ExportFile/ExportFile';
+import Input from '../../components/Input/Input';
 const cx = classNames.bind(styles);
 
 function AdminMenuPage() {
@@ -110,8 +112,8 @@ function AdminMenuPage() {
                             topping={
                                 listToppingByType && listToppingByType.find((type) => type.idType === 1).listToppings
                             }
-                            menu={menuType1}
-                            title="Thức uống"
+                            menuData={menuType1}
+                            title="Trà sữa"
                             onShowEditForm={(data) => {
                                 setShowEditForm(true);
                                 setSelectedRecipe(data);
@@ -127,7 +129,7 @@ function AdminMenuPage() {
                             topping={
                                 listToppingByType && listToppingByType.find((type) => type.idType === 2).listToppings
                             }
-                            menu={menuType2}
+                            menuData={menuType2}
                             title="Cà phê"
                             onShowEditForm={(data) => {
                                 setShowEditForm(true);
@@ -144,8 +146,8 @@ function AdminMenuPage() {
                             topping={
                                 listToppingByType && listToppingByType.find((type) => type.idType === 3).listToppings
                             }
-                            menu={menuType3}
-                            title="Trà túi"
+                            menuData={menuType3}
+                            title="Trà trái cây"
                             onShowEditForm={(data) => {
                                 setShowEditForm(true);
                                 setSelectedRecipe(data);
@@ -161,7 +163,7 @@ function AdminMenuPage() {
                             topping={
                                 listToppingByType && listToppingByType.find((type) => type.idType === 4).listToppings
                             }
-                            menu={menuType4}
+                            menuData={menuType4}
                             title="Bakery"
                             onShowEditForm={(data) => {
                                 setShowEditForm(true);
@@ -173,7 +175,7 @@ function AdminMenuPage() {
                         <ContentWrapper
                             idType={5}
                             titleIcon={<TbLemon className={cx('icon')} />}
-                            menu={allTopping}
+                            menuData={allTopping}
                             title="Topping"
                             onShowEditForm={(data) => {
                                 setShowEditForm(true);
@@ -189,7 +191,7 @@ function AdminMenuPage() {
 function ContentWrapper({
     title,
     titleIcon,
-    menu,
+    menuData,
     topping,
     allTopping,
     onShowEditForm,
@@ -197,10 +199,15 @@ function ContentWrapper({
     onUpdateTopping = () => {},
 }) {
     const [tab, setTab] = useState(0);
+    const [menu, setMenu] = useState(menuData || []);
+    const [searchValue, setSearchValue] = useState('');
     const localStorageManage = LocalStorageManager.getInstance();
     const [showAllTopping, setShowAllTopping] = useState(false);
+    useEffect(() => {setMenu(menuData);}, [menuData]);
     const listAddToppingFiltered =
-        allTopping && allTopping.filter((item) => !topping.some((item2) => item2.idRecipe === item.idRecipe));
+        allTopping &&
+        topping &&
+        allTopping.filter((item) => !topping.some((item2) => item2.idRecipe === item.idRecipe));
     const addToppingToType = async (idRecipe) => {
         const token = localStorageManage.getItem('token');
         if (token) {
@@ -232,8 +239,41 @@ function ContentWrapper({
                         </div>
                     )}
                 </div>
+                <Input
+                    title={'Tìm món ăn'}
+                    value={searchValue}
+                    onChange={(e) => {
+                        setSearchValue(e.target.value);
+                        setMenu(
+                            menuData.filter((item) => item.name.toUpperCase().includes(e.target.value.toUpperCase())),
+                        );
+                    }}
+                />
                 <div className={cx('content-subtitle')}>
-                    {tab === 0 ? menu && menu.length : topping && topping.length} món
+                    <ExportFile
+                        csvData={
+                            menu &&
+                            menu.map((item) => {
+                                return {
+                                    id: item.idRecipe,
+                                    Tên: item.name,
+                                    'Mô tả': item.info,
+                                    Giá: item.price,
+                                    'Giảm giá': item.discount + '%',
+                                    loại:
+                                        item.idType === 1
+                                            ? 'Trà sữa'
+                                            : item.idType === 2
+                                            ? 'Coffee'
+                                            : item.idType === 3
+                                            ? 'Trà trái cây'
+                                            : 'Bakery',
+                                    'Trạng thái': item.isActive ? 'Đang sử dụng' : 'Không sử dụng',
+                                };
+                            })
+                        }
+                        fileName="ListMenu"
+                    />
                     <HeadlessTippy
                         interactive
                         visible={showAllTopping}

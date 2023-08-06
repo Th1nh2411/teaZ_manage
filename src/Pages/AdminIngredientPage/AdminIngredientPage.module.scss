@@ -31,9 +31,16 @@
         color: #dea043fc;
     }
 }
+.sort-btn {
+    margin-left: 5px;
+    &:hover {
+        cursor: pointer;
+        opacity: 0.85;
+    }
+}
 .content-subtitle {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     font-weight: 600;
     color: #555;
     .icon {

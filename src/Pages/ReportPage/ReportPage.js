@@ -29,7 +29,7 @@ import OrderItem from '../../components/OrderItem';
 import ProfitTracker from './ProfitTracker';
 import IngredientTracker from './IngredientTracker';
 import Button from '../../components/Button/Button';
-import ExportFile from '../../components/ExportFile/ExportFile';
+import ExportFile from '../../components/ExportFile';
 const cx = classNames.bind(styles);
 
 function ReportPage() {

@@ -15,6 +15,7 @@ import Tippy from '@tippyjs/react';
 import Button from '../../components/Button';
 import StaffForm from '../../components/StaffForm';
 import ShopForm from './ShopForm';
+import ExportFile from '../../components/ExportFile/ExportFile';
 const cx = classNames.bind(styles);
 
 function StaffPage() {
@@ -215,7 +216,21 @@ function StaffPage() {
                                     <IoPeopleSharp className={cx('icon')} />
                                     Danh sách nhân viên của quán
                                 </div>
-                                <div className={cx('content-subtitle')}>
+                                <div className={cx('content-subtitle', 'd-flex')}>
+                                    <ExportFile
+                                        csvData={
+                                            listStaff &&
+                                            listStaff.map((item) => {
+                                                return {
+                                                    id: item.idUser,
+                                                    Tên: item.name,
+                                                    Mail: item.mail,
+                                                    SĐT: item.phone,
+                                                };
+                                            })
+                                        }
+                                        fileName="ListStaff"
+                                    />
                                     <div onClick={() => setShowStaffForm(true)} className={cx('icon')}>
                                         <RiAddCircleFill />
                                     </div>

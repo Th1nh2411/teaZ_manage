@@ -16,13 +16,18 @@ import Input from '../../components/Input/Input';
 import { onlyNumber } from '../../utils/format';
 import IngredientForm from './IngredientForm';
 import { RiAddCircleFill } from 'react-icons/ri';
+import { FaSort } from 'react-icons/fa';
 import ImportForm from './ImportForm';
 import ExportForm from './ExportForm';
+import ExportFile from '../../components/ExportFile';
 const cx = classNames.bind(styles);
 
 function AdminIngredientPage() {
+    const [defaultIngredients, setDefaultIngredients] = useState();
     const [ingredients, setIngredients] = useState();
     const [loading, setLoading] = useState();
+    const [sort, setSort] = useState(0);
+    const [searchValue, setSearchValue] = useState('');
     const [selectedIngredient, setSelectedIngredient] = useState();
     const [showIngredientForm, setShowIngredientForm] = useState();
     const [showImportForm, setShowImportForm] = useState();
@@ -35,6 +40,7 @@ function AdminIngredientPage() {
             setLoading(true);
             const results = await adminService.getAllIngredient(token);
             if (results && results.listIngredient) {
+                setDefaultIngredients(results.listIngredient);
                 setIngredients(results.listIngredient);
             }
             setLoading(false);
@@ -95,8 +101,53 @@ function AdminIngredientPage() {
                                 <div className={cx('content-title')}>
                                     <GiMilkCarton className={cx('icon', 'warning')} />
                                     Danh sách nguyên liệu
+                                    <FaSort
+                                        onClick={() => {
+                                            if (sort === 0) {
+                                                setSort(1);
+                                                setIngredients(ingredients.sort((a, b) => a.quantity - b.quantity));
+                                            } else {
+                                                setSort(0);
+                                                setIngredients(ingredients.sort((a, b) => b.quantity - a.quantity));
+                                            }
+                                        }}
+                                        className={cx('sort-btn')}
+                                    />
+                                </div>
+                                <div>
+                                    <Input
+                                        title={'Tìm nguyên liệu'}
+                                        value={searchValue}
+                                        onChange={(e) => {
+                                            setSearchValue(e.target.value);
+                                            setIngredients(
+                                                defaultIngredients.filter((item) =>
+                                                    item.name.toUpperCase().includes(e.target.value.toUpperCase()),
+                                                ),
+                                            );
+                                        }}
+                                    />
                                 </div>
                                 <div className={cx('content-subtitle')}>
+                                    <ExportFile
+                                        csvData={
+                                            ingredients &&
+                                            ingredients.map((item) => {
+                                                return {
+                                                    id: item.idIngredient,
+                                                    Tên: item.name,
+                                                    'Trạng thái': item.isActive
+                                                        ? 'Đang sử dụng'
+                                                        : item.quantity === 0
+                                                        ? 'Hết hàng'
+                                                        : 'Không sử dụng',
+                                                    'Số lượng': item.quantity,
+                                                    ĐVT: item.unitName,
+                                                };
+                                            })
+                                        }
+                                        fileName="ListIngredient"
+                                    />
                                     <div onClick={() => setShowIngredientForm(true)} className={cx('icon')}>
                                         <RiAddCircleFill />
                                     </div>
