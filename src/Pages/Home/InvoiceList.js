@@ -1,7 +1,6 @@
 import styles from './Home.module.scss';
 import classNames from 'classnames/bind';
 import Image from '../../components/Image';
-import Calendar from '../../components/Calendar';
 import images from '../../assets/images';
 import { Col, Row } from 'react-bootstrap';
 import { useContext, useEffect, useState } from 'react';
@@ -16,6 +15,7 @@ import { FaFileInvoiceDollar } from 'react-icons/fa';
 
 import Tippy from '@tippyjs/react';
 import dayjs from 'dayjs';
+import { DatePicker } from 'antd';
 const cx = classNames.bind(styles);
 
 function InvoiceList() {
@@ -44,7 +44,13 @@ function InvoiceList() {
                     Danh sách hóa đơn
                 </div>
                 <div>
-                    <Calendar onDayChange={(date) => setDate(date.format('YYYY-MM-DD'))} />
+                    <DatePicker
+                        size="large"
+                        value={dayjs(date)}
+                        onChange={(date) => {
+                            if (date) setDate(date.format('YYYY-MM-DD'));
+                        }}
+                    />
                 </div>
                 <div className={cx('content-subtitle')}>{invoices && invoices.length} đơn</div>
             </div>

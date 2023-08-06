@@ -1,7 +1,6 @@
 import styles from './ReportPage.module.scss';
 import classNames from 'classnames/bind';
 import Image from '../../components/Image';
-import Calendar from '../../components/Calendar';
 import images from '../../assets/images';
 import { Col, Row } from 'react-bootstrap';
 import { useContext, useEffect, useState } from 'react';
@@ -11,7 +10,7 @@ import LocalStorageManager from '../../utils/LocalStorageManager';
 import { formatNumber, formatPrice, priceFormat, timeGap } from '../../utils/format';
 
 import Tippy from '@tippyjs/react';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import {
     LineChartIcon,
     DrinkIcon,
@@ -30,6 +29,7 @@ import ProfitTracker from './ProfitTracker';
 import IngredientTracker from './IngredientTracker';
 import Button from '../../components/Button/Button';
 import ExportFile from '../../components/ExportFile';
+import { DatePicker } from 'antd';
 const cx = classNames.bind(styles);
 
 function ReportPage() {
@@ -80,11 +80,13 @@ function ReportPage() {
                                 Năm
                             </Button>
                         </div>
-                        <Calendar
-                            type={type}
-                            date={date}
-                            className={cx('header-calendar')}
-                            onDayChange={(date) => setDate(date.format('YYYY-MM-DD'))}
+                        <DatePicker
+                            picker={type === 1 ? 'date' : type === 2 ? 'month' : 'year'}
+                            size="large"
+                            value={dayjs(date)}
+                            onChange={(date) => {
+                                if (date) setDate(date.format('YYYY-MM-DD'));
+                            }}
                         />
                     </div>
                     <Row>

@@ -20,6 +20,7 @@ import { FaSort } from 'react-icons/fa';
 import ImportForm from './ImportForm';
 import ExportForm from './ExportForm';
 import ExportFile from '../../components/ExportFile';
+import QuantityChange from './QuantityChange';
 const cx = classNames.bind(styles);
 
 function AdminIngredientPage() {
@@ -94,142 +95,159 @@ function AdminIngredientPage() {
                     <span></span>
                 </div>
             ) : (
-                <Row>
-                    <Col>
-                        <div className={cx('content-wrapper')}>
-                            <div className={cx('content-header')}>
-                                <div className={cx('content-title')}>
-                                    <GiMilkCarton className={cx('icon', 'warning')} />
-                                    Danh sách nguyên liệu
-                                    <FaSort
-                                        onClick={() => {
-                                            if (sort === 0) {
-                                                setSort(1);
-                                                setIngredients(ingredients.sort((a, b) => a.quantity - b.quantity));
-                                            } else {
-                                                setSort(0);
-                                                setIngredients(ingredients.sort((a, b) => b.quantity - a.quantity));
+                <>
+                    <Row>
+                        <Col>
+                            <div className={cx('content-wrapper')}>
+                                <div className={cx('content-header')}>
+                                    <div className={cx('content-title')}>
+                                        <GiMilkCarton className={cx('icon', 'warning')} />
+                                        Danh sách nguyên liệu
+                                        <FaSort
+                                            onClick={() => {
+                                                if (sort === 0) {
+                                                    setSort(1);
+                                                    setIngredients(ingredients.sort((a, b) => a.quantity - b.quantity));
+                                                } else {
+                                                    setSort(0);
+                                                    setIngredients(ingredients.sort((a, b) => b.quantity - a.quantity));
+                                                }
+                                            }}
+                                            className={cx('sort-btn')}
+                                        />
+                                    </div>
+                                    <div>
+                                        <Input
+                                            title={'Tìm nguyên liệu'}
+                                            value={searchValue}
+                                            onChange={(e) => {
+                                                setSearchValue(e.target.value);
+                                                setIngredients(
+                                                    defaultIngredients.filter((item) =>
+                                                        item.name.toUpperCase().includes(e.target.value.toUpperCase()),
+                                                    ),
+                                                );
+                                            }}
+                                        />
+                                    </div>
+                                    <div className={cx('content-subtitle')}>
+                                        <ExportFile
+                                            csvData={
+                                                ingredients &&
+                                                ingredients.map((item) => {
+                                                    return {
+                                                        id: item.idIngredient,
+                                                        Tên: item.name,
+                                                        'Trạng thái': item.isActive
+                                                            ? 'Đang sử dụng'
+                                                            : item.quantity === 0
+                                                            ? 'Hết hàng'
+                                                            : 'Không sử dụng',
+                                                        'Số lượng': item.quantity,
+                                                        ĐVT: item.unitName,
+                                                    };
+                                                })
                                             }
-                                        }}
-                                        className={cx('sort-btn')}
-                                    />
-                                </div>
-                                <div>
-                                    <Input
-                                        title={'Tìm nguyên liệu'}
-                                        value={searchValue}
-                                        onChange={(e) => {
-                                            setSearchValue(e.target.value);
-                                            setIngredients(
-                                                defaultIngredients.filter((item) =>
-                                                    item.name.toUpperCase().includes(e.target.value.toUpperCase()),
-                                                ),
-                                            );
-                                        }}
-                                    />
-                                </div>
-                                <div className={cx('content-subtitle')}>
-                                    <ExportFile
-                                        csvData={
-                                            ingredients &&
-                                            ingredients.map((item) => {
-                                                return {
-                                                    id: item.idIngredient,
-                                                    Tên: item.name,
-                                                    'Trạng thái': item.isActive
-                                                        ? 'Đang sử dụng'
-                                                        : item.quantity === 0
-                                                        ? 'Hết hàng'
-                                                        : 'Không sử dụng',
-                                                    'Số lượng': item.quantity,
-                                                    ĐVT: item.unitName,
-                                                };
-                                            })
-                                        }
-                                        fileName="ListIngredient"
-                                    />
-                                    <div onClick={() => setShowIngredientForm(true)} className={cx('icon')}>
-                                        <RiAddCircleFill />
+                                            fileName="ListIngredient"
+                                        />
+                                        <div onClick={() => setShowIngredientForm(true)} className={cx('icon')}>
+                                            <RiAddCircleFill />
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div className={cx('content-body')}>
-                                {ingredients &&
-                                    ingredients.map((ingredient, index) => (
-                                        <div
-                                            key={index}
-                                            className={cx('ingredient-item', { inactive: ingredient.quantity === 0 })}
-                                        >
-                                            <div className={cx('ingredient-content')}>
-                                                <div className={cx('ingredient-img-wrapper')}>
-                                                    <Image src={ingredient.image} className={cx('ingredient-img')} />
-                                                </div>
-                                                <div className={cx('ingredient-info')}>
-                                                    <div className={cx('ingredient-name')}>{ingredient.name}</div>
-                                                    <div className={cx('ingredient-info')}>
-                                                        <span>Còn lại:</span>
-                                                        {ingredient.quantity}
-                                                        {ingredient.unitName}
-                                                    </div>
-                                                    <div className={cx('ingredient-info')}>
-                                                        <span>Trạng thái :</span>
-                                                        <span
-                                                            className={cx({
-                                                                inactive:
-                                                                    !ingredient.isActive || ingredient.quantity === 0,
-                                                                active: ingredient.isActive,
-                                                            })}
-                                                        >
-                                                            {ingredient.quantity === 0
-                                                                ? 'Hết nguyên liệu'
-                                                                : ingredient.isActive
-                                                                ? 'Đang sử dụng'
-                                                                : 'Không'}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className={cx('ingredient-actions')}>
-                                                <Button
-                                                    disable={userRole < 2}
-                                                    onClick={() => {
-                                                        setShowImportForm(true);
-                                                        setSelectedIngredient(ingredient);
-                                                    }}
-                                                    primary
-                                                    rightIcon={<BiImport />}
-                                                    className={cx('action')}
-                                                >
-                                                    Nhập hàng
-                                                </Button>
-                                                <Button
-                                                    disable={userRole < 2}
-                                                    onClick={() => {
-                                                        setShowExportForm(true);
-                                                        setSelectedIngredient(ingredient);
-                                                    }}
-                                                    rightIcon={<BiExport />}
-                                                    className={cx('action')}
-                                                >
-                                                    Xuất hàng
-                                                </Button>
-                                                <Tippy content="Chỉnh sửa" placement="bottom" duration={0}>
-                                                    <div className={cx('edit-btn')}>
-                                                        <BiEdit
-                                                            onClick={() => {
-                                                                setShowIngredientForm(true);
-                                                                setSelectedIngredient(ingredient);
-                                                            }}
+                                <div className={cx('content-body')}>
+                                    {ingredients && ingredients.length !== 0 ? (
+                                        ingredients.map((ingredient, index) => (
+                                            <div
+                                                key={index}
+                                                className={cx('ingredient-item', {
+                                                    inactive: ingredient.quantity === 0,
+                                                })}
+                                            >
+                                                <div className={cx('ingredient-content')}>
+                                                    <div className={cx('ingredient-img-wrapper')}>
+                                                        <Image
+                                                            src={ingredient.image}
+                                                            className={cx('ingredient-img')}
                                                         />
                                                     </div>
-                                                </Tippy>
+                                                    <div className={cx('ingredient-info')}>
+                                                        <div className={cx('ingredient-name')}>{ingredient.name}</div>
+                                                        <div className={cx('ingredient-info')}>
+                                                            <span>Còn lại:</span>
+                                                            {ingredient.quantity}
+                                                            {ingredient.unitName}
+                                                        </div>
+                                                        <div className={cx('ingredient-info')}>
+                                                            <span>Trạng thái :</span>
+                                                            <span
+                                                                className={cx({
+                                                                    inactive:
+                                                                        !ingredient.isActive ||
+                                                                        ingredient.quantity === 0,
+                                                                    active: ingredient.isActive,
+                                                                })}
+                                                            >
+                                                                {ingredient.quantity === 0
+                                                                    ? 'Hết nguyên liệu'
+                                                                    : ingredient.isActive
+                                                                    ? 'Đang sử dụng'
+                                                                    : 'Không'}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className={cx('ingredient-actions')}>
+                                                    <Button
+                                                        disable={userRole < 2}
+                                                        onClick={() => {
+                                                            setShowImportForm(true);
+                                                            setSelectedIngredient(ingredient);
+                                                        }}
+                                                        primary
+                                                        rightIcon={<BiImport />}
+                                                        className={cx('action')}
+                                                    >
+                                                        Nhập hàng
+                                                    </Button>
+                                                    <Button
+                                                        disable={userRole < 2}
+                                                        onClick={() => {
+                                                            setShowExportForm(true);
+                                                            setSelectedIngredient(ingredient);
+                                                        }}
+                                                        rightIcon={<BiExport />}
+                                                        className={cx('action')}
+                                                    >
+                                                        Xuất hàng
+                                                    </Button>
+                                                    <Tippy content="Chỉnh sửa" placement="bottom" duration={0}>
+                                                        <div className={cx('edit-btn')}>
+                                                            <BiEdit
+                                                                onClick={() => {
+                                                                    setShowIngredientForm(true);
+                                                                    setSelectedIngredient(ingredient);
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    </Tippy>
+                                                </div>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className={cx('empty-order-wrapper')}>
+                                            <Image src={images.emptyCart} className={cx('empty-order-img')} />
+                                            <div className={cx('empty-order-title')}>
+                                                Không tìm thấy nguyên liệu nào
                                             </div>
                                         </div>
-                                    ))}
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                    </Col>
-                </Row>
+                        </Col>
+                    </Row>
+                    <QuantityChange />
+                </>
             )}
         </div>
     );

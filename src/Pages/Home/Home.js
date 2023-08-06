@@ -1,7 +1,6 @@
 import styles from './Home.module.scss';
 import classNames from 'classnames/bind';
 import Image from '../../components/Image';
-import Calendar from '../../components/Calendar';
 import images from '../../assets/images';
 import { Col, Row } from 'react-bootstrap';
 import { useContext, useEffect, useState } from 'react';
