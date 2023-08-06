@@ -14,6 +14,7 @@ import { IoPeopleSharp } from 'react-icons/io5';
 import Tippy from '@tippyjs/react';
 import Button from '../../components/Button';
 import StaffForm from '../../components/StaffForm';
+import ShopForm from './ShopForm';
 const cx = classNames.bind(styles);
 
 function StaffPage() {
@@ -21,11 +22,10 @@ function StaffPage() {
     const [shopInfo, setShopInfo] = useState();
     const [listStaff, setListStaff] = useState();
     const [active, setActive] = useState();
-    const [imageValue, setImageValue] = useState('');
-    const [showEditShop, setShowEditShop] = useState();
     const [showStaffForm, setShowStaffForm] = useState();
     const [staffData, setStaffData] = useState();
     const [showConfirmDelStaff, setShowConfirmDelStaff] = useState();
+    const [showShopForm, setShowShopForm] = useState();
     const localStorageManager = LocalStorageManager.getInstance();
     const userRole = localStorageManager.getItem('userInfo').role;
     const [state, dispatch] = useContext(StoreContext);
@@ -42,10 +42,10 @@ function StaffPage() {
         }
     };
 
-    const editShopInfo = async (isActive = shopInfo.isActive, image = shopInfo.image) => {
+    const editShopInfo = async (isActive = shopInfo.isActive) => {
         const token = localStorageManager.getItem('token');
         if (token) {
-            const results = await shopService.editInfoShop(image, isActive, token);
+            const results = await shopService.editInfoShop({ isActive }, token);
             if (results && results.isSuccess) {
                 setActive(isActive);
                 dispatch(
@@ -96,13 +96,7 @@ function StaffPage() {
             editShopInfo(false);
         }
     };
-    const handleSubmitEdit = () => {
-        if (userRole > 1) {
-            editShopInfo(active, imageValue);
-            setShowEditShop(false);
-            setShopInfo({ ...shopInfo, image: imageValue });
-        }
-    };
+
     return (
         <div className={cx('wrapper')}>
             {showStaffForm && (
@@ -151,22 +145,16 @@ function StaffPage() {
                     </div>
                 </Modal>
             )}
-            {showEditShop && (
-                <Modal className={cx('edit-form-wrapper')} handleClickOutside={() => setShowEditShop(false)}>
-                    <div className={cx('form-title')}>Cập nhật thông tin cửa hàng</div>
-                    <form onSubmit={handleSubmitEdit}>
-                        <Input
-                            onChange={(event) => {
-                                setImageValue(event.target.value);
-                            }}
-                            value={imageValue}
-                            title="Nhập đường dẫn ảnh"
-                        />
-                        <Button className={cx('shop-update-btn')} primary type="submit">
-                            Cập nhật
-                        </Button>
-                    </form>
-                </Modal>
+            {showShopForm && (
+                <ShopForm
+                    data={shopInfo}
+                    onCloseModal={(updated) => {
+                        if (updated) {
+                            getShopInfo();
+                        }
+                        setShowShopForm(false);
+                    }}
+                />
             )}
             {loading ? (
                 <div className={cx('loader')}>
@@ -182,17 +170,17 @@ function StaffPage() {
                                     <BsShop className={cx('icon', 'warning')} />
                                     Thông tin cửa hàng
                                 </div>
-                                <div className={cx('content-subtitle')}></div>
+                                <div className={cx('content-subtitle')}>
+                                    <div onClick={() => setShowShopForm(true)} className={cx('icon')}>
+                                        <RiEditCircleFill />
+                                    </div>
+                                </div>
                             </div>
                             <div className={cx('content-body')}>
                                 {shopInfo && (
                                     <div className={cx('shop-wrapper')}>
                                         <div className={cx('shop-img-wrapper')}>
                                             <Image src={shopInfo.image} className={cx('shop-img')} />
-                                            <RiImageAddFill
-                                                onClick={() => setShowEditShop(true)}
-                                                className={cx('update-img-btn', { disable: userRole < 2 })}
-                                            />
                                         </div>
                                         <div className={cx('shop-address')}>
                                             <span>Địa chỉ :</span> {shopInfo.address}

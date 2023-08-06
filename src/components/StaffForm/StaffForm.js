@@ -17,7 +17,8 @@ const cx = classNames.bind(styles);
 
 function StaffForm({ data, onCloseModal = () => {} }) {
     const [nameValue, setNameValue] = useState(data ? data.name : '');
-    const [phoneValue, setPhoneValue] = useState(data ? data.phone : '');
+    const [phone, setPhoneValue] = useState(data ? data.phone : '');
+    const [mail, setMailValue] = useState(data ? data.mail : '');
     const [passwordValue, setPasswordValue] = useState('');
     const [valueChange, setValueChange] = useState(false);
     const [state, dispatch] = useContext(StoreContext);
@@ -26,7 +27,7 @@ function StaffForm({ data, onCloseModal = () => {} }) {
     const editStaff = async (activeValue) => {
         const token = localStorageManage.getItem('token');
         if (token) {
-            const results = await shopService.editStaff(data.idStaff, token, phoneValue, nameValue, passwordValue);
+            const results = await shopService.editStaff(data.idUser, token, phone, mail, nameValue, passwordValue);
             if (results && results.isSuccess) {
                 dispatch(
                     actions.setToast({
@@ -36,13 +37,22 @@ function StaffForm({ data, onCloseModal = () => {} }) {
                     }),
                 );
                 onCloseModal(true);
+            } else {
+                dispatch(
+                    actions.setToast({
+                        show: true,
+                        content: results.message,
+                        title: 'Thất bại',
+                        type: 'error',
+                    }),
+                );
             }
         }
     };
     const addNewStaff = async (activeValue) => {
         const token = localStorageManage.getItem('token');
         if (token) {
-            const results = await shopService.addStaff(phoneValue, nameValue, passwordValue, token);
+            const results = await shopService.addStaff(phone, mail, nameValue, passwordValue, token);
             if (results && results.isSuccess) {
                 dispatch(
                     actions.setToast({
@@ -56,7 +66,7 @@ function StaffForm({ data, onCloseModal = () => {} }) {
                 dispatch(
                     actions.setToast({
                         show: true,
-                        content: 'Số điện thoại đã được đăng kí',
+                        content: results.message,
                         title: 'Thất bại',
                         type: 'error',
                     }),
@@ -68,9 +78,11 @@ function StaffForm({ data, onCloseModal = () => {} }) {
         if (data) {
             setNameValue(data.name);
             setPhoneValue(data.phone);
+            setMailValue(data.mail);
         } else {
             setNameValue('');
-            setPhoneValue(data.phone);
+            setPhoneValue('');
+            setMailValue('');
         }
         setPasswordValue('');
     };
@@ -85,13 +97,13 @@ function StaffForm({ data, onCloseModal = () => {} }) {
 
     useEffect(() => {
         if (data) {
-            if (data.name !== nameValue || data.phone !== phoneValue || passwordValue !== '') {
+            if (data.name !== nameValue || data.phone !== phone || data.mail !== mail || passwordValue !== '') {
                 setValueChange(true);
             } else {
                 setValueChange(false);
             }
         }
-    }, [nameValue, phoneValue, passwordValue]);
+    }, [nameValue, phone, passwordValue, mail]);
     return (
         <Modal
             handleClickOutside={() => {
@@ -114,6 +126,17 @@ function StaffForm({ data, onCloseModal = () => {} }) {
                         title="Tên nhân viên"
                         type="text"
                     />
+
+                    <Input
+                        className={cx('price-input')}
+                        onChange={(event) => {
+                            setMailValue(event.target.value);
+                            setValueChange(true);
+                        }}
+                        value={mail}
+                        title="Tài khoản gmail"
+                        type="email"
+                    />
                     <div className={cx('item-price-wrapper')}>
                         <Input
                             className={cx('price-input')}
@@ -123,7 +146,7 @@ function StaffForm({ data, onCloseModal = () => {} }) {
                                     setValueChange(true);
                                 }
                             }}
-                            value={phoneValue}
+                            value={phone}
                             title="Số điện thoại"
                             type="text"
                         />

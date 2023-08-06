@@ -5,20 +5,19 @@ export const getInfoShop = async (token) => {
         headers: { access_token: token },
     };
     try {
-        const res = await httpRequest.get('shop/info', config);
+        const res = await httpRequest.get('shop/getShopInfo', config);
         return res;
     } catch (error) {
         console.log(error);
         return error.response && error.response.data;
     }
 };
-export const editInfoShop = async (image, isActive, token) => {
+export const editInfoShop = async (body, token) => {
     const config = {
         headers: { access_token: token },
     };
-    const body = { image, isActive };
     try {
-        const res = await httpRequest.put('shop/editInfo', body, config);
+        const res = await httpRequest.patch('shop/editInfo', body, config);
         return res;
     } catch (error) {
         console.log(error);
@@ -30,14 +29,32 @@ export const getListStaff = async (token) => {
         headers: { access_token: token },
     };
     try {
-        const res = await httpRequest.get('manager/getListStaff', config);
+        const res = await httpRequest.get('admin/getListStaff', config);
         return res;
     } catch (error) {
         console.log(error);
         return error.response && error.response.data;
     }
 };
-export const addStaff = async (phone, name, password, token) => {
+export const addStaff = async (phone, mail, name, password, token) => {
+    const config = {
+        headers: { access_token: token },
+    };
+    const body = {
+        phone,
+        name,
+        mail,
+        password,
+    };
+    try {
+        const res = await httpRequest.post('admin/addStaff', body, config);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return error.response && error.response.data;
+    }
+};
+export const editStaff = async (idStaff, token, phone, mail, name, password) => {
     const config = {
         headers: { access_token: token },
     };
@@ -45,26 +62,10 @@ export const addStaff = async (phone, name, password, token) => {
         phone,
         name,
         password,
+        mail,
     };
     try {
-        const res = await httpRequest.post('manager/addStaff', body, config);
-        return res;
-    } catch (error) {
-        console.log(error);
-        return error.response && error.response.data;
-    }
-};
-export const editStaff = async (idStaff, token, phone, name, password) => {
-    const config = {
-        headers: { access_token: token },
-    };
-    const body = {
-        phone,
-        name,
-        password,
-    };
-    try {
-        const res = await httpRequest.patch(`manager/editStaff/${idStaff}`, body, config);
+        const res = await httpRequest.patch(`admin/editStaff/${idStaff}`, body, config);
         return res;
     } catch (error) {
         console.log(error);
@@ -79,7 +80,7 @@ export const deleteStaff = async (phone, token) => {
         phone,
     };
     try {
-        const res = await httpRequest.del('manager/deleteStaff', body, config);
+        const res = await httpRequest.del('admin/deleteStaff', body, config);
         return res;
     } catch (error) {
         console.log(error);

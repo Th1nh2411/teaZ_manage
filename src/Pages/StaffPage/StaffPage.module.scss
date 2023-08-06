@@ -172,21 +172,97 @@
     min-width: 400px;
 }
 .form-title {
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: 10px;
     text-align: center;
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 15px;
 }
-.shop-update-btn {
-    width: 100%;
-    border-radius: 6px;
-    height: 40px;
-    margin-top: 15px;
+.search-result {
+    background-color: #fff;
+    max-width: 650px;
+    max-height: 300px;
+    overflow-y: auto;
+    border-radius: 4px;
+    box-shadow: 0 1px 2px 2px rgba(56, 65, 74, 0.15);
+    .search-item {
+        padding: 10px 10px;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        transition: 0.1s ease-in-out all;
+        &:hover {
+            background-color: var(--hover-color);
+            cursor: pointer;
+        }
+    }
+    .search-item + .search-item {
+        border-top: 1px solid #cccccc93;
+    }
+    .location-icon {
+        font-size: 4rem;
+        color: var(--primary-color);
+        flex-shrink: 0;
+        margin-right: 10px;
+    }
+    .address-title {
+        color: var(--primary-color);
+        font-weight: 700;
+    }
+    .address-detail {
+        font-size: 1.4rem;
+    }
+    .chosen-address {
+        padding: 10px 25px 0;
+        font-size: 1.4rem;
+        span {
+            font-weight: 700;
+        }
+    }
+    .current-address {
+        padding: 10px 20px 15px;
+        display: flex;
+        align-items: center;
+        color: var(--primary-color);
+        &:hover {
+            opacity: 0.8;
+            cursor: pointer;
+        }
+        .icon {
+            font-size: 2.4rem;
+            margin-right: 5px;
+        }
+    }
+}
+
+.status-select {
+    border-color: var(--primary-color);
+    height: 48.6px;
+    padding: 0 8px;
+    font-weight: 700;
+    margin-left: 12px;
+    margin-bottom: 6px;
+    font-size: 1.8rem;
+    color: #888;
+}
+.half-width {
+    width: 49%;
+}
+.image-input {
+    flex: 1;
+}
+.form-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: end;
+    .confirm-btn {
+        margin-left: 10px;
+    }
 }
 // Staff Form
 
 .form-header {
 }
+
 .form-body {
     display: flex;
 }

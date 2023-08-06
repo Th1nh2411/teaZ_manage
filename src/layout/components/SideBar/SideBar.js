@@ -90,19 +90,6 @@ function SideBar({ className, sideBarShrink }) {
                     </Tippy>
                 )}
 
-                {userRole === 2 && (
-                    <Tippy content="Cửa hàng" placement="right" disabled={!sideBarShrink} duration={0}>
-                        <div>
-                            <MenuItem
-                                title={!sideBarShrink && 'Cửa hàng'}
-                                to={config.routes.shop}
-                                icon={<AiFillShop />}
-                                activeIcon={<AiFillShop />}
-                            />
-                        </div>
-                    </Tippy>
-                )}
-
                 <Tippy content="Log Out" placement="right" disabled={!sideBarShrink} duration={0}>
                     <div>
                         <MenuItem

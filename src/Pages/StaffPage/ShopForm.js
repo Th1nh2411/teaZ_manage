@@ -1,4 +1,4 @@
-import styles from './ShopPage.module.scss';
+import styles from './StaffPage.module.scss';
 import classNames from 'classnames/bind';
 import Image from '../../components/Image';
 import Modal from '../../components/Modal';
@@ -7,30 +7,28 @@ import { Col, Form, Row } from 'react-bootstrap';
 import { useContext, useEffect, useState } from 'react';
 import { StoreContext, actions } from '../../store';
 import LocalStorageManager from '../../utils/LocalStorageManager';
-import * as adminService from '../../services/adminService';
+import * as shopService from '../../services/shopService';
 import * as mapService from '../../services/mapService';
 import Tippy from '@tippyjs/react';
 import HeadlessTippy from '@tippyjs/react/headless';
 import Button from '../../components/Button';
-import ManagerForm from '../../components/ManagerForm';
 import { onlyNumber } from '../../utils/format';
 import { useDebounce } from '../../hooks';
 import { IoLocationSharp } from 'react-icons/io5';
 const cx = classNames.bind(styles);
 
 function ShopForm({ data, onCloseModal = () => {} }) {
-    const [addressValue, setAddressValue] = useState(data ? data.address : '');
+    const [address, setAddressValue] = useState(data ? data.address : '');
     const [searchResult, setSearchResult] = useState([]);
     const [showAddressResult, setShowAddressResult] = useState(false);
 
-    const [latitudeValue, setLatitudeValue] = useState(data ? data.latitude : '');
-    const [longitudeValue, setLongitudeValue] = useState(data ? data.longitude : '');
-    const [imageValue, setImageValue] = useState(data ? data.image : '');
-    const [isActive, setIsActive] = useState(data ? data.isActive : 1);
+    const [latitude, setLatitudeValue] = useState(data ? data.latitude : '');
+    const [longitude, setLongitudeValue] = useState(data ? data.longitude : '');
+    const [image, setImageValue] = useState(data ? data.image : '');
     const [valueChange, setValueChange] = useState(false);
     const [state, dispatch] = useContext(StoreContext);
     const localStorageManage = LocalStorageManager.getInstance();
-    const debouncedValue = useDebounce(addressValue, 500);
+    const debouncedValue = useDebounce(address, 500);
     const userRole = localStorageManage.getItem('userInfo').role;
     useEffect(() => {
         if (!debouncedValue.trim()) {
@@ -49,18 +47,10 @@ function ShopForm({ data, onCloseModal = () => {} }) {
         setAddressValue(newAddress);
         setShowAddressResult(false);
     };
-    const editShop = async (activeValue) => {
+    const editShop = async () => {
         const token = localStorageManage.getItem('token');
         if (token) {
-            const results = await adminService.editShop(
-                data.idShop,
-                token,
-                addressValue,
-                latitudeValue,
-                longitudeValue,
-                imageValue,
-                isActive,
-            );
+            const results = await shopService.editInfoShop({ address, latitude, longitude, image }, token);
             if (results && results.isSuccess) {
                 dispatch(
                     actions.setToast({
@@ -70,34 +60,11 @@ function ShopForm({ data, onCloseModal = () => {} }) {
                     }),
                 );
                 onCloseModal(true);
-            }
-        }
-    };
-    const addNewShop = async (activeValue) => {
-        const token = localStorageManage.getItem('token');
-        if (token) {
-            const results = await adminService.addShop(
-                token,
-                addressValue,
-                latitudeValue,
-                longitudeValue,
-                imageValue,
-                isActive,
-            );
-            if (results && results.isSuccess) {
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: 'Tạo mới cửa hàng thành công',
-                        title: 'Thành công',
-                    }),
-                );
-                onCloseModal(true);
             } else {
                 dispatch(
                     actions.setToast({
                         show: true,
-                        content: 'Cửa hàng đã tồn tại',
+                        content: results.message || 'Cập nhật thất bại',
                         title: 'Thất bại',
                         type: 'error',
                     }),
@@ -105,55 +72,30 @@ function ShopForm({ data, onCloseModal = () => {} }) {
             }
         }
     };
+
     const handleCancelEdit = () => {
-        if (data) {
-            setAddressValue(data.address);
-            setLatitudeValue(data.latitude);
-            setLongitudeValue(data.longitude);
-            setImageValue(data.image);
-        } else {
-            setAddressValue('');
-            setLatitudeValue('');
-            setLongitudeValue('');
-            setImageValue('');
-        }
+        setAddressValue(data.address);
+        setLatitudeValue(data.latitude);
+        setLongitudeValue(data.longitude);
+        setImageValue(data.image);
     };
     const handleClickConfirm = (e) => {
         e.preventDefault();
-        if (data) {
-            editShop();
-        } else {
-            addNewShop();
-        }
+        editShop();
     };
 
     useEffect(() => {
-        if (data) {
-            if (
-                data.address !== addressValue ||
-                data.latitude !== Number(latitudeValue) ||
-                data.longitude !== Number(longitudeValue) ||
-                data.image !== imageValue ||
-                data.isActive !== isActive
-            ) {
-                setValueChange(true);
-            } else {
-                setValueChange(false);
-            }
+        if (
+            data.address !== address ||
+            data.latitude !== Number(latitude) ||
+            data.longitude !== Number(longitude) ||
+            data.image !== image
+        ) {
+            setValueChange(true);
         } else {
-            if (
-                addressValue !== '' ||
-                Number(latitudeValue) !== '' ||
-                Number(longitudeValue) !== '' ||
-                imageValue !== '' ||
-                isActive !== true
-            ) {
-                setValueChange(true);
-            } else {
-                setValueChange(false);
-            }
+            setValueChange(false);
         }
-    }, [addressValue, latitudeValue, longitudeValue, imageValue, isActive]);
+    }, [address, latitude, longitude, image]);
     return (
         <Modal
             handleClickOutside={() => {
@@ -198,7 +140,7 @@ function ShopForm({ data, onCloseModal = () => {} }) {
                                     setAddressValue(event.target.value);
                                     setValueChange(true);
                                 }}
-                                value={addressValue}
+                                value={address}
                                 title="Địa chỉ quán"
                                 type="text"
                             />
@@ -213,7 +155,7 @@ function ShopForm({ data, onCloseModal = () => {} }) {
                                     setLatitudeValue(event.target.value);
                                 }
                             }}
-                            value={latitudeValue}
+                            value={latitude}
                             title="Vĩ độ"
                             type="text"
                         />
@@ -223,7 +165,7 @@ function ShopForm({ data, onCloseModal = () => {} }) {
                             onChange={(event) => {
                                 setLongitudeValue(event.target.value);
                             }}
-                            value={longitudeValue}
+                            value={longitude}
                             title="kinh độ"
                             type="text"
                         />
@@ -234,20 +176,10 @@ function ShopForm({ data, onCloseModal = () => {} }) {
                             onChange={(event) => {
                                 setImageValue(event.target.value);
                             }}
-                            value={imageValue}
+                            value={image}
                             title="Hình ảnh cửa hàng"
                             type="text"
                         />
-                        <select
-                            className={cx('status-select')}
-                            value={isActive}
-                            onChange={(event) => {
-                                setIsActive(event.target.value);
-                            }}
-                        >
-                            <option value={0}>Ngưng hoạt động</option>
-                            <option value={1}>Hoạt động</option>
-                        </select>
                     </div>
 
                     <div className={cx('form-actions')}>
