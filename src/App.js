@@ -8,15 +8,15 @@ import LocalStorageManager from './utils/LocalStorageManager';
 
 function App() {
     const titles = {
-        [config.routes.login]: 'Phúc Long - Đăng nhập',
-        [config.routes.order]: 'Phúc Long - Đơn hàng',
-        [config.routes.staff]: 'Phúc Long - Cửa hàng',
-        [config.routes.ingredient]: 'Phúc Long - Nguyên liệu',
-        [config.routes.adminIngredient]: 'Phúc Long - Nguyên liệu',
-        [config.routes.menu]: 'Phúc Long - Menu',
-        [config.routes.adminMenu]: 'Phúc Long - Menu',
-        [config.routes.report]: 'Phúc Long - Thống kê',
-        [config.routes.adminReport]: 'Phúc Long - Thống kê',
+        [config.routes.login]: 'TeaZ - Đăng nhập',
+        [config.routes.order]: 'TeaZ - Đơn hàng',
+        [config.routes.staff]: 'TeaZ - Cửa hàng',
+        [config.routes.ingredient]: 'TeaZ - Nguyên liệu',
+        [config.routes.adminIngredient]: 'TeaZ - Nguyên liệu',
+        [config.routes.menu]: 'TeaZ - Menu',
+        [config.routes.adminMenu]: 'TeaZ - Menu',
+        [config.routes.report]: 'TeaZ - Thống kê',
+        [config.routes.adminReport]: 'TeaZ - Thống kê',
     };
     const location = useLocation();
     const navigate = useNavigate();
@@ -29,7 +29,7 @@ function App() {
             navigate(config.routes.login);
         }
         localStorage.getItem('token');
-        document.title = titles[location.pathname] ?? 'Phúc Long - Manage';
+        document.title = titles[location.pathname] ?? 'TeaZ - Manage';
     }, [location]);
     return (
         <div className="App">
