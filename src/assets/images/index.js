@@ -3,6 +3,7 @@ const images = {
     logo: require('./logo.png'),
     logo2: require('./logo2.png'),
     logo3: require('./logo3.png'),
+    logo4: require('./logo4.png'),
     coconutCaramel: require('./coconut_caramel.jpg'),
     longan: require('./longan.jpg'),
     twoFor1: require('./2for1.jpg'),

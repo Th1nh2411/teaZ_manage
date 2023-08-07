@@ -68,14 +68,14 @@ const exportColumns = [
         key: 'quantity',
     },
     {
-        title: 'Ngày xuất',
-        dataIndex: 'date',
-        key: 'date',
-    },
-    {
         title: 'Ghi chú',
         dataIndex: 'info',
         key: 'info',
+    },
+    {
+        title: 'Ngày xuất',
+        dataIndex: 'date',
+        key: 'date',
     },
 ];
 function QuantityChange() {
@@ -212,8 +212,8 @@ function QuantityChange() {
                                             'Tên sản phẩm': item.name,
                                             ĐVT: item.unitName,
                                             'Số lượng': item.quantity,
-                                            'Ngày nhập': item.date,
                                             'Ghi chú': item.info,
+                                            'Ngày nhập': item.date,
                                         };
                                     })}
                                     fileName="exportIngredient"
@@ -244,8 +244,8 @@ function QuantityChange() {
                                             'Tên sản phẩm': item.name,
                                             ĐVT: item.unitName,
                                             'Số lượng': item.quantity,
-                                            'Ngày nhập': item.date,
                                             'Ghi chú': item.info,
+                                            'Ngày nhập': item.date,
                                         };
                                     })}
                                     fileName="SellIngredient"

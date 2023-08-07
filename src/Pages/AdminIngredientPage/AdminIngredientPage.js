@@ -27,7 +27,7 @@ function AdminIngredientPage() {
     const [defaultIngredients, setDefaultIngredients] = useState();
     const [ingredients, setIngredients] = useState();
     const [loading, setLoading] = useState();
-    const [sort, setSort] = useState(0);
+    const [sort, setSort] = useState(1);
     const [searchValue, setSearchValue] = useState('');
     const [selectedIngredient, setSelectedIngredient] = useState();
     const [showIngredientForm, setShowIngredientForm] = useState();
@@ -41,8 +41,8 @@ function AdminIngredientPage() {
             setLoading(true);
             const results = await adminService.getAllIngredient(token);
             if (results && results.listIngredient) {
-                setDefaultIngredients(results.listIngredient);
-                setIngredients(results.listIngredient);
+                setDefaultIngredients(results.listIngredient.sort((a, b) => a.quantity - b.quantity));
+                setIngredients(results.listIngredient.sort((a, b) => a.quantity - b.quantity));
             }
             setLoading(false);
         }

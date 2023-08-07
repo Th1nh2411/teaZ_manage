@@ -32,7 +32,7 @@ function SideBar({ className, sideBarShrink }) {
         <aside className={cx('wrapper', className)}>
             <Menu>
                 <div className={cx('logo-img-wrapper')}>
-                    <Image ref={logoRef} src={images.logo} className={cx('logo-img')} />
+                    <Image ref={logoRef} src={images.logo2} className={cx('logo-img')} />
                 </div>
                 <Tippy content="Đơn hàng" placement="right" disabled={!sideBarShrink} duration={0}>
                     <div>

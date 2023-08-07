@@ -5,8 +5,9 @@
     align-items: center;
     height: 100vh;
     position: relative;
-    background: #fff url('https://phuclong.com.vn/uploads/store/83943c23fd8b7a-ntmk.jpg') center center / cover
-        no-repeat;
+    background: #fff
+        url('https://file.hstatic.net/1000075078/file/grandview2_a48a6f2b6495492180138bfd09d22bb3_master.jpg') center
+        center / cover no-repeat;
     z-index: 0;
     &::before {
         z-index: -99;
@@ -29,12 +30,16 @@
     object-fit: cover;
     text-align: center;
 }
-.slogan {
-    color: #ddd;
-    font-weight: 800;
-    font-size: 2.2rem;
-}
+
 .form-wrapper {
+}
+.form-title {
+    color: #333;
+    font-weight: 800;
+    font-size: 2.8rem;
+    text-align: center;
+    margin-bottom: 10px;
+    max-width: 250px;
 }
 .form-container {
     padding: 30px 40px 25px;

@@ -51,11 +51,11 @@ const Login = ({ setAuth }) => {
         <div className={cx('wrapper')}>
             <div className={cx('bg-wrapper')}>
                 <img src={images.logo2} className={cx('bg-img')} alt="bg-img" />
-                <div className={cx('slogan')}>Đăng nhập vào hệ thống quản lý Phúc Long</div>
             </div>
             <div className={cx('form-wrapper')}>
                 <Card className={cx('form-container')}>
-                    <img src={images.logo3} className={cx('logo')} alt="logo-img" />
+                    <div className={cx('form-title')}>Đăng nhập vào hệ thống quản lý</div>
+                    {/* <img src={images.logo3} className={cx('logo')} alt="logo-img" /> */}
 
                     <form onSubmit={handleSubmit} className={cx('form-body')}>
                         <Input
