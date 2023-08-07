@@ -76,7 +76,7 @@ function ImportForm({ selectedIngredient, onCloseModal = () => {} }) {
                             selectedIngredient.unitName === 'g'
                                 ? 'kg'
                                 : selectedIngredient.unitName === 'ml'
-                                ? 'l'
+                                ? 'lít'
                                 : 'pcs'
                         }
                     />

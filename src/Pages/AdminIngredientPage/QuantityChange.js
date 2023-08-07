@@ -26,15 +26,16 @@ const importColumns = [
         key: 'name',
     },
     {
-        title: 'ĐVT',
-        dataIndex: 'unitName',
-        key: 'unitName',
-    },
-    {
         title: 'SL',
         dataIndex: 'quantity',
         key: 'quantity',
     },
+    {
+        title: 'ĐVT',
+        dataIndex: 'unitName',
+        key: 'unitName',
+    },
+
     {
         title: 'Tổng tiền',
         dataIndex: 'total',
@@ -58,15 +59,16 @@ const exportColumns = [
         key: 'name',
     },
     {
-        title: 'ĐVT',
-        dataIndex: 'unitName',
-        key: 'unitName',
-    },
-    {
         title: 'SL',
         dataIndex: 'quantity',
         key: 'quantity',
     },
+    {
+        title: 'ĐVT',
+        dataIndex: 'unitName',
+        key: 'unitName',
+    },
+
     {
         title: 'Ghi chú',
         dataIndex: 'info',
@@ -97,21 +99,25 @@ function QuantityChange() {
                     results.imports.map((item) => {
                         return {
                             ...item,
+                            quantity: item.quantity / 1000,
+                            unitName: item.unitName === 'g' ? 'kg' : item.unitName === 'ml' ? 'lít' : 'pcs',
                             total: priceFormat(item.total) + 'đ',
-                            date: item.date,
-                        };
-                    }),
-                );
-                setExportsFromBH(
-                    results.exportsBH.map((item) => {
-                        return {
-                            ...item,
                             date: item.date,
                         };
                     }),
                 );
                 setExports(
                     results.exportsWithoutBH.map((item) => {
+                        return {
+                            ...item,
+                            quantity: item.quantity / 1000,
+                            unitName: item.unitName === 'g' ? 'kg' : item.unitName === 'ml' ? 'lít' : 'pcs',
+                            date: item.date,
+                        };
+                    }),
+                );
+                setExportsFromBH(
+                    results.exportsBH.map((item) => {
                         return {
                             ...item,
                             date: item.date,

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import dayjs from 'dayjs';
 import { Chart, registerables } from 'chart.js';
-import { formatNumber } from '../../utils/format';
+import { formatNumber, formatPrice } from '../../utils/format';
 import LocalStorageManager from '../../utils/LocalStorageManager';
 import * as reportService from '../../services/reportService';
 Chart.register(...registerables);
@@ -79,7 +79,7 @@ const ProfitTracker = ({ className }) => {
                     // autoSkipPadding: 10,
                     //  stepSize: 10
                     callback: function (value, index, ticks) {
-                        return formatNumber(value);
+                        return formatPrice(value);
                     },
                 },
                 grid: {

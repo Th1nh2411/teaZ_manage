@@ -90,7 +90,7 @@ const IngredientTracker = ({ className, date, type }) => {
                     // autoSkipPadding: 10,
                     //  stepSize: 10
                     callback: function (value, index, ticks) {
-                        return value + 'g';
+                        return value / 1000 + '(kg/l)';
                     },
                 },
                 grid: {
