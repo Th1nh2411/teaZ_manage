@@ -9,6 +9,7 @@ import { BiImport, BiExport } from 'react-icons/bi';
 import LocalStorageManager from '../../utils/LocalStorageManager';
 import Input from '../../components/Input/Input';
 import { onlyNumber } from '../../utils/format';
+import { InputNumber, Select } from 'antd';
 const cx = classNames.bind(styles);
 
 function ExportForm({ selectedIngredient, onCloseModal = () => {} }) {
@@ -52,37 +53,35 @@ function ExportForm({ selectedIngredient, onCloseModal = () => {} }) {
                     </div>
                 </div>
                 <div className={cx('quantity-wrapper')}>
-                    <span>Lý do xuất:</span>
-                    <select
+                    <span>Lý do xuất :</span>
+                    <Select
                         className={cx('quantity-select')}
                         value={infoValue}
-                        onChange={(event) => {
-                            setInfoValue(event.target.value);
+                        onChange={(value) => {
+                            setInfoValue(value);
                         }}
-                    >
-                        <option value="Hết HSD">Hết HSD</option>
-                        <option value="Hư, hỏng">Hư, hỏng</option>
-                        <option value="Lỗi đặt hàng">Lỗi đặt hàng</option>
-                        <option value="Không dùng tới">Nguyên liệu cũ</option>
-                        <option value="Tồn kho">Tồn kho</option>
-                    </select>
+                        dropdownStyle={{ zIndex: 1000000 }}
+                        options={[
+                            { value: 'Hết HSD', label: 'Hết HSD' },
+                            { value: 'Hư, hỏng', label: 'Hư, hỏng' },
+                            { value: 'Lỗi đặt hàng', label: 'Lỗi đặt hàng' },
+                            { value: 'Không dùng tới', label: 'Không dùng tới' },
+                            { value: 'Hết HSD', label: 'Hết HSD' },
+                        ]}
+                    />
                 </div>
                 <div className={cx('quantity-wrapper')}>
-                    <span>Số lượng xuất:</span>
-                    <select
+                    <span>Số lượng xuất :</span>
+                    <InputNumber
                         className={cx('quantity-select')}
                         value={quantityValue}
-                        onChange={(event) => {
-                            setQuantityValue(event.target.value);
+                        onChange={(value) => {
+                            setQuantityValue(value);
                         }}
-                    >
-                        {[...Array(selectedIngredient.quantity).keys()].map((value) => (
-                            <option key={value + 1} value={value + 1}>
-                                {value + 1}
-                            </option>
-                        ))}
-                    </select>
-                    {selectedIngredient.unitName}
+                        min={0}
+                        max={selectedIngredient.quantity}
+                        addonAfter={selectedIngredient.unitName}
+                    />
                 </div>
                 <Button primary rightIcon={<BiImport />} className={cx('action-btn')}>
                     Xuất hàng

@@ -180,7 +180,21 @@
     font-size: 1.8rem;
     color: #888;
 }
-
+.quantity-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.quantity-select {
+    margin: 5px 0;
+    margin-left: 8px;
+    width: 150px;
+    z-index: 1000;
+}
+.action-btn {
+    width: 100%;
+    margin-top: 10px;
+}
 .form-actions {
     margin-top: 20px;
     display: flex;

@@ -9,6 +9,7 @@ import { BiImport, BiExport } from 'react-icons/bi';
 import LocalStorageManager from '../../utils/LocalStorageManager';
 import Input from '../../components/Input/Input';
 import { onlyNumber } from '../../utils/format';
+import { InputNumber } from 'antd';
 const cx = classNames.bind(styles);
 
 function ImportForm({ selectedIngredient, onCloseModal = () => {} }) {
@@ -64,21 +65,16 @@ function ImportForm({ selectedIngredient, onCloseModal = () => {} }) {
                     type="text"
                 />
                 <div className={cx('quantity-wrapper')}>
-                    <span>Số lượng nhập:</span>
-                    <select
+                    <span>Số lượng nhập :</span>
+                    <InputNumber
                         className={cx('quantity-select')}
                         value={quantityValue}
-                        onChange={(event) => {
-                            setQuantityValue(event.target.value);
+                        onChange={(value) => {
+                            setQuantityValue(value);
                         }}
-                    >
-                        {[...Array(1000).keys()].map((value) => (
-                            <option key={value + 1} value={value + 1}>
-                                {value + 1}
-                            </option>
-                        ))}
-                    </select>
-                    {selectedIngredient.unitName}
+                        min={0}
+                        addonAfter={selectedIngredient.unitName}
+                    />
                 </div>
                 <Button primary rightIcon={<BiImport />} className={cx('action-btn')}>
                     Nhập hàng
