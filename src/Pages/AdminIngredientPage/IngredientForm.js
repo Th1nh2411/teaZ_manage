@@ -139,9 +139,9 @@ function IngredientForm({ data, onCloseModal = () => {} }) {
                                 setUnitValue(event.target.value);
                             }}
                         >
-                            <option value={'g'}>gram</option>
+                            <option value={'g'}>kilogram</option>
                             <option value={'ml'}>mililit</option>
-                            <option value={'units'}>unit</option>
+                            <option value={'pcs'}>pcs</option>
                         </select>
                         <select
                             disabled={!data}

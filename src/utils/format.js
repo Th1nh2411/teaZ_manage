@@ -9,6 +9,18 @@ export function priceFormat(number) {
             .replace(/\B(?=(\d{3})+(?!\d))/g, '.')
     );
 }
+export function ingredientFormat(quantity, unit) {
+    if (quantity >= 1000) {
+        if (unit === 'g') {
+            return quantity / 1000 + 'kg';
+        }
+        if (unit === 'ml') {
+            return quantity / 1000 + 'l';
+        } else return quantity + unit;
+    } else {
+        return quantity + unit;
+    }
+}
 export const onlyNumber = (input) => {
     var regex = /^(\d+(\.\d*)?|)$/;
     return regex.test(input);

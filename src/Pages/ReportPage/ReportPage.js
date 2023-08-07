@@ -155,6 +155,7 @@ function ReportPage() {
                                         <ExportFile
                                             csvData={
                                                 reports &&
+                                                reports.topNames &&
                                                 reports.topNames.map((item, index) => {
                                                     return {
                                                         id: item.idRecipe,
@@ -174,7 +175,7 @@ function ReportPage() {
                                     </div>
                                 </div>
                                 <div className={cx('content-body')}>
-                                    {reports && reports.topNames.length ? (
+                                    {reports && reports.topNames && reports.topNames.length ? (
                                         reports.topNames.map((item, index) => (
                                             <div key={index} className={cx('product-wrapper')}>
                                                 <div className={cx('product-content')}>
@@ -220,6 +221,7 @@ function ReportPage() {
                                         <ExportFile
                                             csvData={
                                                 reports &&
+                                                reports.topNames &&
                                                 reports.topNames.map((item, index) => {
                                                     return {
                                                         id: item.idRecipe,
@@ -239,7 +241,7 @@ function ReportPage() {
                                     </div>
                                 </div>
                                 <div className={cx('content-body')}>
-                                    {reports && reports.topToppings.length ? (
+                                    {reports && reports.topToppings && reports.topToppings.length ? (
                                         reports.topToppings.map((item, index) => (
                                             <div key={index} className={cx('product-wrapper')}>
                                                 <div className={cx('product-content')}>

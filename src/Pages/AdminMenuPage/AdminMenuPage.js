@@ -103,7 +103,7 @@ function AdminMenuPage() {
                 </div>
             ) : (
                 <Row>
-                    <Col md={6}>
+                    <Col xxl={6}>
                         <ContentWrapper
                             allTopping={allTopping || []}
                             onUpdateTopping={async () => await getListToppingByType()}
@@ -120,7 +120,7 @@ function AdminMenuPage() {
                             }}
                         />
                     </Col>
-                    <Col md={6}>
+                    <Col xxl={6}>
                         <ContentWrapper
                             allTopping={allTopping || []}
                             onUpdateTopping={async () => await getListToppingByType()}
@@ -137,7 +137,7 @@ function AdminMenuPage() {
                             }}
                         />
                     </Col>
-                    <Col md={6}>
+                    <Col xxl={6}>
                         <ContentWrapper
                             allTopping={allTopping || []}
                             onUpdateTopping={async () => await getListToppingByType()}
@@ -154,7 +154,7 @@ function AdminMenuPage() {
                             }}
                         />
                     </Col>
-                    <Col md={6}>
+                    <Col xxl={6}>
                         <ContentWrapper
                             allTopping={allTopping || []}
                             onUpdateTopping={async () => await getListToppingByType()}
@@ -171,7 +171,7 @@ function AdminMenuPage() {
                             }}
                         />
                     </Col>
-                    <Col md={6}>
+                    <Col xxl={6}>
                         <ContentWrapper
                             idType={5}
                             titleIcon={<TbLemon className={cx('icon')} />}
@@ -203,7 +203,9 @@ function ContentWrapper({
     const [searchValue, setSearchValue] = useState('');
     const localStorageManage = LocalStorageManager.getInstance();
     const [showAllTopping, setShowAllTopping] = useState(false);
-    useEffect(() => {setMenu(menuData);}, [menuData]);
+    useEffect(() => {
+        setMenu(menuData);
+    }, [menuData]);
     const listAddToppingFiltered =
         allTopping &&
         topping &&

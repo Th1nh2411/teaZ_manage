@@ -8,13 +8,13 @@ import { StoreContext, actions } from '../../store';
 import { BiImport, BiExport } from 'react-icons/bi';
 import LocalStorageManager from '../../utils/LocalStorageManager';
 import Input from '../../components/Input/Input';
-import { onlyNumber } from '../../utils/format';
+import { ingredientFormat, onlyNumber } from '../../utils/format';
 import { InputNumber } from 'antd';
 const cx = classNames.bind(styles);
 
 function ImportForm({ selectedIngredient, onCloseModal = () => {} }) {
     const [priceValue, setPriceValue] = useState('');
-    const [quantityValue, setQuantityValue] = useState(100);
+    const [quantityValue, setQuantityValue] = useState(1);
     const [state, dispatch] = useContext(StoreContext);
     const localStorageManage = LocalStorageManager.getInstance();
 
@@ -24,7 +24,7 @@ function ImportForm({ selectedIngredient, onCloseModal = () => {} }) {
         if (token) {
             const results = await ingredientService.importIngredient(
                 priceValue,
-                quantityValue,
+                quantityValue * 1000,
                 selectedIngredient.idIngredient,
                 token,
             );
@@ -48,8 +48,7 @@ function ImportForm({ selectedIngredient, onCloseModal = () => {} }) {
                 <div className={cx('d-flex')}>
                     <div className={cx('ingredient-name')}>Tên : {selectedIngredient.name} </div>
                     <div className={cx('ingredient-remain')}>
-                        ( còn lại {selectedIngredient.quantity}
-                        {selectedIngredient.unitName} )
+                        ( còn lại {ingredientFormat(selectedIngredient.quantity, selectedIngredient.unitName)} )
                     </div>
                 </div>
                 <Input
@@ -73,7 +72,13 @@ function ImportForm({ selectedIngredient, onCloseModal = () => {} }) {
                             setQuantityValue(value);
                         }}
                         min={0}
-                        addonAfter={selectedIngredient.unitName}
+                        addonAfter={
+                            selectedIngredient.unitName === 'g'
+                                ? 'kg'
+                                : selectedIngredient.unitName === 'ml'
+                                ? 'l'
+                                : 'pcs'
+                        }
                     />
                 </div>
                 <Button primary rightIcon={<BiImport />} className={cx('action-btn')}>

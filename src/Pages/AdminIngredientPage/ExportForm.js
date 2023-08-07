@@ -24,7 +24,7 @@ function ExportForm({ selectedIngredient, onCloseModal = () => {} }) {
         if (token) {
             const results = await ingredientService.exportIngredient(
                 infoValue,
-                quantityValue,
+                quantityValue * 1000,
                 selectedIngredient.idIngredient,
                 token,
             );
@@ -80,7 +80,13 @@ function ExportForm({ selectedIngredient, onCloseModal = () => {} }) {
                         }}
                         min={0}
                         max={selectedIngredient.quantity}
-                        addonAfter={selectedIngredient.unitName}
+                        addonAfter={
+                            selectedIngredient.unitName === 'g'
+                                ? 'kg'
+                                : selectedIngredient.unitName === 'ml'
+                                ? 'l'
+                                : 'pcs'
+                        }
                     />
                 </div>
                 <Button primary rightIcon={<BiImport />} className={cx('action-btn')}>

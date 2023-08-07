@@ -13,7 +13,7 @@ import { GiMilkCarton } from 'react-icons/gi';
 import { BiImport, BiExport, BiEdit } from 'react-icons/bi';
 import LocalStorageManager from '../../utils/LocalStorageManager';
 import Input from '../../components/Input/Input';
-import { onlyNumber } from '../../utils/format';
+import { ingredientFormat, onlyNumber } from '../../utils/format';
 import IngredientForm from './IngredientForm';
 import { RiAddCircleFill } from 'react-icons/ri';
 import { FaSort } from 'react-icons/fa';
@@ -175,8 +175,9 @@ function AdminIngredientPage() {
                                                         <div className={cx('ingredient-name')}>{ingredient.name}</div>
                                                         <div className={cx('ingredient-info')}>
                                                             <span>Còn lại:</span>
-                                                            {ingredient.quantity}
-                                                            {ingredient.unitName}
+                                                            {/* {ingredient.quantity}
+                                                            {ingredient.unitName} */}
+                                                            {ingredientFormat(ingredient.quantity, ingredient.unitName)}
                                                         </div>
                                                         <div className={cx('ingredient-info')}>
                                                             <span>Trạng thái :</span>
