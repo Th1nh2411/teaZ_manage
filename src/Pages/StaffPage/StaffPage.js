@@ -267,30 +267,36 @@ function StaffPage() {
                                                     </td>
                                                     <td className={cx('text-center')}>{staff.phone}</td>
                                                     <td className={cx('text-end')}>
-                                                        <div className={cx('staff-actions')}>
-                                                            <Tippy content="Chỉnh sửa" placement="bottom" duration={0}>
-                                                                <div
-                                                                    onClick={() => {
-                                                                        setShowStaffForm(true);
-                                                                        setStaffData(staff);
-                                                                    }}
-                                                                    className={cx('icon')}
+                                                        {staff.role !== 2 && (
+                                                            <div className={cx('staff-actions')}>
+                                                                <Tippy
+                                                                    content="Chỉnh sửa"
+                                                                    placement="bottom"
+                                                                    duration={0}
                                                                 >
-                                                                    <RiEditCircleFill />
-                                                                </div>
-                                                            </Tippy>
-                                                            <Tippy content="Xóa" placement="bottom" duration={0}>
-                                                                <div
-                                                                    onClick={() => {
-                                                                        setShowConfirmDelStaff(true);
-                                                                        setStaffData(staff);
-                                                                    }}
-                                                                    className={cx('icon', 'red')}
-                                                                >
-                                                                    <RiDeleteBin2Fill />
-                                                                </div>
-                                                            </Tippy>
-                                                        </div>
+                                                                    <div
+                                                                        onClick={() => {
+                                                                            setShowStaffForm(true);
+                                                                            setStaffData(staff);
+                                                                        }}
+                                                                        className={cx('icon')}
+                                                                    >
+                                                                        <RiEditCircleFill />
+                                                                    </div>
+                                                                </Tippy>
+                                                                <Tippy content="Xóa" placement="bottom" duration={0}>
+                                                                    <div
+                                                                        onClick={() => {
+                                                                            setShowConfirmDelStaff(true);
+                                                                            setStaffData(staff);
+                                                                        }}
+                                                                        className={cx('icon', 'red')}
+                                                                    >
+                                                                        <RiDeleteBin2Fill />
+                                                                    </div>
+                                                                </Tippy>
+                                                            </div>
+                                                        )}
                                                     </td>
                                                 </tr>
                                             ))}

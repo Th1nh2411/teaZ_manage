@@ -72,12 +72,12 @@ export const editStaff = async (idStaff, token, phone, mail, name, password) => 
         return error.response && error.response.data;
     }
 };
-export const deleteStaff = async (phone, token) => {
+export const deleteStaff = async (username, token) => {
     const config = {
         headers: { access_token: token },
     };
     const body = {
-        phone,
+        username,
     };
     try {
         const res = await httpRequest.del('admin/deleteStaff', body, config);
