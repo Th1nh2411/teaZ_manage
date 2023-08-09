@@ -167,11 +167,7 @@ function ManagerForm({ data, onCloseModal = () => {}, listShop }) {
                     </div>
 
                     <div className={cx('form-actions')}>
-                        {valueChange && (
-                            <Button divBtn onClick={handleCancelEdit}>
-                                Đặt lại
-                            </Button>
-                        )}
+                        {valueChange && <Button onClick={handleCancelEdit}>Đặt lại</Button>}
                         <Button className={cx('confirm-btn')} primary disable={!valueChange}>
                             {data ? 'Cập nhật' : 'Tạo tài khoản'}
                         </Button>
