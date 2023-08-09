@@ -170,13 +170,16 @@
     text-align: center;
     margin: 0px 0 10px;
 }
+.custom-upload {
+    border-color: var(--primary-color);
+    height: 48.6px;
+    margin-bottom: 6px;
+}
 .custom-select {
     border-color: var(--primary-color);
     height: 48.6px;
     padding: 0 8px;
     font-weight: 700;
-    margin-left: 12px;
-    margin-bottom: 6px;
     font-size: 1.8rem;
     color: #888;
 }

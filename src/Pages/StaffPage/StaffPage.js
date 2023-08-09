@@ -82,6 +82,15 @@ function StaffPage() {
                         title: 'Thành công',
                     }),
                 );
+            } else {
+                dispatch(
+                    actions.setToast({
+                        show: true,
+                        content: results.message,
+                        title: 'Thất bại',
+                        type: 'error',
+                    }),
+                );
             }
         }
         getListStaff();
@@ -267,23 +276,19 @@ function StaffPage() {
                                                     </td>
                                                     <td className={cx('text-center')}>{staff.phone}</td>
                                                     <td className={cx('text-end')}>
-                                                        {staff.role !== 2 && (
-                                                            <div className={cx('staff-actions')}>
-                                                                <Tippy
-                                                                    content="Chỉnh sửa"
-                                                                    placement="bottom"
-                                                                    duration={0}
+                                                        <div className={cx('staff-actions')}>
+                                                            <Tippy content="Chỉnh sửa" placement="bottom" duration={0}>
+                                                                <div
+                                                                    onClick={() => {
+                                                                        setShowStaffForm(true);
+                                                                        setStaffData(staff);
+                                                                    }}
+                                                                    className={cx('icon')}
                                                                 >
-                                                                    <div
-                                                                        onClick={() => {
-                                                                            setShowStaffForm(true);
-                                                                            setStaffData(staff);
-                                                                        }}
-                                                                        className={cx('icon')}
-                                                                    >
-                                                                        <RiEditCircleFill />
-                                                                    </div>
-                                                                </Tippy>
+                                                                    <RiEditCircleFill />
+                                                                </div>
+                                                            </Tippy>
+                                                            {staff.role < 2 && (
                                                                 <Tippy content="Xóa" placement="bottom" duration={0}>
                                                                     <div
                                                                         onClick={() => {
@@ -295,8 +300,8 @@ function StaffPage() {
                                                                         <RiDeleteBin2Fill />
                                                                     </div>
                                                                 </Tippy>
-                                                            </div>
-                                                        )}
+                                                            )}
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             ))}

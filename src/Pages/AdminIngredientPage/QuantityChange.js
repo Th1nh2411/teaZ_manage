@@ -131,7 +131,6 @@ function QuantityChange() {
     useEffect(() => {
         getIngredientReport();
     }, [date, type]);
-    console.log(imports);
     return (
         <div className={cx('content-wrapper', 'mt-4')}>
             <div className={cx('content-header')}>

@@ -107,12 +107,21 @@ input {
 a[href] {
     text-decoration: none;
 }
+.mt-8 {
+    margin-top: 8px;
+}
 .mt-16 {
     margin-top: 16px;
 }
 
 .mr-16 {
     margin-right: 16px;
+}
+.ml-8 {
+    margin-left: 8px;
+}
+.ml-16 {
+    margin-left: 16px;
 }
 .sep {
     &::before {
@@ -125,6 +134,9 @@ a[href] {
     }
 }
 // Custom tippy tool tip
+.ant-message {
+    z-index: 10000000;
+}
 body {
     .tippy-box {
         text-align: center;

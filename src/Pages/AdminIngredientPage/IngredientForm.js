@@ -1,36 +1,43 @@
 import styles from './AdminIngredientPage.module.scss';
 import classNames from 'classnames/bind';
-import Button from '../../components/Button';
+// import Button from '../../components/Button';
 import Modal from '../../components/Modal';
 import { useContext, useEffect, useState } from 'react';
 import * as adminService from '../../services/adminService';
 import { StoreContext, actions } from '../../store';
-import { BiImport, BiExport } from 'react-icons/bi';
+import { BiImport, BiExport, BiUpload } from 'react-icons/bi';
 import LocalStorageManager from '../../utils/LocalStorageManager';
 import Input from '../../components/Input/Input';
 import { onlyNumber } from '../../utils/format';
+import { Upload, Button, message, Select } from 'antd';
+import axios from 'axios';
 const cx = classNames.bind(styles);
 
 function IngredientForm({ data, onCloseModal = () => {} }) {
+    const [messageApi, contextHolder] = message.useMessage();
     const [nameValue, setNameValue] = useState(data ? data.name : '');
-    const [imageValue, setImageValue] = useState(data ? data.image : '');
+    const [imageValue, setImageValue] = useState(null);
     const [unitValue, setUnitValue] = useState(data ? data.unitName : 'g');
     const [isActive, setIsActive] = useState(data ? data.isActive : 1);
     const [valueChange, setValueChange] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [state, dispatch] = useContext(StoreContext);
     const localStorageManage = LocalStorageManager.getInstance();
     const userRole = localStorageManage.getItem('userInfo').role;
     const editIngredient = async () => {
         const token = localStorageManage.getItem('token');
         if (token) {
+            setLoading(true);
+            const res = await adminService.uploadFile(imageValue);
             const results = await adminService.editIngredient(
                 data.idIngredient,
                 token,
                 nameValue,
-                imageValue,
+                res.url,
                 unitValue,
                 isActive,
             );
+            setLoading(false);
             if (results && results.isSuccess) {
                 dispatch(
                     actions.setToast({
@@ -43,10 +50,20 @@ function IngredientForm({ data, onCloseModal = () => {} }) {
             }
         }
     };
+
     const addNewIngredient = async () => {
+        if (!nameValue || !imageValue || !unitValue) {
+            messageApi.open({
+                type: 'error',
+                content: 'This is an error message',
+            });
+        }
         const token = localStorageManage.getItem('token');
         if (token) {
-            const results = await adminService.addIngredient(nameValue, imageValue, unitValue, token);
+            setLoading(true);
+            const res = await adminService.uploadFile(imageValue);
+            const results = await adminService.addIngredient(nameValue, res.url, unitValue, token);
+            setLoading(false);
             if (results && results.isSuccess) {
                 dispatch(
                     actions.setToast({
@@ -69,14 +86,13 @@ function IngredientForm({ data, onCloseModal = () => {} }) {
         }
     };
     const handleCancelEdit = () => {
+        setImageValue(null);
         if (data) {
             setNameValue(data.name);
-            setImageValue(data.image);
             setUnitValue(data.unitName);
             setIsActive(data.isActive);
         } else {
             setNameValue('');
-            setImageValue('');
             setUnitValue('');
             setIsActive(0);
         }
@@ -94,7 +110,7 @@ function IngredientForm({ data, onCloseModal = () => {} }) {
         if (data) {
             if (
                 data.name !== nameValue ||
-                data.image !== imageValue ||
+                imageValue !== null ||
                 data.unitName !== unitValue ||
                 Number(data.isActive) !== Number(isActive)
             ) {
@@ -103,80 +119,122 @@ function IngredientForm({ data, onCloseModal = () => {} }) {
                 setValueChange(false);
             }
         } else {
-            if (nameValue !== '' || imageValue !== '' || unitValue !== 'g' || Number(isActive) !== 1) {
+            if (nameValue !== '' || imageValue !== null || unitValue !== 'g' || Number(isActive) !== 1) {
                 setValueChange(true);
             } else {
                 setValueChange(false);
             }
         }
     }, [nameValue, imageValue, unitValue, isActive]);
-    console.log(isActive);
+
     return (
-        <Modal
-            handleClickOutside={() => {
-                onCloseModal();
-            }}
-            className={cx('form-wrapper')}
-        >
-            <div className={cx('form-title')}>{data ? 'Cập nhật thông tin nguyên liệu' : 'Thêm mới nguyên liệu'}</div>
+        <>
+            {contextHolder}
+            <Modal
+                handleClickOutside={() => {
+                    onCloseModal();
+                }}
+                className={cx('form-wrapper')}
+            >
+                <div className={cx('form-title')}>
+                    {data ? 'Cập nhật thông tin nguyên liệu' : 'Thêm mới nguyên liệu'}
+                </div>
 
-            <div className={cx('form-body')}>
-                <form onSubmit={handleClickConfirm} className={cx('form-info')}>
-                    <div className={cx('d-flex', 'justify-content-between', 'align-items-end')}>
-                        <Input
-                            className={cx('flex-grow-1')}
-                            onChange={(event) => {
-                                setNameValue(event.target.value);
-                            }}
-                            value={nameValue}
-                            title="Tên nguyên liệu"
-                            type="text"
-                        />
-                        <select
-                            className={cx('custom-select')}
-                            value={unitValue}
-                            onChange={(event) => {
-                                setUnitValue(event.target.value);
-                            }}
-                        >
-                            <option value={'g'}>kilogram</option>
-                            <option value={'ml'}>mililit</option>
-                            <option value={'pcs'}>pcs</option>
-                        </select>
-                        <select
-                            disabled={!data}
-                            className={cx('custom-select')}
-                            value={Number(isActive)}
-                            onChange={(event) => {
-                                setIsActive(event.target.value);
-                            }}
-                        >
-                            <option value={1}>active</option>
-                            <option value={0}>inactive</option>
-                        </select>
-                    </div>
-                    <Input
-                        onChange={(event) => {
-                            setImageValue(event.target.value);
-                        }}
-                        value={imageValue}
-                        title="Hình ảnh nguyên liệu"
-                        type="text"
-                    />
+                <div className={cx('form-body')}>
+                    <form onSubmit={handleClickConfirm} className={cx('form-info')}>
+                        <div className={cx('d-flex', 'justify-content-between', 'align-items-end')}>
+                            <Input
+                                className={cx('flex-grow-1')}
+                                onChange={(event) => {
+                                    setNameValue(event.target.value);
+                                }}
+                                value={nameValue}
+                                title="Tên nguyên liệu"
+                                type="text"
+                            />
 
-                    <div className={cx('form-actions')}>
-                        {valueChange && (
-                            <Button divBtn onClick={handleCancelEdit}>
-                                Đặt lại
+                            <select
+                                disabled={!data}
+                                className={cx('custom-select', 'ml-8')}
+                                value={Number(isActive)}
+                                onChange={(event) => {
+                                    setIsActive(event.target.value);
+                                }}
+                            >
+                                <option value={1}>active</option>
+                                <option value={0}>inactive</option>
+                            </select>
+                        </div>
+
+                        <div className={cx('d-flex', 'align-items-start', 'justify-content-between', 'mt-8')}>
+                            <div className={cx('d-flex', 'align-items-center')}>
+                                <h4>Đơn vị tính : </h4>
+                                <Select
+                                    className={cx('ml-16')}
+                                    dropdownStyle={{ zIndex: 1000000 }}
+                                    value={unitValue}
+                                    onChange={(value) => {
+                                        setUnitValue(value);
+                                    }}
+                                    options={[
+                                        {
+                                            value: 'g',
+                                            label: 'Kilogram',
+                                        },
+                                        {
+                                            value: 'ml',
+                                            label: 'Mililit',
+                                        },
+                                        {
+                                            value: 'pcs',
+                                            label: 'pcs',
+                                        },
+                                    ]}
+                                />
+                            </div>
+                            <Upload
+                                className={cx('ml-8')}
+                                fileList={imageValue && [imageValue]}
+                                accept="image/*"
+                                beforeUpload={() => false}
+                                onChange={(info) => {
+                                    const { file, fileList } = info;
+                                    if (fileList[0]) {
+                                        setImageValue(fileList[0].originFileObj);
+                                    } else {
+                                        setImageValue(null);
+                                    }
+                                }}
+                                maxCount={1}
+                            >
+                                <Button onClick={(e) => e.preventDefault()} icon={<BiUpload />}>
+                                    Upload ảnh
+                                </Button>
+                            </Upload>
+                        </div>
+
+                        <div className={cx('form-actions')}>
+                            {valueChange && (
+                                <Button size="large" onClick={handleCancelEdit}>
+                                    Đặt lại
+                                </Button>
+                            )}
+                            <Button
+                                onClick={handleClickConfirm}
+                                loading={loading}
+                                type="primary"
+                                size="large"
+                                className={cx('confirm-btn')}
+                                primary
+                                disabled={!valueChange}
+                            >
+                                {data ? 'Cập nhật' : 'Thêm nguyên liệu'}
                             </Button>
-                        )}
-                        <Button className={cx('confirm-btn')} primary disable={!valueChange}>
-                            {data ? 'Cập nhật' : 'Thêm nguyên liệu'}
-                        </Button>
-                    </div>
-                </form>
-            </div>
-        </Modal>
+                        </div>
+                    </form>
+                </div>
+            </Modal>
+        </>
     );
 }
 
