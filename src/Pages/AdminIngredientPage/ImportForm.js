@@ -24,7 +24,7 @@ function ImportForm({ selectedIngredient, onCloseModal = () => {} }) {
         if (token) {
             const results = await ingredientService.importIngredient(
                 priceValue,
-                quantityValue * 1000,
+                selectedIngredient.unitName === 'pcs' ? quantityValue : quantityValue * 1000,
                 selectedIngredient.idIngredient,
                 token,
             );

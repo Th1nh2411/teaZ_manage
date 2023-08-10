@@ -31,7 +31,7 @@ function Input({
             <input
                 disabled={disable}
                 className={cx('form-input', {
-                    hasValue: value,
+                    hasValue: value.toString(),
                 })}
                 type={type}
                 value={value}

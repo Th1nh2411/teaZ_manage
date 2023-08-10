@@ -18,7 +18,7 @@ function IngredientForm({ data, onCloseModal = () => {} }) {
     const [nameValue, setNameValue] = useState(data ? data.name : '');
     const [imageValue, setImageValue] = useState(null);
     const [unitValue, setUnitValue] = useState(data ? data.unitName : 'g');
-    const [isActive, setIsActive] = useState(data ? data.isActive : 1);
+    const [isActive, setIsActive] = useState(data ? data.isActive : 0);
     const [valueChange, setValueChange] = useState(false);
     const [loading, setLoading] = useState(false);
     const [state, dispatch] = useContext(StoreContext);
@@ -142,58 +142,71 @@ function IngredientForm({ data, onCloseModal = () => {} }) {
 
                 <div className={cx('form-body')}>
                     <form onSubmit={handleClickConfirm} className={cx('form-info')}>
-                        <div className={cx('d-flex', 'justify-content-between', 'align-items-end')}>
-                            <Input
-                                className={cx('flex-grow-1')}
-                                onChange={(event) => {
-                                    setNameValue(event.target.value);
-                                }}
-                                value={nameValue}
-                                title="Tên nguyên liệu"
-                                type="text"
-                            />
-
-                            <select
+                        {/* <div className={cx('d-flex', 'justify-content-between', 'align-items-end')}> */}
+                        <Input
+                            className={cx('flex-grow-1')}
+                            onChange={(event) => {
+                                setNameValue(event.target.value);
+                            }}
+                            value={nameValue}
+                            title="Tên nguyên liệu"
+                            type="text"
+                        />
+                        <div className={cx('d-flex', 'align-items-center', 'mt-16')}>
+                            <h4>Trạng thái : </h4>
+                            <Select
                                 disabled={!data}
-                                className={cx('custom-select', 'ml-8')}
+                                className={cx('ml-16')}
+                                dropdownStyle={{ zIndex: 1000000 }}
                                 value={Number(isActive)}
-                                onChange={(event) => {
-                                    setIsActive(event.target.value);
+                                onChange={(value) => {
+                                    setIsActive(value);
                                 }}
-                            >
-                                <option value={1}>active</option>
-                                <option value={0}>inactive</option>
-                            </select>
+                                options={[
+                                    {
+                                        value: 1,
+                                        label: 'Active',
+                                    },
+                                    {
+                                        value: 0,
+                                        label: 'Inactive',
+                                    },
+                                ]}
+                            />
                         </div>
 
-                        <div className={cx('d-flex', 'align-items-start', 'justify-content-between', 'mt-8')}>
-                            <div className={cx('d-flex', 'align-items-center')}>
-                                <h4>Đơn vị tính : </h4>
-                                <Select
-                                    className={cx('ml-16')}
-                                    dropdownStyle={{ zIndex: 1000000 }}
-                                    value={unitValue}
-                                    onChange={(value) => {
-                                        setUnitValue(value);
-                                    }}
-                                    options={[
-                                        {
-                                            value: 'g',
-                                            label: 'Kilogram',
-                                        },
-                                        {
-                                            value: 'ml',
-                                            label: 'Mililit',
-                                        },
-                                        {
-                                            value: 'pcs',
-                                            label: 'pcs',
-                                        },
-                                    ]}
-                                />
-                            </div>
+                        {/* </div> */}
+
+                        {/* <div className={cx('d-flex', 'align-items-start', 'justify-content-between', 'mt-8')}> */}
+                        <div className={cx('d-flex', 'align-items-center', 'mt-8')}>
+                            <h4>Đơn vị tính : </h4>
+                            <Select
+                                className={cx('ml-16')}
+                                dropdownStyle={{ zIndex: 1000000 }}
+                                value={unitValue}
+                                onChange={(value) => {
+                                    setUnitValue(value);
+                                }}
+                                options={[
+                                    {
+                                        value: 'g',
+                                        label: 'Kilogram',
+                                    },
+                                    {
+                                        value: 'ml',
+                                        label: 'Mililit',
+                                    },
+                                    {
+                                        value: 'pcs',
+                                        label: 'pcs',
+                                    },
+                                ]}
+                            />
+                        </div>
+                        <div className={cx('d-flex', 'mt-16')}>
+                            <h4>Ảnh hiển thị : </h4>
                             <Upload
-                                className={cx('ml-8')}
+                                className={cx('ml-16')}
                                 fileList={imageValue && [imageValue]}
                                 accept="image/*"
                                 beforeUpload={() => false}
@@ -212,6 +225,7 @@ function IngredientForm({ data, onCloseModal = () => {} }) {
                                 </Button>
                             </Upload>
                         </div>
+                        {/* </div> */}
 
                         <div className={cx('form-actions')}>
                             {valueChange && (

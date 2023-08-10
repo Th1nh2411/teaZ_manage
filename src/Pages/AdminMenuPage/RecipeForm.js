@@ -223,7 +223,7 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
                                             setValueChange(true);
                                         }
                                     }}
-                                    value={price}
+                                    value={Number(price)}
                                     unit=".000 vnđ"
                                     title="Giá món"
                                     type="text"
@@ -238,7 +238,7 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
                                             setValueChange(true);
                                         }
                                     }}
-                                    value={discount}
+                                    value={Number(discount)}
                                     unit="%"
                                     title="Discount"
                                     type="text"
@@ -297,6 +297,7 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
                                 </Button>
                             )}
                             <Button
+                                disabled={!valueChange}
                                 loading={loading}
                                 onClick={handleClickConfirm}
                                 size="large"

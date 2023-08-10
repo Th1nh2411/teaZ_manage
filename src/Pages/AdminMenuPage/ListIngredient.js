@@ -21,6 +21,7 @@ const cx = classNames.bind(styles);
 function ListIngredient({ detailRecipe, onUpdateIngredient = () => {} }) {
     const [showAllIngredient, setShowAllIngredient] = useState();
     const [allIngredient, setAllIngredient] = useState();
+    const [state, dispatch] = useContext(StoreContext);
     const localStorageManage = LocalStorageManager.getInstance();
     const updateIngredientQuantity = async (idIngredient, quantity) => {
         const token = localStorageManage.getItem('token');
@@ -31,7 +32,14 @@ function ListIngredient({ detailRecipe, onUpdateIngredient = () => {} }) {
                 quantity,
                 token,
             );
-            if (results && results.detailRecipe) {
+            if (results && results.isSuccess) {
+                dispatch(
+                    actions.setToast({
+                        show: true,
+                        content: 'Cập nhật thành công',
+                        title: 'Thành công',
+                    }),
+                );
             }
         }
     };
@@ -67,8 +75,10 @@ function ListIngredient({ detailRecipe, onUpdateIngredient = () => {} }) {
                                 allIngredient.map((item, index) => (
                                     <div
                                         onClick={async () => {
-                                            await updateIngredientQuantity(item.idIngredient, 1);
-                                            setShowAllIngredient(false);
+                                            await updateIngredientQuantity(item.idIngredient, 20);
+                                            setAllIngredient((prev) =>
+                                                prev.filter((item2) => item.idIngredient !== item2.idIngredient),
+                                            );
                                             onUpdateIngredient();
                                         }}
                                         key={index}

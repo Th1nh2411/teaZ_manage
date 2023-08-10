@@ -24,7 +24,7 @@ function ExportForm({ selectedIngredient, onCloseModal = () => {} }) {
         if (token) {
             const results = await ingredientService.exportIngredient(
                 infoValue,
-                quantityValue * 1000,
+                selectedIngredient.unitName === 'pcs' ? quantityValue : quantityValue * 1000,
                 selectedIngredient.idIngredient,
                 token,
             );
@@ -79,7 +79,11 @@ function ExportForm({ selectedIngredient, onCloseModal = () => {} }) {
                             setQuantityValue(value);
                         }}
                         min={0}
-                        max={selectedIngredient.quantity}
+                        max={
+                            selectedIngredient.unitName === 'pcs'
+                                ? selectedIngredient.quantity
+                                : selectedIngredient.quantity / 1000
+                        }
                         addonAfter={
                             selectedIngredient.unitName === 'g'
                                 ? 'kg'
