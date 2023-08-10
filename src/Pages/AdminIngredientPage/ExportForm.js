@@ -66,7 +66,6 @@ function ExportForm({ selectedIngredient, onCloseModal = () => {} }) {
                             { value: 'Hư, hỏng', label: 'Hư, hỏng' },
                             { value: 'Lỗi đặt hàng', label: 'Lỗi đặt hàng' },
                             { value: 'Không dùng tới', label: 'Không dùng tới' },
-                            { value: 'Hết HSD', label: 'Hết HSD' },
                         ]}
                     />
                 </div>

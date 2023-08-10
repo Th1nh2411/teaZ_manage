@@ -99,7 +99,8 @@ function QuantityChange() {
                     results.imports.map((item) => {
                         return {
                             ...item,
-                            quantity: item.quantity / 1000,
+                            quantity:
+                                item.unitName === 'g' || item.unitName === 'ml' ? item.quantity / 1000 : item.quantity,
                             unitName: item.unitName === 'g' ? 'kg' : item.unitName === 'ml' ? 'lít' : 'pcs',
                             total: priceFormat(item.total) + 'đ',
                             date: item.date,

@@ -60,7 +60,7 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
         }
     };
     const addNewMenuItem = async () => {
-        if (!name || !image || !info || !price || !discount || !idType) {
+        if (!name || !image || !info || !price || discount !== '' || !idType) {
             messageApi.open({
                 type: 'error',
                 content: 'Vui lòng nhập đầy đủ thông tin',
