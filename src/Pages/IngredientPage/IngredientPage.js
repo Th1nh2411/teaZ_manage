@@ -1,28 +1,23 @@
 import styles from './IngredientPage.module.scss';
 import classNames from 'classnames/bind';
 import Image from '../../components/Image';
-import Button from '../../components/Button';
-import Modal from '../../components/Modal';
-import images from '../../assets/images';
 import { Col, Row } from 'react-bootstrap';
 import { useContext, useEffect, useState } from 'react';
 import * as ingredientService from '../../services/ingredientService';
-import { StoreContext, actions } from '../../store';
 import Tippy from '@tippyjs/react';
 import { GiMilkCarton } from 'react-icons/gi';
-import { BiImport, BiExport } from 'react-icons/bi';
 import LocalStorageManager from '../../utils/LocalStorageManager';
+import { FaSort } from 'react-icons/fa';
 import Input from '../../components/Input/Input';
-import { onlyNumber } from '../../utils/format';
 
 const cx = classNames.bind(styles);
 
 function IngredientPage() {
+    const [defaultIngredients, setDefaultIngredients] = useState();
     const [ingredients, setIngredients] = useState();
+    const [searchValue, setSearchValue] = useState('');
+    const [sort, setSort] = useState(1);
     const [loading, setLoading] = useState();
-    const [selectedIngredient, setSelectedIngredient] = useState();
-    const [showImportForm, setShowImportForm] = useState();
-    const [showExportForm, setShowExportForm] = useState();
     const localStorageManage = LocalStorageManager.getInstance();
     const userRole = localStorageManage.getItem('userInfo').role;
     const getIngredients = async () => {
@@ -31,7 +26,8 @@ function IngredientPage() {
             setLoading(true);
             const results = await ingredientService.getListIngredient(token);
             if (results && results.ingredients) {
-                setIngredients(results.ingredients);
+                setDefaultIngredients(results.ingredients.sort((a, b) => a.quantity - b.quantity));
+                setIngredients(results.ingredients.sort((a, b) => a.quantity - b.quantity));
             }
             setLoading(false);
         }
@@ -43,28 +39,6 @@ function IngredientPage() {
 
     return (
         <div className={cx('wrapper')}>
-            {/* {showImportForm && (
-                <ImportForm
-                    selectedIngredient={selectedIngredient}
-                    onCloseModal={(update) => {
-                        if (update) {
-                            getIngredients();
-                        }
-                        setShowImportForm(false);
-                    }}
-                />
-            )} */}
-            {/* {showExportForm && (
-                <ExportForm
-                    selectedIngredient={selectedIngredient}
-                    onCloseModal={(update) => {
-                        if (update) {
-                            getIngredients();
-                        }
-                        setShowExportForm(false);
-                    }}
-                />
-            )} */}
             {loading ? (
                 <div className={cx('loader')}>
                     <span></span>
@@ -78,6 +52,32 @@ function IngredientPage() {
                                 <div className={cx('content-title')}>
                                     <GiMilkCarton className={cx('icon', 'warning')} />
                                     Danh sách nguyên liệu
+                                    <FaSort
+                                        onClick={() => {
+                                            if (sort === 0) {
+                                                setSort(1);
+                                                setIngredients(ingredients.sort((a, b) => a.quantity - b.quantity));
+                                            } else {
+                                                setSort(0);
+                                                setIngredients(ingredients.sort((a, b) => b.quantity - a.quantity));
+                                            }
+                                        }}
+                                        className={cx('sort-btn')}
+                                    />
+                                </div>
+                                <div>
+                                    <Input
+                                        title={'Tìm nguyên liệu'}
+                                        value={searchValue}
+                                        onChange={(e) => {
+                                            setSearchValue(e.target.value);
+                                            setIngredients(
+                                                defaultIngredients.filter((item) =>
+                                                    item.name.toUpperCase().includes(e.target.value.toUpperCase()),
+                                                ),
+                                            );
+                                        }}
+                                    />
                                 </div>
                                 <div className={cx('content-subtitle')}>
                                     {ingredients && ingredients.length} nguyên liệu
@@ -103,31 +103,6 @@ function IngredientPage() {
                                                     </div>
                                                 </div>
                                             </div>
-                                            {/* <div className={cx('ingredient-actions')}>
-                                                <Button
-                                                    disable={userRole < 2}
-                                                    onClick={() => {
-                                                        setShowImportForm(true);
-                                                        setSelectedIngredient(ingredient);
-                                                    }}
-                                                    primary
-                                                    rightIcon={<BiImport />}
-                                                    className={cx('action')}
-                                                >
-                                                    Nhập hàng
-                                                </Button>
-                                                <Button
-                                                    disable={userRole < 2}
-                                                    onClick={() => {
-                                                        setShowExportForm(true);
-                                                        setSelectedIngredient(ingredient);
-                                                    }}
-                                                    rightIcon={<BiExport />}
-                                                    className={cx('action')}
-                                                >
-                                                    Xuất hàng
-                                                </Button>
-                                            </div> */}
                                         </div>
                                     ))}
                             </div>

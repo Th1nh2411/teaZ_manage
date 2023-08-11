@@ -15,6 +15,7 @@ import { GiCoffeeBeans } from 'react-icons/gi';
 import { TbLemon, TbPaperBag } from 'react-icons/tb';
 import HeadlessTippy from '@tippyjs/react/headless';
 import { priceFormat } from '../../utils/format';
+import Input from '../../components/Input/Input';
 const cx = classNames.bind(styles);
 
 function MenuPage() {
@@ -79,7 +80,7 @@ function MenuPage() {
                 </div>
             ) : (
                 <Row>
-                    <Col md={6}>
+                    <Col xxl={6}>
                         <ContentWrapper
                             allTopping={allTopping || []}
                             idType={1}
@@ -88,11 +89,11 @@ function MenuPage() {
                                 listToppingByType && listToppingByType.find((type) => type.idType === 1).listToppings
                             }
                             titleIcon={<SiBuymeacoffee className={cx('icon')} />}
-                            menu={menuType1}
+                            menuData={menuType1}
                             title="Thức uống"
                         />
                     </Col>
-                    <Col md={6}>
+                    <Col xxl={6}>
                         <ContentWrapper
                             allTopping={allTopping || []}
                             idType={2}
@@ -101,11 +102,11 @@ function MenuPage() {
                                 listToppingByType && listToppingByType.find((type) => type.idType === 2).listToppings
                             }
                             titleIcon={<GiCoffeeBeans className={cx('icon')} />}
-                            menu={menuType2}
+                            menuData={menuType2}
                             title="Cà phê"
                         />
                     </Col>
-                    <Col md={6}>
+                    <Col xxl={6}>
                         <ContentWrapper
                             allTopping={allTopping || []}
                             idType={3}
@@ -114,11 +115,11 @@ function MenuPage() {
                                 listToppingByType && listToppingByType.find((type) => type.idType === 3).listToppings
                             }
                             titleIcon={<TbPaperBag className={cx('icon')} />}
-                            menu={menuType3}
+                            menuData={menuType3}
                             title="Trà túi"
                         />
                     </Col>
-                    <Col md={6}>
+                    <Col xxl={6}>
                         <ContentWrapper
                             allTopping={allTopping || []}
                             idType={4}
@@ -127,16 +128,16 @@ function MenuPage() {
                                 listToppingByType && listToppingByType.find((type) => type.idType === 4).listToppings
                             }
                             titleIcon={<SiCakephp className={cx('icon')} />}
-                            menu={menuType4}
+                            menuData={menuType4}
                             title="Bakery"
                         />
                     </Col>
-                    <Col md={6}>
+                    <Col xxl={6}>
                         <ContentWrapper
                             idType={1}
                             onUpdateTopping={async () => await getListToppingByType()}
                             titleIcon={<TbLemon className={cx('icon')} />}
-                            menu={allTopping}
+                            menuData={allTopping}
                             title="Topping"
                         />
                     </Col>
@@ -145,10 +146,10 @@ function MenuPage() {
         </div>
     );
 }
-function ContentWrapper({ title, titleIcon, menu, topping, allTopping, idType, onUpdateTopping = () => {} }) {
+function ContentWrapper({ title, titleIcon, menuData, topping }) {
     const [tab, setTab] = useState(0);
-    const localStorageManage = LocalStorageManager.getInstance();
-    const [showAllTopping, setShowAllTopping] = useState(false);
+    const [searchValue, setSearchValue] = useState('');
+    const [menu, setMenu] = useState(menuData || []);
     return (
         <div className={cx('content-wrapper')}>
             <div className={cx('content-header')}>
@@ -164,6 +165,16 @@ function ContentWrapper({ title, titleIcon, menu, topping, allTopping, idType, o
                         </div>
                     )}
                 </div>
+                <Input
+                    title={'Tìm món ăn'}
+                    value={searchValue}
+                    onChange={(e) => {
+                        setSearchValue(e.target.value);
+                        setMenu(
+                            menuData.filter((item) => item.name.toUpperCase().includes(e.target.value.toUpperCase())),
+                        );
+                    }}
+                />
                 <div className={cx('content-subtitle')}>
                     {tab === 0 ? menu && menu.length : topping && topping.length} món
                 </div>

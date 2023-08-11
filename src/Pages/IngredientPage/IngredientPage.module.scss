@@ -31,6 +31,13 @@
         color: #dea043fc;
     }
 }
+.sort-btn {
+    margin-left: 5px;
+    &:hover {
+        cursor: pointer;
+        opacity: 0.85;
+    }
+}
 .content-subtitle {
     font-weight: 600;
     color: #555;
