@@ -4,12 +4,10 @@ import Modal from '../Modal';
 import Input from '../Input';
 import Button from '../Button';
 import { Col, Form, Row } from 'react-bootstrap';
-import { MdOutlineAddShoppingCart } from 'react-icons/md';
 import { useContext, useEffect, useState } from 'react';
 import LocalStorageManager from '../../utils/LocalStorageManager';
 import * as shopService from '../../services/shopService';
-import Tippy from '@tippyjs/react';
-import { MdOutlineInfo } from 'react-icons/md';
+import * as authService from '../../services/authService';
 import { onlyNumber, priceFormat } from '../../utils/format';
 import { StoreContext, actions } from '../../store';
 
@@ -24,11 +22,19 @@ function StaffForm({ data, onCloseModal = () => {} }) {
     const [state, dispatch] = useContext(StoreContext);
     const localStorageManage = LocalStorageManager.getInstance();
     const userRole = localStorageManage.getItem('userInfo').role;
-    const editStaff = async (activeValue) => {
+    const editStaff = async () => {
         const token = localStorageManage.getItem('token');
         if (token) {
             const results = await shopService.editStaff(data.idUser, token, phone, mail, nameValue, passwordValue);
             if (results && results.isSuccess) {
+                if (data.role === 2) {
+                    const results2 = await authService.refreshToken(mail);
+                    if (results2 && results2.isSuccess) {
+                        localStorageManage.setItem('token', results2.token);
+                        localStorageManage.setItem('userInfo', results2.userInfo);
+                        dispatch(actions.setUserInfo(results2.userInfo));
+                    }
+                }
                 dispatch(
                     actions.setToast({
                         show: true,
@@ -49,7 +55,7 @@ function StaffForm({ data, onCloseModal = () => {} }) {
             }
         }
     };
-    const addNewStaff = async (activeValue) => {
+    const addNewStaff = async () => {
         const token = localStorageManage.getItem('token');
         if (token) {
             const results = await shopService.addStaff(phone, mail, nameValue, passwordValue, token);

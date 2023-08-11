@@ -39,7 +39,6 @@ const Login = ({ setAuth }) => {
                 );
                 navigate(config.routes.order);
             } else {
-                setUsername('');
                 setPassword('');
                 setErrorMessage('Password or mail is incorrect');
             }
