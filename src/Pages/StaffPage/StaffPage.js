@@ -173,7 +173,7 @@ function StaffPage() {
                 </div>
             ) : (
                 <Row>
-                    <Col md={5}>
+                    <Col lg={5}>
                         <div className={cx('content-wrapper')}>
                             <div className={cx('content-header')}>
                                 <div className={cx('content-title')}>
@@ -218,7 +218,7 @@ function StaffPage() {
                             </div>
                         </div>
                     </Col>
-                    <Col md={7}>
+                    <Col lg={7}>
                         <div className={cx('content-wrapper')}>
                             <div className={cx('content-header')}>
                                 <div className={cx('content-title')}>
@@ -252,6 +252,7 @@ function StaffPage() {
                                             <th>Họ và tên</th>
                                             <th className={cx('text-center')}>Chức danh</th>
                                             <th className={cx('text-center')}>Số điện thoại</th>
+                                            <th className={cx('text-center')}>Tài khoản gmail</th>
                                             <th className={cx('text-end')}>Hành động</th>
                                         </tr>
                                     </thead>
@@ -275,6 +276,7 @@ function StaffPage() {
                                                         </div>
                                                     </td>
                                                     <td className={cx('text-center')}>{staff.phone}</td>
+                                                    <td className={cx('text-center')}>{staff.mail}</td>
                                                     <td className={cx('text-end')}>
                                                         <div className={cx('staff-actions')}>
                                                             <Tippy content="Chỉnh sửa" placement="bottom" duration={0}>
