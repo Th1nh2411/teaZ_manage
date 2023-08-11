@@ -136,6 +136,10 @@ function ListIngredient({ detailRecipe, onUpdateIngredient = () => {} }) {
                                     </select>
                                     {ingredient.name}
                                 </div>
+                                <h5 className={cx('remain-quantity')}>
+                                    (còn lại: {ingredient.remainQuantity}
+                                    {ingredient.unitName})
+                                </h5>
                             </div>
                         </Col>
                     ))}
