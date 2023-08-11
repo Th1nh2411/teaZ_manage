@@ -53,7 +53,7 @@ const Login = ({ setAuth }) => {
             </div>
             <div className={cx('form-wrapper')}>
                 <Card className={cx('form-container')}>
-                    <div className={cx('form-title')}>Đăng nhập vào hệ thống quản lý</div>
+                    <div className={cx('form-title')}>Đăng nhập hệ thống quản lý</div>
                     {/* <img src={images.logo3} className={cx('logo')} alt="logo-img" /> */}
 
                     <form onSubmit={handleSubmit} className={cx('form-body')}>
@@ -63,7 +63,7 @@ const Login = ({ setAuth }) => {
                                 setErrorMessage('');
                             }}
                             value={username}
-                            title="Nhập số điện thoại"
+                            title="Nhập số điện thoại hoặc gmail"
                         />
 
                         <Input

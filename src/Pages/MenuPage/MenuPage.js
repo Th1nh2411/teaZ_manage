@@ -149,7 +149,10 @@ function MenuPage() {
 function ContentWrapper({ title, titleIcon, menuData, topping }) {
     const [tab, setTab] = useState(0);
     const [searchValue, setSearchValue] = useState('');
-    const [menu, setMenu] = useState(menuData || []);
+    const [menu, setMenu] = useState(menuData);
+    useEffect(() => {
+        setMenu(menuData);
+    }, [menuData]);
     return (
         <div className={cx('content-wrapper')}>
             <div className={cx('content-header')}>
