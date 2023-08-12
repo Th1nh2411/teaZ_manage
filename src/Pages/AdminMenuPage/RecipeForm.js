@@ -35,6 +35,16 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
     const localStorageManage = LocalStorageManager.getInstance();
     const editMenuItem = async () => {
         const token = localStorageManage.getItem('token');
+        if (!name) {
+            messageApi.open({
+                type: 'error',
+                content: 'Vui lòng nhập đầy đủ thông tin',
+                style: {
+                    zIndex: '100000000',
+                },
+            });
+            return;
+        }
         if (token) {
             setLoading(true);
             const res = image && (await adminService.uploadFile(image));
@@ -60,7 +70,7 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
         }
     };
     const addNewMenuItem = async () => {
-        if (!name || !image || !info || !price || discount !== '' || !idType) {
+        if (!name || !image) {
             messageApi.open({
                 type: 'error',
                 content: 'Vui lòng nhập đầy đủ thông tin',

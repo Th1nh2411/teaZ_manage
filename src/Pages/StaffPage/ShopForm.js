@@ -9,23 +9,28 @@ import { StoreContext, actions } from '../../store';
 import LocalStorageManager from '../../utils/LocalStorageManager';
 import * as shopService from '../../services/shopService';
 import * as mapService from '../../services/mapService';
+import * as adminService from '../../services/adminService';
 import Tippy from '@tippyjs/react';
 import HeadlessTippy from '@tippyjs/react/headless';
-import Button from '../../components/Button';
+// import Button from '../../components/Button';
 import { onlyNumber } from '../../utils/format';
 import { useDebounce } from '../../hooks';
 import { IoLocationSharp } from 'react-icons/io5';
+import { Upload, Button, message } from 'antd';
+import { BiUpload } from 'react-icons/bi';
 const cx = classNames.bind(styles);
 
 function ShopForm({ data, onCloseModal = () => {} }) {
+    const [messageApi, contextHolder] = message.useMessage();
     const [address, setAddressValue] = useState(data ? data.address : '');
     const [searchResult, setSearchResult] = useState([]);
     const [showAddressResult, setShowAddressResult] = useState(false);
 
     const [latitude, setLatitudeValue] = useState(data ? data.latitude : '');
     const [longitude, setLongitudeValue] = useState(data ? data.longitude : '');
-    const [image, setImageValue] = useState(data ? data.image : '');
+    const [image, setImageValue] = useState(null);
     const [valueChange, setValueChange] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [state, dispatch] = useContext(StoreContext);
     const localStorageManage = LocalStorageManager.getInstance();
     const debouncedValue = useDebounce(address, 500);
@@ -48,9 +53,25 @@ function ShopForm({ data, onCloseModal = () => {} }) {
         setShowAddressResult(false);
     };
     const editShop = async () => {
+        if (!address || !latitude || !longitude) {
+            messageApi.open({
+                type: 'error',
+                content: 'Vui lòng nhập đầy đủ thông tin',
+                style: {
+                    zIndex: '100000000',
+                },
+            });
+            return;
+        }
         const token = localStorageManage.getItem('token');
         if (token) {
-            const results = await shopService.editInfoShop({ address, latitude, longitude, image }, token);
+            setLoading(true);
+            const res = image && (await adminService.uploadFile(image));
+            const results = await shopService.editInfoShop(
+                { address, latitude, longitude, image: res && res.url },
+                token,
+            );
+            setLoading(false);
             if (results && results.isSuccess) {
                 dispatch(
                     actions.setToast({
@@ -77,7 +98,6 @@ function ShopForm({ data, onCloseModal = () => {} }) {
         setAddressValue(data.address);
         setLatitudeValue(data.latitude);
         setLongitudeValue(data.longitude);
-        setImageValue(data.image);
     };
     const handleClickConfirm = (e) => {
         e.preventDefault();
@@ -87,9 +107,9 @@ function ShopForm({ data, onCloseModal = () => {} }) {
     useEffect(() => {
         if (
             data.address !== address ||
+            image !== null ||
             data.latitude !== Number(latitude) ||
-            data.longitude !== Number(longitude) ||
-            data.image !== image
+            data.longitude !== Number(longitude)
         ) {
             setValueChange(true);
         } else {
@@ -103,10 +123,11 @@ function ShopForm({ data, onCloseModal = () => {} }) {
             }}
             className={cx('edit-form-wrapper')}
         >
+            {contextHolder}
             <div className={cx('form-title')}>{data ? 'Cập nhật thông tin cửa hàng' : 'Tạo mới cửa hàng'}</div>
 
             <div className={cx('form-body')}>
-                <form onSubmit={handleClickConfirm} className={cx('form-info')}>
+                <div className={cx('form-info')}>
                     <HeadlessTippy
                         interactive
                         visible={showAddressResult}
@@ -171,24 +192,43 @@ function ShopForm({ data, onCloseModal = () => {} }) {
                         />
                     </div>
                     <div className={cx('d-flex', 'justify-content-between', 'align-items-end')}>
-                        <Input
-                            className={cx('image-input')}
-                            onChange={(event) => {
-                                setImageValue(event.target.value);
+                        <Upload
+                            fileList={image && [image]}
+                            accept="image/*"
+                            beforeUpload={() => false}
+                            onChange={(info) => {
+                                const { file, fileList } = info;
+                                if (fileList[0]) {
+                                    setImageValue(fileList[0].originFileObj);
+                                } else {
+                                    setImageValue(null);
+                                }
                             }}
-                            value={image}
-                            title="Hình ảnh cửa hàng"
-                            type="text"
-                        />
+                            maxCount={1}
+                        >
+                            <Button
+                                className={cx('custom-upload')}
+                                onClick={(e) => e.preventDefault()}
+                                icon={<BiUpload />}
+                            >
+                                Upload ảnh
+                            </Button>
+                        </Upload>
                     </div>
 
                     <div className={cx('form-actions')}>
                         {valueChange && <Button onClick={handleCancelEdit}>Đặt lại</Button>}
-                        <Button className={cx('confirm-btn')} primary disable={!valueChange}>
+                        <Button
+                            onClick={handleClickConfirm}
+                            className={cx('confirm-btn')}
+                            type="primary"
+                            loading={loading}
+                            disabled={!valueChange}
+                        >
                             {data ? 'Cập nhật' : 'Tạo'}
                         </Button>
                     </div>
-                </form>
+                </div>
             </div>
         </Modal>
     );

@@ -297,7 +297,7 @@ function ReportPage() {
                                 <div className={cx('content-header')}>
                                     <div className={cx('content-title')}>
                                         <BarChartIcon height="3rem" width="3rem" className={cx('icon')} />
-                                        Thống kê nhập/xuất hàng
+                                        Thống kê nhập/xuất nguyên liệu
                                     </div>
                                     <div className={cx('content-subtitle')}></div>
                                 </div>
