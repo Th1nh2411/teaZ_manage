@@ -45,7 +45,7 @@ function ReceiptDetail({ data, onCloseModal = () => {} }) {
                         </div>
                     </div>
                     <h2 className={cx('title')}>HOÁ ĐƠN BÁN HÀNG</h2>
-                    <h4>HD{data.idInvoices}</h4>
+                    <h4>HD{data.idInvoice}</h4>
                     <div className={cx('body')}>
                         <div className={cx('body-title')}>Các món đã đặt</div>
                         <table>

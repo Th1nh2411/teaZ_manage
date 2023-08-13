@@ -22,7 +22,8 @@ function Home() {
     const [state, dispatch] = useContext(StoreContext);
     const [incompleteOrders, setIncompleteOrders] = useState([]);
     const [completeOrders, setCompleteOrders] = useState([]);
-    const [showDetailReceipt, setShowDetailReceipt] = useState(true);
+    const [showDetailReceipt, setShowDetailReceipt] = useState(false);
+    const [receiptData, setReceiptData] = useState(false);
     const [loading, setLoading] = useState();
 
     const localStorageManager = LocalStorageManager.getInstance();
@@ -46,11 +47,12 @@ function Home() {
             }
         }
     };
-    const completeOrder = async (idInvoice) => {
+    const completeOrder = async (order) => {
         setShowDetailReceipt(true);
+        setReceiptData(order);
         const token = localStorageManager.getItem('token');
         if (token) {
-            const results = await orderService.completeOrder(idInvoice, token);
+            const results = await orderService.completeOrder(order.idInvoice, token);
             if (results.isSuccess) {
                 dispatch(
                     actions.setToast({
@@ -110,9 +112,7 @@ function Home() {
     }, []);
     return (
         <>
-            {showDetailReceipt && (
-                <ReceiptDetail data={incompleteOrders[0]} onCloseModal={() => setShowDetailReceipt(false)} />
-            )}
+            {showDetailReceipt && <ReceiptDetail data={receiptData} onCloseModal={() => setShowDetailReceipt(false)} />}
             <div className={cx('wrapper')}>
                 {loading ? (
                     <div className={cx('loader')}>
@@ -138,15 +138,18 @@ function Home() {
                                             <div key={index} className={cx('order-list')}>
                                                 <div className={cx('order-header')}>
                                                     <div className={cx('order-title')}>
-                                                        Đơn {order.idInvoices} - {timeGap(order.date)}{' '}
+                                                        Đơn {order.idInvoice} - {timeGap(order.date)}{' '}
                                                         <BsInfoCircle
                                                             className={cx('icon')}
-                                                            onClick={() => setShowDetailReceipt(true)}
+                                                            onClick={() => {
+                                                                setShowDetailReceipt(true);
+                                                                setReceiptData(order);
+                                                            }}
                                                         />
                                                     </div>
                                                     <Tippy content="Hoàn thành đơn" placement="bottom" duration={0}>
                                                         <div
-                                                            onClick={() => completeOrder(order.idInvoices)}
+                                                            onClick={() => completeOrder(order)}
                                                             className={cx('order-item-actions')}
                                                         >
                                                             <BsClipboardCheckFill />
@@ -197,11 +200,11 @@ function Home() {
                                             <div key={index} className={cx('order-list')}>
                                                 <div className={cx('order-header')}>
                                                     <div className={cx('order-title')}>
-                                                        Đơn {order.idInvoices} - {timeGap(order.date)}
+                                                        Đơn {order.idInvoice} - {timeGap(order.date)}
                                                     </div>
                                                     <Tippy content="Hoàn thành giao" placement="bottom" duration={0}>
                                                         <div
-                                                            onClick={() => completeShipping(order.idInvoices)}
+                                                            onClick={() => completeShipping(order.idInvoice)}
                                                             className={cx('order-item-actions')}
                                                         >
                                                             <BsClipboardCheckFill />

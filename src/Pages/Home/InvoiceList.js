@@ -60,7 +60,7 @@ function InvoiceList() {
                         <div key={index} className={cx('order-list')}>
                             <div className={cx('order-header')}>
                                 <div className={cx('order-title')}>
-                                    Đơn {invoice.idInvoices} - {timeGap(invoice.date)}
+                                    Đơn {invoice.idInvoice} - {timeGap(invoice.date)}
                                 </div>
 
                                 <div className={cx('order-subtitle')}>Total: {priceFormat(invoice.total)}đ</div>
