@@ -62,6 +62,11 @@
     color: var(--primary-color);
     padding-bottom: 8px;
     font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    .icon {
+        margin-left: 5px;
+    }
 }
 .order-subtitle {
     font-size: 1.4rem;
