@@ -24,6 +24,18 @@ export const getAllOrderInTransit = async (token) => {
         return error.response && error.response.data;
     }
 };
+export const cancelInvoice = async (idInvoice, token) => {
+    const config = {
+        headers: { access_token: token },
+    };
+    try {
+        const res = await httpRequest.del(`order/cancelInvoiceById/${idInvoice}`, {}, config);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return error.response && error.response.data;
+    }
+};
 export const completeOrder = async (idInvoice, token) => {
     const config = {
         headers: { access_token: token },

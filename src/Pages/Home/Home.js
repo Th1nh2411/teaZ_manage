@@ -8,7 +8,7 @@ import * as orderService from '../../services/orderService';
 import { StoreContext, actions } from '../../store';
 import LocalStorageManager from '../../utils/LocalStorageManager';
 import { timeGap } from '../../utils/format';
-import { BsClipboardCheckFill, BsInfoCircle } from 'react-icons/bs';
+import { BsClipboardCheckFill, BsInfoCircle, BsXCircleFill } from 'react-icons/bs';
 import { HiDocumentMinus } from 'react-icons/hi2';
 import { RiEBike2Fill } from 'react-icons/ri';
 import { FaFileInvoiceDollar } from 'react-icons/fa';
@@ -107,6 +107,18 @@ function Home() {
 
         return () => clearInterval(checkOrderInterval);
     }, []);
+    const handleCancelInvoice = async (idInvoice) => {
+        const token = localStorageManager.getItem('token');
+        if (token) {
+            const results = await orderService.cancelInvoice(idInvoice, token);
+            if (results && results.isCancel) {
+                dispatch(actions.setToast({ show: true, title: 'Hủy đơn', content: results.message }));
+                getAllOrder();
+            } else {
+                dispatch(actions.setToast({ show: true, title: 'Hủy đơn', content: results.message, type: 'info' }));
+            }
+        }
+    };
     return (
         <>
             {showDetailReceipt && <ReceiptDetail data={receiptData} onCloseModal={() => setShowDetailReceipt(false)} />}
@@ -138,14 +150,29 @@ function Home() {
                                                         }}
                                                     />
                                                 </div>
-                                                <Tippy content="Hoàn thành đơn" placement="bottom" duration={0}>
-                                                    <div
-                                                        onClick={() => completeOrder(order)}
-                                                        className={cx('order-item-actions')}
-                                                    >
-                                                        <BsClipboardCheckFill />
-                                                    </div>
-                                                </Tippy>
+                                                <div className={cx('d-flex', 'align-items-center')}>
+                                                    <Tippy content="Hoàn thành đơn" placement="bottom" duration={0}>
+                                                        <div
+                                                            onClick={() => completeOrder(order)}
+                                                            className={cx('order-item-actions')}
+                                                        >
+                                                            <BsClipboardCheckFill />
+                                                        </div>
+                                                    </Tippy>
+                                                    <Tippy content="Huỷ đơn" placement="bottom" duration={0}>
+                                                        <div
+                                                            onClick={async () => {
+                                                                if (window.confirm('Xác nhận huỷ đơn này?')) {
+                                                                    await handleCancelInvoice(order.idInvoice);
+                                                                }
+                                                            }}
+                                                            style={{ color: 'red' }}
+                                                            className={cx('order-item-actions')}
+                                                        >
+                                                            <BsXCircleFill />
+                                                        </div>
+                                                    </Tippy>
+                                                </div>
                                             </div>
                                             {order.products.map((item, index) => (
                                                 <div key={index} className={cx('order-item-wrapper')}>
