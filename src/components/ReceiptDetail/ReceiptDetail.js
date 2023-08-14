@@ -18,8 +18,10 @@ const cx = classNames.bind(styles);
 
 function ReceiptDetail({ data, onCloseModal = () => {} }) {
     useEffect(() => {
-        window.print();
-    }, []);
+        if (data) {
+            window.print();
+        }
+    }, [data]);
     return (
         <>
             {data && (
