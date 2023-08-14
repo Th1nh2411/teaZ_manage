@@ -1,10 +1,19 @@
+@media print {
+    html,
+    body {
+        height: 100%;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden;
+    }
+}
 .wrapper {
     padding: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
     position: relative;
-    border-radius: 0;
+    border-radius: 0 !important;
     border: 1px solid #333;
 }
 .title {
