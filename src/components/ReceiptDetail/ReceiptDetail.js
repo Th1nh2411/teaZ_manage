@@ -37,6 +37,7 @@ function ReceiptDetail({ data, onCloseModal = () => {} }) {
                         <div className={cx('info')}>
                             Số điện thoại : <span>0935098022</span>
                         </div>
+
                         <div className={cx('info')}>
                             Ngày đặt :{' '}
                             <span>
@@ -85,35 +86,24 @@ function ReceiptDetail({ data, onCloseModal = () => {} }) {
                                     ))}
                             </tbody>
                         </table>
-                        {/* <div className={cx('product-list')}>
-                            {data &&
-                                data.products.map((item, index) => (
-                                    <div key={index} className={cx('product-wrapper')}>
-                                        <div className={cx('product-info')}>
-                                            <div className={cx('product-name')}>
-                                                {item.name}({item.size ? 'L' : 'M'}) x{item.quantity}
-                                            </div>
-                                            {item.listTopping.length !== 0 && (
-                                                <div className={cx('product-topping')}>
-                                                    Topping :{' '}
-                                                    {item.listTopping.map((topping) => topping.name).join(', ')}
-                                                </div>
-                                            )}
-                                        </div>
-                                        <h5 className={cx('product-price')}>{priceFormat(item.totalProduct)}đ</h5>
-                                    </div>
-                                ))}
-                        </div> */}
                     </div>
                     <div className={cx('footer')}>
-                        <div className={cx('info')}>
+                        <div className={cx('price-info')}>
                             Tổng tiền các món : <span>{priceFormat(data.total)}đ</span>
                         </div>
-                        <div className={cx('info')}>
+                        <div className={cx('price-info')}>
                             Phí ship : <span>{priceFormat(data.shippingFee)}đ</span>
                         </div>
-                        <div className={cx('info')}>
+                        <div className={cx('price-info')}>
                             Thành tiền : <span>{priceFormat(data.total + data.shippingFee)}đ</span>
+                        </div>
+                        <div className={cx('price-info')}>
+                            Thanh toán :{' '}
+                            <span>{data.payment_status ? priceFormat(data.total + data.shippingFee) + 'đ' : '0đ'}</span>
+                        </div>
+                        <div className={cx('price-info')}>
+                            Thu :{' '}
+                            <span>{data.payment_status ? '0đ' : priceFormat(data.total + data.shippingFee) + 'đ'}</span>
                         </div>
                     </div>
                 </Modal>

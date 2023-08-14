@@ -32,6 +32,17 @@
         color: #333;
     }
 }
+.price-info {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    span {
+        font-weight: 600;
+        color: #333;
+        width: 85px;
+        display: block;
+    }
+}
 .body {
     margin-top: 30px;
     width: 360px;
