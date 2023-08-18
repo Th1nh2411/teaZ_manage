@@ -1,4 +1,5 @@
 Run web : npm start
+
 A web administration with 3 different login roles - employee, store manager, and admin, featuring functions for order management, inventory management, beverage information management, employee management, and statistical analysis.
 
 Details of the functions of the website:
