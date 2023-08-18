@@ -1,4 +1,8 @@
-Run web : npm start
+Run web: npm start
+
+Doc: https://docs.google.com/document/d/1Z0jSGbtzdfzhF4kmWWc6i6dJ09poG9yuSjei1Pm1o2M/edit#heading=h.gjdgxs
+
+Customer web github: https://github.com/Th1nh2411/teaZ
 
 A web administration with 3 different login roles - employee, store manager, and admin, featuring functions for order management, inventory management, beverage information management, employee management, and statistical analysis.
 
