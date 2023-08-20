@@ -1,4 +1,8 @@
-import * as httpRequest from '../utils/httpRequest';
+import axios from 'axios';
+
+const httpRequest = axios.create({
+    baseURL: 'https://mocki.io/v1/',
+});
 
 export const getMenuByType = async (idType = 1, token) => {
     const config = {
@@ -6,8 +10,8 @@ export const getMenuByType = async (idType = 1, token) => {
         params: { idType },
     };
     try {
-        const res = await httpRequest.get('shop/typeForStaff', config);
-        return res;
+        const res = await httpRequest.get('cf8f6788-826c-471e-bb97-f26ad4d03776', config);
+        return res.data;
     } catch (error) {
         console.log(error);
         return error.response && error.response.data;
@@ -20,8 +24,8 @@ export const getDetailRecipe = async (idRecipe, token) => {
     };
 
     try {
-        const res = await httpRequest.get(`shop/detailRecipe/${idRecipe}`, config);
-        return res;
+        const res = await httpRequest.get(`0b8d3998-4b3f-44cb-8740-16f2e13fdf9f`, config);
+        return res.data;
     } catch (error) {
         console.log(error);
         return error.response && error.response.data;

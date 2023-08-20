@@ -1,99 +1,9 @@
-import * as httpRequest from '../utils/httpRequest';
+import * as httpRequest2 from '../utils/httpRequest';
+import axios from 'axios';
 
-export const getListManager = async (token) => {
-    const config = {
-        headers: { access_token: token },
-    };
-    try {
-        const res = await httpRequest.get('admin/getListManager', config);
-        return res;
-    } catch (error) {
-        console.log(error);
-        return error.response && error.response.data;
-    }
-};
-export const addManager = async (idShop, phone, password, name, token) => {
-    const config = {
-        headers: { access_token: token },
-    };
-    const body = {
-        idShop,
-        phone,
-        password,
-        name,
-    };
-    try {
-        const res = await httpRequest.post('admin/addManager', body, config);
-        return res;
-    } catch (error) {
-        console.log(error);
-        return error.response && error.response.data;
-    }
-};
-export const editManager = async (idStaff, idShop, token, phone, password, name) => {
-    const config = {
-        headers: { access_token: token },
-    };
-    const body = {
-        idShop,
-        phone,
-        password,
-        name,
-    };
-    try {
-        const res = await httpRequest.patch(`admin/editManager/${idStaff}`, body, config);
-        return res;
-    } catch (error) {
-        console.log(error);
-        return error.response && error.response.data;
-    }
-};
-export const deleteManager = async (phone, token) => {
-    const config = {
-        headers: { access_token: token },
-    };
-    const body = {
-        phone,
-    };
-    try {
-        const res = await httpRequest.del(`admin/deleteManager`, body, config);
-        return res;
-    } catch (error) {
-        console.log(error);
-        return error.response && error.response.data;
-    }
-};
-export const getListShop = async (token) => {
-    const config = {
-        headers: { access_token: token },
-    };
-    try {
-        const res = await httpRequest.get('admin/getListShop', config);
-        return res;
-    } catch (error) {
-        console.log(error);
-        return error.response && error.response.data;
-    }
-};
-export const addShop = async (token, address, latitude, longitude, image, isActive) => {
-    const config = {
-        headers: { access_token: token },
-    };
-    const body = {
-        address,
-        latitude,
-        longitude,
-        image,
-        isActive,
-    };
-    try {
-        const res = await httpRequest.post(`admin/addShop`, body, config);
-        return res;
-    } catch (error) {
-        console.log(error);
-        return error.response && error.response.data;
-    }
-};
+const httpRequest = axios.create({
+    baseURL: 'https://mocki.io/v1/',
+});
 export const editShop = async (idShop, token, address, latitude, longitude, image, isActive) => {
     const config = {
         headers: { access_token: token },
@@ -106,34 +16,8 @@ export const editShop = async (idShop, token, address, latitude, longitude, imag
         isActive,
     };
     try {
-        const res = await httpRequest.patch(`admin/editShop/${idShop}`, body, config);
-        return res;
-    } catch (error) {
-        console.log(error);
-        return error.response && error.response.data;
-    }
-};
-export const getDataForChartByShop = async (idShop, token) => {
-    const config = {
-        headers: { access_token: token },
-    };
-
-    try {
-        const res = await httpRequest.get(`admin/getDataForChart/${idShop}`, config);
-        return res;
-    } catch (error) {
-        console.log(error);
-        return error.response && error.response.data;
-    }
-};
-export const getAllShopDataForChart = async (token) => {
-    const config = {
-        headers: { access_token: token },
-    };
-
-    try {
-        const res = await httpRequest.get(`admin/getAllDataForChart`, config);
-        return res;
+        const res = await httpRequest.get('4880c9ba-59f9-46d9-bbce-d73be5c7be9f');
+        return res.data;
     } catch (error) {
         console.log(error);
         return error.response && error.response.data;
@@ -145,8 +29,8 @@ export const getAllIngredient = async (token) => {
     };
 
     try {
-        const res = await httpRequest.get(`admin/getListIngredient`, config);
-        return res;
+        const res = await httpRequest.get(`7ac77bba-a8a4-4ea0-a5d8-fcd087d1e19d`, config);
+        return res.data;
     } catch (error) {
         console.log(error);
         return error.response && error.response.data;
@@ -162,8 +46,8 @@ export const addIngredient = async (name, image, unitName, token) => {
         unitName,
     };
     try {
-        const res = await httpRequest.post(`admin/addIngredient`, body, config);
-        return res;
+        const res = await httpRequest.get('4880c9ba-59f9-46d9-bbce-d73be5c7be9f');
+        return res.data;
     } catch (error) {
         console.log(error);
         return error.response && error.response.data;
@@ -180,8 +64,8 @@ export const editIngredient = async (idIngredient, token, name, image, unitName,
         isActive,
     };
     try {
-        const res = await httpRequest.patch(`admin/editIngredient/${idIngredient}`, body, config);
-        return res;
+        const res = await httpRequest.get('4880c9ba-59f9-46d9-bbce-d73be5c7be9f');
+        return res.data;
     } catch (error) {
         console.log(error);
         return error.response && error.response.data;
@@ -196,7 +80,7 @@ export const getAllRecipe = async (idType, token) => {
     };
 
     try {
-        const res = await httpRequest.get(`admin/getListRecipe`, config);
+        const res = await httpRequest2.get(`admin/getListRecipe`, config);
         return res;
     } catch (error) {
         console.log(error);
@@ -209,7 +93,7 @@ export const getDetailRecipe = async (idRecipe, token) => {
     };
 
     try {
-        const res = await httpRequest.get(`admin/getDetailRecipe/${idRecipe}`, config);
+        const res = await httpRequest2.get(`admin/getDetailRecipe/${idRecipe}`, config);
         return res;
     } catch (error) {
         console.log(error);
@@ -229,8 +113,8 @@ export const addRecipe = async (name, image, info, price, discount, idType, toke
         idType,
     };
     try {
-        const res = await httpRequest.post(`admin/addRecipe`, body, config);
-        return res;
+        const res = await httpRequest.get('4880c9ba-59f9-46d9-bbce-d73be5c7be9f');
+        return res.data;
     } catch (error) {
         console.log(error);
         return error.response && error.response.data;
@@ -241,8 +125,8 @@ export const editRecipe = async (idRecipe, token, body) => {
         headers: { access_token: token },
     };
     try {
-        const res = await httpRequest.patch(`admin/editRecipe/${idRecipe}`, body, config);
-        return res;
+        const res = await httpRequest.get('4880c9ba-59f9-46d9-bbce-d73be5c7be9f');
+        return res.data;
     } catch (error) {
         console.log(error);
         return error.response && error.response.data;
@@ -258,8 +142,8 @@ export const editIngredientFromRecipe = async (idRecipe, idIngredient, quantity,
         quantity,
     };
     try {
-        const res = await httpRequest.put(`admin/editRecipeIngredient`, body, config);
-        return res;
+        const res = await httpRequest.get('4880c9ba-59f9-46d9-bbce-d73be5c7be9f');
+        return res.data;
     } catch (error) {
         console.log(error);
         return error.response && error.response.data;
@@ -267,8 +151,8 @@ export const editIngredientFromRecipe = async (idRecipe, idIngredient, quantity,
 };
 export const getListToppingByType = async () => {
     try {
-        const res = await httpRequest.get(`shop/getListToppingByType`);
-        return res;
+        const res = await httpRequest.get(`0cda3269-50df-4f8e-ae81-644ca5330427`);
+        return res.data;
     } catch (error) {
         console.log(error);
         return error.response && error.response.data;
@@ -283,8 +167,8 @@ export const addToppingToType = async (idRecipe, idType, token) => {
         idType,
     };
     try {
-        const res = await httpRequest.post(`admin/addRecipeType`, body, config);
-        return res;
+        const res = await httpRequest.get('4880c9ba-59f9-46d9-bbce-d73be5c7be9f');
+        return res.data;
     } catch (error) {
         console.log(error);
         return error.response && error.response.data;
@@ -299,8 +183,8 @@ export const delToppingFromType = async (idRecipe, idType, token) => {
         idType,
     };
     try {
-        const res = await httpRequest.del(`admin/deleteRecipeType`, body, config);
-        return res;
+        const res = await httpRequest.get('4880c9ba-59f9-46d9-bbce-d73be5c7be9f');
+        return res.data;
     } catch (error) {
         console.log(error);
         return error.response && error.response.data;
@@ -314,8 +198,8 @@ export const uploadFile = async (my_file, token) => {
         my_file,
     };
     try {
-        const res = await httpRequest.post(`upload`, body, config);
-        return res;
+        const res = await httpRequest.get(`0fb03573-c878-4818-a4c7-cef99030cc07`, body, config);
+        return res.data;
     } catch (error) {
         console.log(error);
         return error.response && error.response.data;

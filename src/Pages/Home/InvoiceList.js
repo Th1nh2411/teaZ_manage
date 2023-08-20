@@ -26,7 +26,7 @@ function InvoiceList() {
     const getAllInvoiceByDate = async () => {
         const token = localStorageManager.getItem('token');
         if (token) {
-            const results = await orderService.getAllInvoiceByDate(date, token);
+            const results = await orderService.getAllOrder(date, token);
             if (results) {
                 setInvoices(results.invoices);
             }
