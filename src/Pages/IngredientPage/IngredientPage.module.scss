@@ -162,3 +162,9 @@
     margin: 20px 0 0;
     width: 100%;
 }
+@media (max-width: 792px) {
+    .content-header {
+        flex-direction: column;
+        gap: 10px;
+    }
+}

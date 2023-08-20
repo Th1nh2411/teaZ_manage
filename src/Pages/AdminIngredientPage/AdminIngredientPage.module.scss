@@ -224,3 +224,21 @@
         font-size: 1.8rem;
     }
 }
+@media (max-width: 892px) {
+    .content-header {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .ingredient-item {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .ingredient-info {
+        span {
+            display: none;
+        }
+        .active {
+            display: block;
+        }
+    }
+}
