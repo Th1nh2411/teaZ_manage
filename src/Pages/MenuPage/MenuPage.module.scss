@@ -155,3 +155,9 @@
 .recipe-price {
     font-weight: 800;
 }
+@media (max-width: 792px) {
+    .content-header {
+        flex-direction: column;
+        gap: 10px;
+    }
+}

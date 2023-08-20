@@ -6,6 +6,8 @@
     z-index: 1;
     margin-bottom: 6px;
     border: 1px solid var(--primary-color);
+    overflow: hidden;
+    white-space: nowrap;
     &.error {
         margin-bottom: 35px;
     }

@@ -25,13 +25,21 @@ function DefaultLayout({ children }) {
     };
     useEffect(() => {
         if (sideBarShrink) {
-            root_theme.style.setProperty('--sidebar-width', '70px');
+            root_theme.style.setProperty('--sidebar-width', '64px');
         } else {
             root_theme.style.setProperty('--sidebar-width', '250px');
         }
     }, [sideBarShrink]);
     useEffect(() => {
         setStorageData();
+        function updateSize() {
+            if (window.innerWidth < 892) {
+                setSideBarShrink(true);
+            }
+        }
+        window.addEventListener('resize', updateSize);
+        updateSize();
+        return () => window.removeEventListener('resize', updateSize);
     }, []);
     return (
         <>

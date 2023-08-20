@@ -17,3 +17,8 @@
 .content {
     padding: 20px 20px 30px;
 }
+@media (max-width: 892px) {
+    .container {
+        // padding-left: 0;
+    }
+}

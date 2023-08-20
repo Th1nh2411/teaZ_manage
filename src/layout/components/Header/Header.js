@@ -43,7 +43,7 @@ function Header({ toggleSideBar = defaultFc }) {
                     )}
                 </div>
                 <div onClick={handleLogOut} className={cx('actions')}>
-                    Đăng xuất
+                    <span>Đăng xuất</span>
                     <IoLogOut className={cx('icon')} />
                 </div>
             </div>
