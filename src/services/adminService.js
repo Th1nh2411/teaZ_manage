@@ -1,62 +1,8 @@
 import * as httpRequest from '../utils/httpRequest';
 
 export const getListManager = async (token) => {
-    const config = {
-        headers: { access_token: token },
-    };
     try {
-        const res = await httpRequest.get('admin/getListManager', config);
-        return res;
-    } catch (error) {
-        console.log(error);
-        return error.response && error.response.data;
-    }
-};
-export const addManager = async (idShop, phone, password, name, token) => {
-    const config = {
-        headers: { access_token: token },
-    };
-    const body = {
-        idShop,
-        phone,
-        password,
-        name,
-    };
-    try {
-        const res = await httpRequest.post('admin/addManager', body, config);
-        return res;
-    } catch (error) {
-        console.log(error);
-        return error.response && error.response.data;
-    }
-};
-export const editManager = async (idStaff, idShop, token, phone, password, name) => {
-    const config = {
-        headers: { access_token: token },
-    };
-    const body = {
-        idShop,
-        phone,
-        password,
-        name,
-    };
-    try {
-        const res = await httpRequest.patch(`admin/editManager/${idStaff}`, body, config);
-        return res;
-    } catch (error) {
-        console.log(error);
-        return error.response && error.response.data;
-    }
-};
-export const deleteManager = async (phone, token) => {
-    const config = {
-        headers: { access_token: token },
-    };
-    const body = {
-        phone,
-    };
-    try {
-        const res = await httpRequest.del(`admin/deleteManager`, body, config);
+        const res = await httpRequest.get('admin/getListManager');
         return res;
     } catch (error) {
         console.log(error);
@@ -64,11 +10,8 @@ export const deleteManager = async (phone, token) => {
     }
 };
 export const getListShop = async (token) => {
-    const config = {
-        headers: { access_token: token },
-    };
     try {
-        const res = await httpRequest.get('admin/getListShop', config);
+        const res = await httpRequest.get('admin/getListShop');
         return res;
     } catch (error) {
         console.log(error);
@@ -76,9 +19,6 @@ export const getListShop = async (token) => {
     }
 };
 export const addShop = async (token, address, latitude, longitude, image, isActive) => {
-    const config = {
-        headers: { access_token: token },
-    };
     const body = {
         address,
         latitude,
@@ -87,26 +27,16 @@ export const addShop = async (token, address, latitude, longitude, image, isActi
         isActive,
     };
     try {
-        const res = await httpRequest.post(`admin/addShop`, body, config);
+        const res = await httpRequest.post(`admin/addShop`, body);
         return res;
     } catch (error) {
         console.log(error);
         return error.response && error.response.data;
     }
 };
-export const editShop = async (idShop, token, address, latitude, longitude, image, isActive) => {
-    const config = {
-        headers: { access_token: token },
-    };
-    const body = {
-        address,
-        latitude,
-        longitude,
-        image,
-        isActive,
-    };
+export const editShop = async (body) => {
     try {
-        const res = await httpRequest.patch(`admin/editShop/${idShop}`, body, config);
+        const res = await httpRequest.patch(`shop`, body);
         return res;
     } catch (error) {
         console.log(error);
@@ -114,12 +44,8 @@ export const editShop = async (idShop, token, address, latitude, longitude, imag
     }
 };
 export const getDataForChartByShop = async (idShop, token) => {
-    const config = {
-        headers: { access_token: token },
-    };
-
     try {
-        const res = await httpRequest.get(`admin/getDataForChart/${idShop}`, config);
+        const res = await httpRequest.get(`admin/getDataForChart/${idShop}`);
         return res;
     } catch (error) {
         console.log(error);
@@ -127,12 +53,8 @@ export const getDataForChartByShop = async (idShop, token) => {
     }
 };
 export const getAllShopDataForChart = async (token) => {
-    const config = {
-        headers: { access_token: token },
-    };
-
     try {
-        const res = await httpRequest.get(`admin/getAllDataForChart`, config);
+        const res = await httpRequest.get(`admin/getAllDataForChart`);
         return res;
     } catch (error) {
         console.log(error);
@@ -140,12 +62,8 @@ export const getAllShopDataForChart = async (token) => {
     }
 };
 export const getAllIngredient = async (token) => {
-    const config = {
-        headers: { access_token: token },
-    };
-
     try {
-        const res = await httpRequest.get(`admin/getListIngredient`, config);
+        const res = await httpRequest.get(`admin/getListIngredient`);
         return res;
     } catch (error) {
         console.log(error);
@@ -153,16 +71,13 @@ export const getAllIngredient = async (token) => {
     }
 };
 export const addIngredient = async (name, image, unitName, token) => {
-    const config = {
-        headers: { access_token: token },
-    };
     const body = {
         name,
         image,
         unitName,
     };
     try {
-        const res = await httpRequest.post(`admin/addIngredient`, body, config);
+        const res = await httpRequest.post(`admin/addIngredient`, body);
         return res;
     } catch (error) {
         console.log(error);
@@ -170,9 +85,6 @@ export const addIngredient = async (name, image, unitName, token) => {
     }
 };
 export const editIngredient = async (idIngredient, token, name, image, unitName, isActive) => {
-    const config = {
-        headers: { access_token: token },
-    };
     const body = {
         name,
         image,
@@ -180,7 +92,7 @@ export const editIngredient = async (idIngredient, token, name, image, unitName,
         isActive,
     };
     try {
-        const res = await httpRequest.patch(`admin/editIngredient/${idIngredient}`, body, config);
+        const res = await httpRequest.patch(`admin/editIngredient/${idIngredient}`, body);
         return res;
     } catch (error) {
         console.log(error);
@@ -189,7 +101,6 @@ export const editIngredient = async (idIngredient, token, name, image, unitName,
 };
 export const getAllRecipe = async (idType, token) => {
     const config = {
-        headers: { access_token: token },
         params: {
             idType,
         },
@@ -204,12 +115,8 @@ export const getAllRecipe = async (idType, token) => {
     }
 };
 export const getDetailRecipe = async (idRecipe, token) => {
-    const config = {
-        headers: { access_token: token },
-    };
-
     try {
-        const res = await httpRequest.get(`admin/getDetailRecipe/${idRecipe}`, config);
+        const res = await httpRequest.get(`admin/getDetailRecipe/${idRecipe}`);
         return res;
     } catch (error) {
         console.log(error);
@@ -217,9 +124,6 @@ export const getDetailRecipe = async (idRecipe, token) => {
     }
 };
 export const addRecipe = async (name, image, info, price, discount, idType, token) => {
-    const config = {
-        headers: { access_token: token },
-    };
     const body = {
         name,
         image,
@@ -229,7 +133,7 @@ export const addRecipe = async (name, image, info, price, discount, idType, toke
         idType,
     };
     try {
-        const res = await httpRequest.post(`admin/addRecipe`, body, config);
+        const res = await httpRequest.post(`admin/addRecipe`, body);
         return res;
     } catch (error) {
         console.log(error);
@@ -237,11 +141,8 @@ export const addRecipe = async (name, image, info, price, discount, idType, toke
     }
 };
 export const editRecipe = async (idRecipe, token, body) => {
-    const config = {
-        headers: { access_token: token },
-    };
     try {
-        const res = await httpRequest.patch(`admin/editRecipe/${idRecipe}`, body, config);
+        const res = await httpRequest.patch(`admin/editRecipe/${idRecipe}`, body);
         return res;
     } catch (error) {
         console.log(error);
@@ -249,16 +150,13 @@ export const editRecipe = async (idRecipe, token, body) => {
     }
 };
 export const editIngredientFromRecipe = async (idRecipe, idIngredient, quantity, token) => {
-    const config = {
-        headers: { access_token: token },
-    };
     const body = {
         idRecipe,
         idIngredient,
         quantity,
     };
     try {
-        const res = await httpRequest.put(`admin/editRecipeIngredient`, body, config);
+        const res = await httpRequest.put(`admin/editRecipeIngredient`, body);
         return res;
     } catch (error) {
         console.log(error);
@@ -275,15 +173,12 @@ export const getListToppingByType = async () => {
     }
 };
 export const addToppingToType = async (idRecipe, idType, token) => {
-    const config = {
-        headers: { access_token: token },
-    };
     const body = {
         idRecipe,
         idType,
     };
     try {
-        const res = await httpRequest.post(`admin/addRecipeType`, body, config);
+        const res = await httpRequest.post(`admin/addRecipeType`, body);
         return res;
     } catch (error) {
         console.log(error);
@@ -291,15 +186,12 @@ export const addToppingToType = async (idRecipe, idType, token) => {
     }
 };
 export const delToppingFromType = async (idRecipe, idType, token) => {
-    const config = {
-        headers: { access_token: token },
-    };
     const body = {
         idRecipe,
         idType,
     };
     try {
-        const res = await httpRequest.del(`admin/deleteRecipeType`, body, config);
+        const res = await httpRequest.del(`admin/deleteRecipeType`, body);
         return res;
     } catch (error) {
         console.log(error);

@@ -26,19 +26,16 @@ function Home() {
     const [receiptData, setReceiptData] = useState(false);
 
     const localStorageManager = LocalStorageManager.getInstance();
-    const getAllOrder = async () => {
-        const token = localStorageManager.getItem('token');
-        if (token) {
-            const results = await orderService.getAllOrder(token);
-            if (results) {
-                setIncompleteOrders(results.invoices);
-            }
+    const getAllInvoice = async () => {
+        const results = await orderService.getAllInvoice();
+        if (results) {
+            setIncompleteOrders(results.invoices);
         }
     };
-    const getAllOrderInTransit = async () => {
+    const getAllInvoiceInTransit = async () => {
         const token = localStorageManager.getItem('token');
         if (token) {
-            const results = await orderService.getAllOrderInTransit(token);
+            const results = await orderService.getAllInvoiceInTransit(token);
             if (results) {
                 setCompleteOrders(results.invoices);
             }
@@ -49,7 +46,7 @@ function Home() {
         setReceiptData(order);
         const token = localStorageManager.getItem('token');
         if (token) {
-            const results = await orderService.completeOrder(order.idInvoice, token);
+            const results = await orderService.completeInvoice(order.idInvoice, token);
             if (results.isSuccess) {
                 dispatch(
                     actions.setToast({
@@ -69,8 +66,8 @@ function Home() {
                 );
             }
         }
-        getAllOrder();
-        getAllOrderInTransit();
+        getAllInvoice();
+        getAllInvoiceInTransit();
     };
     const completeShipping = async (idInvoice) => {
         const token = localStorageManager.getItem('token');
@@ -95,28 +92,25 @@ function Home() {
                 );
             }
         }
-        getAllOrderInTransit();
+        getAllInvoiceInTransit();
     };
     useEffect(() => {
-        getAllOrder();
-        getAllOrderInTransit();
+        getAllInvoice();
+        getAllInvoiceInTransit();
 
         const checkOrderInterval = setInterval(() => {
-            getAllOrder();
+            getAllInvoice();
         }, 10000);
 
         return () => clearInterval(checkOrderInterval);
     }, []);
     const handleCancelInvoice = async (idInvoice) => {
-        const token = localStorageManager.getItem('token');
-        if (token) {
-            const results = await orderService.cancelInvoice(idInvoice, token);
-            if (results && results.isCancel) {
-                dispatch(actions.setToast({ show: true, title: 'Hủy đơn', content: results.message }));
-                getAllOrder();
-            } else {
-                dispatch(actions.setToast({ show: true, title: 'Hủy đơn', content: results.message, type: 'info' }));
-            }
+        const results = await orderService.cancelInvoice(idInvoice);
+        if (results && results.isCancel) {
+            dispatch(actions.setToast({ show: true, title: 'Hủy đơn', content: results.message }));
+            getAllInvoice();
+        } else {
+            dispatch(actions.setToast({ show: true, title: 'Hủy đơn', content: results.message, type: 'info' }));
         }
     };
     return (

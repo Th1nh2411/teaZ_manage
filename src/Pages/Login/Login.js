@@ -14,7 +14,7 @@ import { StoreContext, actions } from '../../store';
 const cx = classNames.bind(styles);
 const Login = ({ setAuth }) => {
     const navigate = useNavigate();
-    const [username, setUsername] = useState('');
+    const [phone, setPhone] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [state, dispatch] = useContext(StoreContext);
@@ -23,7 +23,7 @@ const Login = ({ setAuth }) => {
         event.preventDefault();
 
         const getTokenApi = async () => {
-            const results = await authService.login({ username, password });
+            const results = await authService.login({ phone, password });
             if (results && results.userInfo && results.userInfo.role && results.userInfo.role !== 0) {
                 const expirationDate = dayjs().add(results.expireTime, 'second');
                 localStorageManage.setItem('token', results.token);
@@ -59,11 +59,11 @@ const Login = ({ setAuth }) => {
                     <form onSubmit={handleSubmit} className={cx('form-body')}>
                         <Input
                             onChange={(event) => {
-                                setUsername(event.target.value);
+                                setPhone(event.target.value);
                                 setErrorMessage('');
                             }}
-                            value={username}
-                            title="Nhập số điện thoại hoặc gmail"
+                            value={phone}
+                            title="Nhập số điện thoại"
                         />
 
                         <Input

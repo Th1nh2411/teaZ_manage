@@ -2,7 +2,6 @@ import * as httpRequest from '../utils/httpRequest';
 
 export const getReportByDate = async (date, token, quantity = 3, type = 'month') => {
     const config = {
-        headers: { access_token: token },
         params: { quantity, type },
     };
     try {
@@ -13,9 +12,19 @@ export const getReportByDate = async (date, token, quantity = 3, type = 'month')
         return error.response && error.response.data;
     }
 };
+
+export const getStatisticalByDate = async (fromdate, todate) => {
+    try {
+        const res = await httpRequest.get(`invoice/statistical/get?fromdate=${fromdate}&todate=${todate}`);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return error.response && error.response.data;
+    }
+};
+
 export const getIngredientReportByDate = async (date, token, type = 'month') => {
     const config = {
-        headers: { access_token: token },
         params: { type },
     };
     try {
@@ -27,11 +36,8 @@ export const getIngredientReportByDate = async (date, token, type = 'month') => 
     }
 };
 export const get6PrevMonthReport = async (token) => {
-    const config = {
-        headers: { access_token: token },
-    };
     try {
-        const res = await httpRequest.get(`admin/getDataForChart`, config);
+        const res = await httpRequest.get(``);
         return res;
     } catch (error) {
         console.log(error);
