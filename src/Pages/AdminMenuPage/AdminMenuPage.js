@@ -30,24 +30,20 @@ function AdminMenuPage() {
     const [allTopping, setAllTopping] = useState();
     const [showEditForm, setShowEditForm] = useState();
     const [selectedRecipe, setSelectedRecipe] = useState();
-    const localStorageManage = LocalStorageManager.getInstance();
     const [listToppingByType, setListToppingByType] = useState();
     const getMenuDataByType = async (idType) => {
-        const token = localStorageManage.getItem('token');
-        if (token) {
-            setLoading(true);
-            const results = await menuService.getMenuByType(idType, token);
-            if (results && results.isSuccess) {
-                idType === 1
-                    ? setMenuType1(results.menu)
-                    : idType === 2
-                    ? setMenuType2(results.menu)
-                    : idType === 3
-                    ? setMenuType3(results.menu)
-                    : setMenuType4(results.menu);
-            }
-            setLoading(false);
+        setLoading(true);
+        const results = await menuService.getMenuByType(idType);
+        if (results) {
+            idType === 1
+                ? setMenuType1(results.data)
+                : idType === 2
+                ? setMenuType2(results.data)
+                : idType === 3
+                ? setMenuType3(results.data)
+                : setMenuType4(results.data);
         }
+        setLoading(false);
     };
     useEffect(() => {
         getMenuDataByType(1);
@@ -57,21 +53,18 @@ function AdminMenuPage() {
     }, []);
 
     const getAllTopping = async () => {
-        const token = localStorageManage.getItem('token');
-        if (token) {
-            const results = await menuService.getMenuByType(5, token);
-            if (results && results.isSuccess) {
-                setAllTopping(results.menu);
-            }
+        const results = await menuService.getMenuByType(5);
+        if (results) {
+            setAllTopping(results.data);
         }
     };
     useEffect(() => {
         getAllTopping();
     }, []);
-    const getListToppingByType = async () => {
-        const results = await adminService.getListToppingByType();
-        if (results && results.isSuccess) {
-            setListToppingByType(results.listType);
+    const getListToppingByType = async (id) => {
+        const results = await adminService.getListToppingByType(id);
+        if (results) {
+            setListToppingByType(results.data);
         }
     };
     useEffect(() => {
@@ -214,7 +207,7 @@ function ContentWrapper({
         const token = localStorageManage.getItem('token');
         if (token) {
             const results = await adminService.addToppingToType(idRecipe, idType, token);
-            if (results && results.isSuccess) {
+            if (results) {
             }
         }
     };
@@ -222,7 +215,7 @@ function ContentWrapper({
         const token = localStorageManage.getItem('token');
         if (token) {
             const results = await adminService.delToppingFromType(idRecipe, idType, token);
-            if (results && results.isSuccess) {
+            if (results) {
             }
         }
     };

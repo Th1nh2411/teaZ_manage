@@ -28,7 +28,6 @@ function App() {
             alert('The login session has expired. Please log in again.');
             navigate(config.routes.login);
         }
-        localStorage.getItem('token');
         document.title = titles[location.pathname] ?? 'TeaZ - Manage';
     }, [location]);
     return (
@@ -48,7 +47,7 @@ function App() {
                             key={index}
                             path={route.path}
                             element={
-                                localStorageManage.getItem('token') ? (
+                                localStorageManage.getItem('userInfo') ? (
                                     <Layout>
                                         <Element />
                                     </Layout>

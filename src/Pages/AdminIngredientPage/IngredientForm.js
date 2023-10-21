@@ -25,29 +25,23 @@ function IngredientForm({ data, onCloseModal = () => {} }) {
     const localStorageManage = LocalStorageManager.getInstance();
     const userRole = localStorageManage.getItem('userInfo').role;
     const editIngredient = async () => {
-        const token = localStorageManage.getItem('token');
-        if (token) {
-            setLoading(true);
-            const res = await adminService.uploadFile(imageValue);
-            const results = await adminService.editIngredient(
-                data.idIngredient,
-                token,
-                nameValue,
-                res.url,
-                unitValue,
-                isActive,
+        setLoading(true);
+        const res = await adminService.uploadFile(imageValue);
+        const results = await adminService.editIngredient(data.id, {
+            name: nameValue,
+            image: res.url,
+            unitName: unitValue,
+        });
+        setLoading(false);
+        if (results) {
+            dispatch(
+                actions.setToast({
+                    show: true,
+                    content: results.message,
+                    title: 'Thành công',
+                }),
             );
-            setLoading(false);
-            if (results && results.isSuccess) {
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: 'Cập nhật thông tin nguyên liệu thành công',
-                        title: 'Thành công',
-                    }),
-                );
-                onCloseModal(true);
-            }
+            onCloseModal(true);
         }
     };
 
@@ -58,31 +52,28 @@ function IngredientForm({ data, onCloseModal = () => {} }) {
                 content: 'This is an error message',
             });
         }
-        const token = localStorageManage.getItem('token');
-        if (token) {
-            setLoading(true);
-            const res = await adminService.uploadFile(imageValue);
-            const results = await adminService.addIngredient(nameValue, res.url, unitValue, token);
-            setLoading(false);
-            if (results && results.isSuccess) {
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: 'Thêm mới nguyên liệu thành công',
-                        title: 'Thành công',
-                    }),
-                );
-                onCloseModal(true);
-            } else {
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: 'Thêm mới nguyên liệu thất bại',
-                        title: 'Thất bại',
-                        type: 'error',
-                    }),
-                );
-            }
+        setLoading(true);
+        const res = await adminService.uploadFile(imageValue);
+        const results = await adminService.addIngredient({ name: nameValue, unitName: unitValue, image: res.url });
+        setLoading(false);
+        if (results) {
+            dispatch(
+                actions.setToast({
+                    show: true,
+                    content: results.message,
+                    title: 'Thành công',
+                }),
+            );
+            onCloseModal(true);
+        } else {
+            dispatch(
+                actions.setToast({
+                    show: true,
+                    content: 'Thêm mới nguyên liệu thất bại',
+                    title: 'Thất bại',
+                    type: 'error',
+                }),
+            );
         }
     };
     const handleCancelEdit = () => {
@@ -152,28 +143,6 @@ function IngredientForm({ data, onCloseModal = () => {} }) {
                             title="Tên nguyên liệu"
                             type="text"
                         />
-                        <div className={cx('d-flex', 'align-items-center', 'mt-16')}>
-                            <h4>Trạng thái : </h4>
-                            <Select
-                                disabled={!data}
-                                className={cx('ml-16')}
-                                dropdownStyle={{ zIndex: 1000000 }}
-                                value={Number(isActive)}
-                                onChange={(value) => {
-                                    setIsActive(value);
-                                }}
-                                options={[
-                                    {
-                                        value: 1,
-                                        label: 'Active',
-                                    },
-                                    {
-                                        value: 0,
-                                        label: 'Inactive',
-                                    },
-                                ]}
-                            />
-                        </div>
 
                         {/* </div> */}
 
@@ -190,6 +159,10 @@ function IngredientForm({ data, onCloseModal = () => {} }) {
                                 options={[
                                     {
                                         value: 'g',
+                                        label: 'Gram',
+                                    },
+                                    {
+                                        value: 'kg',
                                         label: 'Kilogram',
                                     },
                                     {

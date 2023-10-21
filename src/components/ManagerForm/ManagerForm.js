@@ -23,7 +23,6 @@ function ManagerForm({ data, onCloseModal = () => {}, listShop }) {
     const [valueChange, setValueChange] = useState(false);
     const [state, dispatch] = useContext(StoreContext);
     const localStorageManage = LocalStorageManager.getInstance();
-    const userRole = localStorageManage.getItem('userInfo').role;
     const editManager = async (activeValue) => {
         const token = localStorageManage.getItem('token');
         if (token) {
@@ -35,11 +34,11 @@ function ManagerForm({ data, onCloseModal = () => {}, listShop }) {
                 passwordValue,
                 nameValue,
             );
-            if (results && results.isSuccess) {
+            if (results) {
                 dispatch(
                     actions.setToast({
                         show: true,
-                        content: 'Cập nhật thông tin nhân viên thành công',
+                        content: `'Cập nhật thông tin nhân viên thành công'`,
                         title: 'Thành công',
                     }),
                 );
@@ -51,7 +50,7 @@ function ManagerForm({ data, onCloseModal = () => {}, listShop }) {
         const token = localStorageManage.getItem('token');
         if (token) {
             const results = await adminService.addManager(idShop, phoneValue, passwordValue, nameValue, token);
-            if (results && results.isSuccess) {
+            if (results) {
                 dispatch(
                     actions.setToast({
                         show: true,

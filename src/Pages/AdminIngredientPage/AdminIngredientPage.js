@@ -10,7 +10,7 @@ import * as adminService from '../../services/adminService';
 import { StoreContext, actions } from '../../store';
 import Tippy from '@tippyjs/react';
 import { GiMilkCarton } from 'react-icons/gi';
-import { BiImport, BiExport, BiEdit } from 'react-icons/bi';
+import { BiImport, BiExport, BiEdit, BiTrash } from 'react-icons/bi';
 import LocalStorageManager from '../../utils/LocalStorageManager';
 import Input from '../../components/Input/Input';
 import { ingredientFormat, onlyNumber } from '../../utils/format';
@@ -28,6 +28,7 @@ function AdminIngredientPage() {
     const [ingredients, setIngredients] = useState();
     const [loading, setLoading] = useState();
     const [sort, setSort] = useState(1);
+    const [state, dispatch] = useContext(StoreContext);
     const [searchValue, setSearchValue] = useState('');
     const [selectedIngredient, setSelectedIngredient] = useState();
     const [showIngredientForm, setShowIngredientForm] = useState();
@@ -36,15 +37,37 @@ function AdminIngredientPage() {
     const localStorageManage = LocalStorageManager.getInstance();
     const userRole = localStorageManage.getItem('userInfo').role;
     const getIngredients = async () => {
-        const token = localStorageManage.getItem('token');
-        if (token) {
-            setLoading(true);
-            const results = await adminService.getAllIngredient(token);
-            if (results && results.listIngredient) {
-                setDefaultIngredients(results.listIngredient.sort((a, b) => a.quantity - b.quantity));
-                setIngredients(results.listIngredient.sort((a, b) => a.quantity - b.quantity));
+        setLoading(true);
+        const results = await adminService.getAllIngredient();
+        if (results && results.data) {
+            setDefaultIngredients(results.data.sort((a, b) => a.quantity - b.quantity));
+            setIngredients(results.data.sort((a, b) => a.quantity - b.quantity));
+        }
+        setLoading(false);
+    };
+
+    const handleDeleteIngredient = async () => {
+        const results = await adminService.deleteIngredient(selectedIngredient.id);
+        if (results && results.message) {
+            dispatch(
+                actions.setToast({
+                    show: true,
+                    content: results.message,
+                    title: 'Thành công',
+                }),
+            );
+            getIngredients();
+        } else {
+            if (results && results.message) {
+                dispatch(
+                    actions.setToast({
+                        show: true,
+                        content: results.message,
+                        title: 'Thất bại',
+                    }),
+                );
+                getIngredients();
             }
-            setLoading(false);
         }
     };
 
@@ -228,6 +251,22 @@ function AdminIngredientPage() {
                                                                 onClick={() => {
                                                                     setShowIngredientForm(true);
                                                                     setSelectedIngredient(ingredient);
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    </Tippy>
+                                                    <Tippy content="Xoá" placement="bottom" duration={0}>
+                                                        <div className={cx('delete-btn')}>
+                                                            <BiTrash
+                                                                onClick={() => {
+                                                                    if (
+                                                                        window.confirm(
+                                                                            'Bạn có chắc chắn muốn xoá không?',
+                                                                        )
+                                                                    ) {
+                                                                        setSelectedIngredient(ingredient);
+                                                                        handleDeleteIngredient();
+                                                                    }
                                                                 }}
                                                             />
                                                         </div>

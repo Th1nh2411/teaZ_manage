@@ -9,6 +9,7 @@ export const getAllInvoice = async (token) => {
         return error.response && error.response.data;
     }
 };
+
 export const getAllInvoiceInTransit = async (token) => {
     try {
         const res = await httpRequest.get('invoice/?status=2');
@@ -81,7 +82,7 @@ export const receiveInvoice = async (id, token) => {
 
 export const completeInvoice = async (id, token) => {
     try {
-        const res = await httpRequest.put(`invoice/completeInvoice/${id}`);
+        const res = await httpRequest.put(`invoice/complete/${id}`);
         return res;
     } catch (error) {
         console.log(error);
@@ -89,9 +90,23 @@ export const completeInvoice = async (id, token) => {
     }
 };
 
-export const getAllInvoiceByDate = async (date, token) => {
+export const getAllInvoiceByDateAndStatus = async (fromdate, todate, status) => {
     try {
-        const res = await httpRequest.get(`invoice/getAllInvoiceByDate/${date}`);
+        if (fromdate && todate) {
+            if (status) {
+                const res = await httpRequest.get(`invoice/?fromdate=${fromdate}&todate=${todate}&status=${status}`);
+                return res;
+            } else {
+                const res = await httpRequest.get(`invoice/?fromdate=${fromdate}&todate=${todate}`);
+                return res;
+            }
+        }
+        if (status) {
+            const res = await httpRequest.get(`invoice/?status=${status}`);
+            return res;
+        }
+        const res = await httpRequest.get(`invoice`);
+        console.log('đây');
         return res;
     } catch (error) {
         console.log(error);

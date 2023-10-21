@@ -27,52 +27,47 @@ function Home() {
 
     const localStorageManager = LocalStorageManager.getInstance();
     const getAllInvoice = async () => {
-        const results = await orderService.getAllInvoice();
-        if (results) {
-            setIncompleteOrders(results.invoices);
+        const results1 = await orderService.getAllUnConfirmedInvoice();
+        const results2 = await orderService.getAllConfirmedInvoice();
+        if (results1.data && results2.data) {
+            const results = [...results1.data, ...results2.data];
+            setIncompleteOrders(results);
+            return;
         }
+        if (results1.data) {
+            setIncompleteOrders(results1.data);
+            return;
+        }
+        if (results2.data) {
+            setIncompleteOrders(results2.data);
+            return;
+        }
+        setIncompleteOrders(null);
     };
     const getAllInvoiceInTransit = async () => {
-        const token = localStorageManager.getItem('token');
-        if (token) {
-            const results = await orderService.getAllInvoiceInTransit(token);
-            if (results) {
-                setCompleteOrders(results.invoices);
-            }
+        const results = await orderService.getAllInvoiceInTransit();
+        if (results.data) {
+            setCompleteOrders(results.data);
+            return;
         }
+        setCompleteOrders(null);
     };
     const completeOrder = async (order) => {
-        setShowDetailReceipt(true);
-        setReceiptData(order);
-        const token = localStorageManager.getItem('token');
-        if (token) {
-            const results = await orderService.completeInvoice(order.idInvoice, token);
-            if (results.isSuccess) {
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: 'Đã xác nhận đơn hàng',
-                        title: 'Thành công',
-                    }),
-                );
-            } else {
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: results.message,
-                        title: 'Huỷ đơn',
-                        type: 'info',
-                    }),
-                );
-            }
-        }
+        const results = await orderService.confirmInvoice(order.id);
+        dispatch(
+            actions.setToast({
+                show: true,
+                content: results.message,
+                title: 'Thành công',
+            }),
+        );
         getAllInvoice();
         getAllInvoiceInTransit();
     };
-    const completeShipping = async (idInvoice) => {
+    const completeShipping = async (id) => {
         const token = localStorageManager.getItem('token');
         if (token) {
-            const results = await orderService.completeInvoice(idInvoice, token);
+            const results = await orderService.completeInvoice(id, token);
             if (results.isSuccess) {
                 dispatch(
                     actions.setToast({
@@ -104,13 +99,13 @@ function Home() {
 
         return () => clearInterval(checkOrderInterval);
     }, []);
-    const handleCancelInvoice = async (idInvoice) => {
-        const results = await orderService.cancelInvoice(idInvoice);
-        if (results && results.isCancel) {
+    const handleCancelInvoice = async (id) => {
+        try {
+            const results = await orderService.cancelInvoice(id);
             dispatch(actions.setToast({ show: true, title: 'Hủy đơn', content: results.message }));
             getAllInvoice();
-        } else {
-            dispatch(actions.setToast({ show: true, title: 'Hủy đơn', content: results.message, type: 'info' }));
+        } catch (error) {
+            dispatch(actions.setToast({ show: true, title: 'Hủy đơn', content: error.response.message, type: 'info' }));
         }
     };
     return (
@@ -123,7 +118,7 @@ function Home() {
                             <div className={cx('content-header')}>
                                 <div className={cx('content-title')}>
                                     <HiDocumentMinus className={cx('icon', 'warning')} />
-                                    Đơn hàng chưa hoàn thành
+                                    Đơn hàng chưa xác nhận
                                 </div>
                                 <div className={cx('content-subtitle')}>
                                     {incompleteOrders && incompleteOrders.length} đơn
@@ -135,7 +130,7 @@ function Home() {
                                         <div key={index} className={cx('order-list')}>
                                             <div className={cx('order-header')}>
                                                 <div className={cx('order-title')}>
-                                                    Đơn {order.idInvoice} - {timeGap(order.date)}{' '}
+                                                    Đơn {order.id} - {timeGap(order.date)}{' '}
                                                     <BsInfoCircle
                                                         className={cx('icon')}
                                                         onClick={() => {
@@ -145,7 +140,7 @@ function Home() {
                                                     />
                                                 </div>
                                                 <div className={cx('d-flex', 'align-items-center')}>
-                                                    <Tippy content="Hoàn thành đơn" placement="bottom" duration={0}>
+                                                    <Tippy content="Xác nhận đơn hàng" placement="bottom" duration={0}>
                                                         <div
                                                             onClick={() => completeOrder(order)}
                                                             className={cx('order-item-actions')}
@@ -157,7 +152,7 @@ function Home() {
                                                         <div
                                                             onClick={async () => {
                                                                 if (window.confirm('Xác nhận huỷ đơn này?')) {
-                                                                    await handleCancelInvoice(order.idInvoice);
+                                                                    await handleCancelInvoice(order.id);
                                                                 }
                                                             }}
                                                             style={{ color: 'red' }}
@@ -177,9 +172,8 @@ function Home() {
                                                         </div>
                                                         <div className={cx('order-item-topping')}>
                                                             Topping :{' '}
-                                                            {item.listTopping
-                                                                .map((topping) => topping.name)
-                                                                .join(', ') || 'Không'}
+                                                            {item.toppings.map((topping) => topping.name).join(', ') ||
+                                                                'Không'}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -212,7 +206,7 @@ function Home() {
                                         <div key={index} className={cx('order-list')}>
                                             <div className={cx('order-header')}>
                                                 <div className={cx('order-title')}>
-                                                    Đơn {order.idInvoice} - {timeGap(order.date)}
+                                                    Đơn {order.id} - {timeGap(order.date)}
                                                     <BsInfoCircle
                                                         className={cx('icon')}
                                                         onClick={() => {
@@ -223,7 +217,7 @@ function Home() {
                                                 </div>
                                                 <Tippy content="Hoàn thành giao" placement="bottom" duration={0}>
                                                     <div
-                                                        onClick={() => completeShipping(order.idInvoice)}
+                                                        onClick={() => completeShipping(order.id)}
                                                         className={cx('order-item-actions')}
                                                     >
                                                         <BsClipboardCheckFill />
@@ -239,9 +233,8 @@ function Home() {
                                                         </div>
                                                         <div className={cx('order-item-topping')}>
                                                             Topping :{' '}
-                                                            {item.listTopping
-                                                                .map((topping) => topping.name)
-                                                                .join(', ') || 'Không'}
+                                                            {item.toppings.map((topping) => topping.name).join(', ') ||
+                                                                'Không'}
                                                         </div>
                                                     </div>
                                                 </div>

@@ -28,7 +28,7 @@ function ImportForm({ selectedIngredient, onCloseModal = () => {} }) {
                 selectedIngredient.idIngredient,
                 token,
             );
-            if (results && results.isSuccess) {
+            if (results) {
                 dispatch(
                     actions.setToast({
                         show: true,

@@ -32,7 +32,7 @@ function MenuPage() {
         if (token) {
             setLoading(true);
             const results = await menuService.getMenuByType(idType, token);
-            if (results && results.isSuccess) {
+            if (results) {
                 idType === 1
                     ? setMenuType1(results.menu)
                     : idType === 2
@@ -52,7 +52,7 @@ function MenuPage() {
     }, []);
     const getListToppingByType = async () => {
         const results = await adminService.getListToppingByType();
-        if (results && results.isSuccess) {
+        if (results) {
             setListToppingByType(results.listType);
         }
     };
@@ -63,7 +63,7 @@ function MenuPage() {
         const token = localStorageManage.getItem('token');
         if (token) {
             const results = await menuService.getMenuByType(5, token);
-            if (results && results.isSuccess) {
+            if (results) {
                 setAllTopping(results.menu);
             }
         }

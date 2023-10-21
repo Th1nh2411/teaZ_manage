@@ -12,30 +12,32 @@ import { BsClipboardCheckFill } from 'react-icons/bs';
 import { HiDocumentMinus } from 'react-icons/hi2';
 import { RiEBike2Fill } from 'react-icons/ri';
 import { FaFileInvoiceDollar } from 'react-icons/fa';
+import { Select } from 'antd';
 
 import Tippy from '@tippyjs/react';
 import dayjs from 'dayjs';
 import { DatePicker } from 'antd';
 const cx = classNames.bind(styles);
 
+const { Option } = Select;
+
 function InvoiceList() {
     const [invoices, setInvoices] = useState();
-    const [date, setDate] = useState(dayjs().format('YYYY-MM-DD'));
-    const localStorageManager = LocalStorageManager.getInstance();
+    const [fromdate, setFromdate] = useState(dayjs().format('YYYY-MM-DD'));
+    const [todate, setTodate] = useState(dayjs().format('YYYY-MM-DD'));
+    const [status, setStatus] = useState('');
 
     const getAllInvoiceByDate = async () => {
-        const token = localStorageManager.getItem('token');
-        if (token) {
-            const results = await orderService.getAllInvoiceByDate(date, token);
-            if (results) {
-                setInvoices(results.invoices);
-            }
+        const results = await orderService.getAllInvoiceByDateAndStatus(fromdate, todate, status);
+        console.log(results);
+        if (results) {
+            setInvoices(results.data);
         }
     };
 
     useEffect(() => {
         getAllInvoiceByDate();
-    }, [date]);
+    }, [fromdate, todate, status]);
     return (
         <div className={cx('content-wrapper')}>
             <div className={cx('content-header')}>
@@ -46,11 +48,36 @@ function InvoiceList() {
                 <div>
                     <DatePicker
                         size="large"
-                        value={dayjs(date)}
-                        onChange={(date) => {
-                            if (date) setDate(date.format('YYYY-MM-DD'));
+                        value={dayjs(fromdate)}
+                        onChange={(fromdate) => {
+                            if (fromdate) setFromdate(fromdate.format('YYYY-MM-DD'));
                         }}
                     />
+                </div>
+                <div>
+                    <DatePicker
+                        size="large"
+                        value={dayjs(todate)}
+                        onChange={(todate) => {
+                            if (todate) setTodate(todate.format('YYYY-MM-DD'));
+                        }}
+                    />
+                </div>
+                <div>
+                    Trạng thái hoá đơn
+                    <Select
+                        size="large"
+                        value={status}
+                        onChange={(value) => {
+                            setStatus(value);
+                        }}
+                    >
+                        <Option value="0">Chưa xác nhận</Option>
+                        <Option value="1">Đã xác nhận</Option>
+                        <Option value="2">Đang giao</Option>
+                        <Option value="3">Hoàn thành</Option>
+                        <Option value="4">Đã huỷ</Option>
+                    </Select>
                 </div>
                 <div className={cx('content-subtitle')}>{invoices && invoices.length} đơn</div>
             </div>
@@ -60,7 +87,7 @@ function InvoiceList() {
                         <div key={index} className={cx('order-list')}>
                             <div className={cx('order-header')}>
                                 <div className={cx('order-title')}>
-                                    Đơn {invoice.idInvoice} - {timeGap(invoice.date)}
+                                    Đơn {invoice.id} - {timeGap(invoice.date)}
                                 </div>
 
                                 <div className={cx('order-subtitle')}>Total: {priceFormat(invoice.total)}đ</div>
@@ -74,7 +101,7 @@ function InvoiceList() {
                                         </div>
                                         <div className={cx('order-item-topping')}>
                                             Topping :{' '}
-                                            {item.listTopping.map((topping) => topping.name).join(', ') || 'Không'}
+                                            {item.toppings.map((topping) => topping.name).join(', ') || 'Không'}
                                         </div>
                                     </div>
                                 </div>

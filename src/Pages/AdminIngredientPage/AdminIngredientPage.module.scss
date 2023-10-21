@@ -157,6 +157,27 @@
         border-radius: 10px;
         color: white;
     }
+    .delete-btn {
+        background-color: rgb(199, 41, 67);
+        font-size: 2rem;
+        padding: 5px;
+        border-radius: 10px;
+        color: white;
+    }
+    .delete-btn {
+        display: flex;
+        align-items: center;
+        margin-left: 25px;
+        .ingredient-icon {
+            margin-left: 4px;
+            color: var(--primary-color);
+            font-size: 2.2rem;
+        }
+        &:hover {
+            cursor: pointer;
+            opacity: 0.8;
+        }
+    }
 }
 // Form
 .form-wrapper {

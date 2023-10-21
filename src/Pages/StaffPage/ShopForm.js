@@ -72,7 +72,7 @@ function ShopForm({ data, onCloseModal = () => {} }) {
                 token,
             );
             setLoading(false);
-            if (results && results.isSuccess) {
+            if (results) {
                 dispatch(
                     actions.setToast({
                         show: true,

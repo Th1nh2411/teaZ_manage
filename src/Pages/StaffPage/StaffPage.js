@@ -3,6 +3,7 @@ import classNames from 'classnames/bind';
 import Image from '../../components/Image';
 import Modal from '../../components/Modal';
 import Input from '../../components/Input';
+import dayjs from 'dayjs';
 import { Col, Form, Row } from 'react-bootstrap';
 import { useContext, useEffect, useState } from 'react';
 import { StoreContext, actions } from '../../store';
@@ -31,23 +32,20 @@ function StaffPage() {
     const userRole = localStorageManager.getItem('userInfo').role;
     const [state, dispatch] = useContext(StoreContext);
     const getShopInfo = async () => {
-        const token = localStorageManager.getItem('token');
-        if (token) {
-            setLoading(true);
-            const results = await shopService.getInfoShop(token);
-            if (results) {
-                setShopInfo(results.shop);
-                setActive(results.shop.isActive);
-            }
-            setLoading(false);
+        setLoading(true);
+        const results = await shopService.getInfoShop();
+        if (results) {
+            setShopInfo(results.data);
+            setActive(results.data.isActive);
         }
+        setLoading(false);
     };
 
     const editShopInfo = async (isActive = shopInfo.isActive) => {
         const token = localStorageManager.getItem('token');
         if (token) {
             const results = await shopService.editInfoShop({ isActive }, token);
-            if (results && results.isSuccess) {
+            if (results) {
                 setActive(isActive);
                 dispatch(
                     actions.setToast({
@@ -60,38 +58,32 @@ function StaffPage() {
         }
     };
     const getListStaff = async () => {
-        const token = localStorageManager.getItem('token');
-        if (token) {
-            setLoading(true);
-            const results = await shopService.getListStaff(token);
-            if (results && results.isSuccess) {
-                setListStaff(results.listStaffs);
-            }
-            setLoading(false);
+        setLoading(true);
+        const results = await shopService.getListStaff();
+        if (results) {
+            setListStaff(results.data);
         }
+        setLoading(false);
     };
     const delStaff = async () => {
-        const token = localStorageManager.getItem('token');
-        if (token) {
-            const results = await shopService.deleteStaff(staffData.phone, token);
-            if (results && results.isSuccess) {
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: `Xóa thành công nhân viên ${staffData.name} `,
-                        title: 'Thành công',
-                    }),
-                );
-            } else {
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: results.message,
-                        title: 'Thất bại',
-                        type: 'error',
-                    }),
-                );
-            }
+        const results = await shopService.deleteStaff(staffData.id);
+        if (results) {
+            dispatch(
+                actions.setToast({
+                    show: true,
+                    content: results.message,
+                    title: 'Thành công',
+                }),
+            );
+        } else {
+            dispatch(
+                actions.setToast({
+                    show: true,
+                    content: results.message,
+                    title: 'Thất bại',
+                    type: 'error',
+                }),
+            );
         }
         getListStaff();
     };
@@ -223,7 +215,7 @@ function StaffPage() {
                             <div className={cx('content-header')}>
                                 <div className={cx('content-title')}>
                                     <IoPeopleSharp className={cx('icon')} />
-                                    Danh sách nhân viên của quán
+                                    Danh sách nhân viên
                                 </div>
                                 <div className={cx('content-subtitle', 'd-flex')}>
                                     <ExportFile
@@ -252,7 +244,9 @@ function StaffPage() {
                                             <th>Họ và tên</th>
                                             <th className={cx('text-center')}>Chức danh</th>
                                             <th className={cx('text-center')}>Số điện thoại</th>
-                                            <th className={cx('text-center', 'hidden-mb')}>Tài khoản gmail</th>
+                                            <th className={cx('text-center', 'hidden-mb')}>Giới tính</th>
+                                            <th className={cx('text-center', 'hidden-mb')}>Ngày sinh</th>
+                                            <th className={cx('text-center', 'hidden-mb')}>Ngày vào làm</th>
                                             <th className={cx('text-end')}>Hành động</th>
                                         </tr>
                                     </thead>
@@ -264,19 +258,25 @@ function StaffPage() {
                                                     <td>
                                                         <div
                                                             className={cx('staff-role', {
-                                                                blue: staff.role === 1,
-                                                                yellow: staff.role === 2,
+                                                                blue: staff.role === 2,
+                                                                yellow: staff.role === 1,
                                                             })}
                                                         >
-                                                            {staff.role === 1
+                                                            {staff.role == 1
                                                                 ? 'Nhân viên'
-                                                                : staff.role === 2
-                                                                ? 'Quản lý'
-                                                                : 'Admin'}
+                                                                : staff.role == 2
+                                                                ? 'Admin'
+                                                                : 'Quản lý'}
                                                         </div>
                                                     </td>
                                                     <td className={cx('text-center')}>{staff.phone}</td>
-                                                    <td className={cx('text-center', 'hidden-mb')}>{staff.mail}</td>
+                                                    <td className={cx('text-center', 'hidden-mb')}>{staff.gender}</td>
+                                                    <td className={cx('text-center')}>
+                                                        {dayjs(staff.birthday).format('YYYY-MM-DD')}
+                                                    </td>
+                                                    <td className={cx('text-center')}>
+                                                        {dayjs(staff.hiredate).format('YYYY-MM-DD')}
+                                                    </td>
                                                     <td className={cx('text-end')}>
                                                         <div className={cx('staff-actions')}>
                                                             <Tippy content="Chỉnh sửa" placement="bottom" duration={0}>
@@ -290,19 +290,25 @@ function StaffPage() {
                                                                     <RiEditCircleFill />
                                                                 </div>
                                                             </Tippy>
-                                                            {staff.role < 2 && (
-                                                                <Tippy content="Xóa" placement="bottom" duration={0}>
-                                                                    <div
-                                                                        onClick={() => {
-                                                                            setShowConfirmDelStaff(true);
-                                                                            setStaffData(staff);
-                                                                        }}
-                                                                        className={cx('icon', 'red')}
+                                                            {
+                                                                (staff.role = 2 && (
+                                                                    <Tippy
+                                                                        content="Xóa"
+                                                                        placement="bottom"
+                                                                        duration={0}
                                                                     >
-                                                                        <RiDeleteBin2Fill />
-                                                                    </div>
-                                                                </Tippy>
-                                                            )}
+                                                                        <div
+                                                                            onClick={() => {
+                                                                                setShowConfirmDelStaff(true);
+                                                                                setStaffData(staff);
+                                                                            }}
+                                                                            className={cx('icon', 'red')}
+                                                                        >
+                                                                            <RiDeleteBin2Fill />
+                                                                        </div>
+                                                                    </Tippy>
+                                                                ))
+                                                            }
                                                         </div>
                                                     </td>
                                                 </tr>

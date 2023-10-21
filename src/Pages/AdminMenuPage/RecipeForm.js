@@ -57,7 +57,7 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
                 idType,
             });
             setLoading(false);
-            if (results && results.isSuccess) {
+            if (results) {
                 dispatch(
                     actions.setToast({
                         show: true,
@@ -86,7 +86,7 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
             const res = await adminService.uploadFile(image);
             const results = await adminService.addRecipe(name, res.url, info, price, 100 - discount, idType, token);
             setLoading(false);
-            if (results && results.isSuccess) {
+            if (results) {
                 dispatch(
                     actions.setToast({
                         show: true,

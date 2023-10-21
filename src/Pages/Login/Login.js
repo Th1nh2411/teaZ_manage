@@ -21,12 +21,11 @@ const Login = ({ setAuth }) => {
     const localStorageManage = LocalStorageManager.getInstance();
     const handleSubmit = (event) => {
         event.preventDefault();
-
         const getTokenApi = async () => {
             const results = await authService.login({ phone, password });
-            if (results && results.userInfo && results.userInfo.role && results.userInfo.role !== 0) {
+            console.log(results.userInfo);
+            if (results && results.userInfo && results.userInfo.role !== 0) {
                 const expirationDate = dayjs().add(results.expireTime, 'second');
-                localStorageManage.setItem('token', results.token);
                 localStorageManage.setItem('expireDate', expirationDate.format());
                 localStorageManage.setItem('userInfo', results.userInfo);
                 dispatch(actions.setUserInfo(results.userInfo));
@@ -40,7 +39,7 @@ const Login = ({ setAuth }) => {
                 navigate(config.routes.order);
             } else {
                 setPassword('');
-                setErrorMessage('Password or mail is incorrect');
+                setErrorMessage(results.message);
             }
         };
         getTokenApi();

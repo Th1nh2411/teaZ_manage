@@ -32,7 +32,7 @@ function ListIngredient({ detailRecipe, onUpdateIngredient = () => {} }) {
                 quantity,
                 token,
             );
-            if (results && results.isSuccess) {
+            if (results) {
                 dispatch(
                     actions.setToast({
                         show: true,

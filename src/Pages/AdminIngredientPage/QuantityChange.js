@@ -94,7 +94,7 @@ function QuantityChange() {
         setLoading(true);
         if (token) {
             const results = await reportService.getIngredientReportByDate(date, token, type);
-            if (results && results.isSuccess) {
+            if (results) {
                 setImports(
                     results.imports.map((item) => {
                         return {

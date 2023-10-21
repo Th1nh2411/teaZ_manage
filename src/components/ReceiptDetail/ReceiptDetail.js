@@ -48,7 +48,7 @@ function ReceiptDetail({ data, onCloseModal = () => {} }) {
                         </div>
                     </div>
                     <h2 className={cx('title')}>HOÁ ĐƠN BÁN HÀNG</h2>
-                    <h4>HD{data.idInvoice}</h4>
+                    <h4>HD{data.id}</h4>
                     <div className={cx('body')}>
                         <div className={cx('body-title')}>Các món đã đặt</div>
                         <table>
@@ -69,9 +69,9 @@ function ReceiptDetail({ data, onCloseModal = () => {} }) {
                                                     <div className={cx('product-name')}>
                                                         {item.name}({item.size ? 'L' : 'M'})
                                                     </div>
-                                                    {item.listTopping.length !== 0 && (
+                                                    {item.toppings.length !== 0 && (
                                                         <div className={cx('product-topping')}>
-                                                            {item.listTopping.map((topping) => topping.name).join(', ')}
+                                                            {item.toppings.map((topping) => topping.name).join(', ')}
                                                         </div>
                                                     )}
                                                 </div>
@@ -79,10 +79,10 @@ function ReceiptDetail({ data, onCloseModal = () => {} }) {
 
                                             <td className={cx('text-center')}>{item.quantity}</td>
                                             <td className={cx('text-center')}>
-                                                {priceFormat(item.totalProduct / item.quantity)}đ
+                                                {priceFormat(item.price / item.quantity)}đ
                                             </td>
                                             <td className={cx('text-end', 'product-price')}>
-                                                {priceFormat(item.totalProduct)}đ
+                                                {priceFormat(item.price)}đ
                                             </td>
                                         </tr>
                                     ))}

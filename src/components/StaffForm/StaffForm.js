@@ -26,7 +26,7 @@ function StaffForm({ data, onCloseModal = () => {} }) {
         const token = localStorageManage.getItem('token');
         if (token) {
             const results = await shopService.editStaff(data.idUser, token, phone, mail, nameValue, passwordValue);
-            if (results && results.isSuccess) {
+            if (results) {
                 if (data.role === 2) {
                     const results2 = await authService.refreshToken(mail);
                     if (results2 && results2.isSuccess) {
@@ -56,28 +56,25 @@ function StaffForm({ data, onCloseModal = () => {} }) {
         }
     };
     const addNewStaff = async () => {
-        const token = localStorageManage.getItem('token');
-        if (token) {
-            const results = await shopService.addStaff(phone, mail, nameValue, passwordValue, token);
-            if (results && results.isSuccess) {
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: 'Đăng kí tài khoản nhân viên thành công',
-                        title: 'Thành công',
-                    }),
-                );
-                onCloseModal(true);
-            } else {
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: results.message,
-                        title: 'Thất bại',
-                        type: 'error',
-                    }),
-                );
-            }
+        const results = await shopService.addStaff(phone, mail, nameValue, passwordValue);
+        if (results) {
+            dispatch(
+                actions.setToast({
+                    show: true,
+                    content: 'Đăng kí tài khoản nhân viên thành công',
+                    title: 'Thành công',
+                }),
+            );
+            onCloseModal(true);
+        } else {
+            dispatch(
+                actions.setToast({
+                    show: true,
+                    content: results.message,
+                    title: 'Thất bại',
+                    type: 'error',
+                }),
+            );
         }
     };
     const handleCancelEdit = () => {
