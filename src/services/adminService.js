@@ -1,6 +1,6 @@
 import * as httpRequest from '../utils/httpRequest';
 
-export const getListManager = async (token) => {
+export const getListManager = async () => {
     try {
         const res = await httpRequest.get('admin/getListManager');
         return res;
@@ -20,7 +20,7 @@ export const deleteIngredient = async (id) => {
     }
 };
 
-export const getListShop = async (token) => {
+export const getListShop = async () => {
     try {
         const res = await httpRequest.get('admin/getListShop');
         return res;
@@ -29,7 +29,7 @@ export const getListShop = async (token) => {
         return error.response && error.response.data;
     }
 };
-export const addShop = async (token, address, latitude, longitude, image, isActive) => {
+export const addShop = async (address, latitude, longitude, image, isActive) => {
     const body = {
         address,
         latitude,
@@ -54,7 +54,7 @@ export const editShop = async (body) => {
         return error.response && error.response.data;
     }
 };
-export const getDataForChartByShop = async (idShop, token) => {
+export const getDataForChartByShop = async (idShop) => {
     try {
         const res = await httpRequest.get(`admin/getDataForChart/${idShop}`);
         return res;
@@ -63,7 +63,7 @@ export const getDataForChartByShop = async (idShop, token) => {
         return error.response && error.response.data;
     }
 };
-export const getAllShopDataForChart = async (token) => {
+export const getAllShopDataForChart = async () => {
     try {
         const res = await httpRequest.get(`admin/getAllDataForChart`);
         return res;
@@ -72,7 +72,7 @@ export const getAllShopDataForChart = async (token) => {
         return error.response && error.response.data;
     }
 };
-export const getAllIngredient = async (token) => {
+export const getAllIngredient = async () => {
     try {
         const res = await httpRequest.get(`ingredient`);
         return res;
@@ -101,7 +101,7 @@ export const editIngredient = async (id, body) => {
         return error.response && error.response.data;
     }
 };
-export const getAllRecipe = async (idType, token) => {
+export const getAllRecipe = async (idType) => {
     const config = {
         params: {
             idType,
@@ -116,7 +116,7 @@ export const getAllRecipe = async (idType, token) => {
         return error.response && error.response.data;
     }
 };
-export const getDetailRecipe = async (idRecipe, token) => {
+export const getDetailRecipe = async (idRecipe) => {
     try {
         const res = await httpRequest.get(`admin/getDetailRecipe/${idRecipe}`);
         return res;
@@ -125,7 +125,7 @@ export const getDetailRecipe = async (idRecipe, token) => {
         return error.response && error.response.data;
     }
 };
-export const addRecipe = async (name, image, info, price, discount, idType, token) => {
+export const addRecipe = async (name, image, info, price, discount, idType) => {
     const body = {
         name,
         image,
@@ -142,7 +142,7 @@ export const addRecipe = async (name, image, info, price, discount, idType, toke
         return error.response && error.response.data;
     }
 };
-export const editRecipe = async (idRecipe, token, body) => {
+export const editRecipe = async (idRecipe, body) => {
     try {
         const res = await httpRequest.patch(`admin/editRecipe/${idRecipe}`, body);
         return res;
@@ -151,7 +151,7 @@ export const editRecipe = async (idRecipe, token, body) => {
         return error.response && error.response.data;
     }
 };
-export const editIngredientFromRecipe = async (idRecipe, idIngredient, quantity, token) => {
+export const editIngredientFromRecipe = async (idRecipe, idIngredient, quantity) => {
     const body = {
         idRecipe,
         idIngredient,
@@ -165,16 +165,16 @@ export const editIngredientFromRecipe = async (idRecipe, idIngredient, quantity,
         return error.response && error.response.data;
     }
 };
-export const getListToppingByType = async () => {
+export const getListToppingByType = async (idType) => {
     try {
-        const res = await httpRequest.get(`recipe/type-topping`);
+        const res = await httpRequest.get(`recipe/type-topping/${idType}`);
         return res;
     } catch (error) {
         console.log(error);
         return error.response && error.response.data;
     }
 };
-export const addToppingToType = async (idRecipe, idType, token) => {
+export const addToppingToType = async (idRecipe, idType) => {
     const body = {
         idRecipe,
         idType,
@@ -187,7 +187,7 @@ export const addToppingToType = async (idRecipe, idType, token) => {
         return error.response && error.response.data;
     }
 };
-export const delToppingFromType = async (idRecipe, idType, token) => {
+export const delToppingFromType = async (idRecipe, idType) => {
     const body = {
         idRecipe,
         idType,
@@ -200,9 +200,9 @@ export const delToppingFromType = async (idRecipe, idType, token) => {
         return error.response && error.response.data;
     }
 };
-export const uploadFile = async (my_file, token) => {
+export const uploadFile = async (my_file) => {
     const config = {
-        headers: { access_token: token, 'Content-Type': 'multipart/form-data' },
+        headers: { 'Content-Type': 'multipart/form-data' },
     };
     const body = {
         my_file,

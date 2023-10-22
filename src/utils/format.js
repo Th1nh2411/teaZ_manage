@@ -67,7 +67,7 @@ export function formatNumber(number) {
 }
 export const timeGap = (date) => {
     const today = dayjs();
-    const pastDate = dayjs(date);
+    const pastDate = dayjs(date).subtract(7, 'hours');
     const timeDiff = today.diff(pastDate, 'minutes');
     if (timeDiff < 1) {
         return 'mới đây';
@@ -76,6 +76,6 @@ export const timeGap = (date) => {
     } else if (timeDiff / 60 < 24) {
         return `${Math.floor(timeDiff / 60)} giờ trước `;
     } else {
-        return `${Math.floor(timeDiff / 60 / 24)} ngày trước `;
+        return pastDate.format('HH:mm DD/MM/YYYY');
     }
 };

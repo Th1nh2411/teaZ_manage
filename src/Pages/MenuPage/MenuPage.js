@@ -24,40 +24,51 @@ function MenuPage() {
     const [menuType3, setMenuType3] = useState([]);
     const [menuType4, setMenuType4] = useState([]);
     const [allTopping, setAllTopping] = useState();
-    const [listToppingByType, setListToppingByType] = useState();
+    const [topping1, setTopping1] = useState();
+    const [topping2, setTopping2] = useState();
+    const [topping3, setTopping3] = useState();
+    const [topping4, setTopping4] = useState();
     const getMenuDataByType = async (idType) => {
         setLoading(true);
         const results = await menuService.getMenuByType(idType);
         if (results) {
             idType === 1
-                ? setMenuType1(results.menu)
+                ? setMenuType1(results.data)
                 : idType === 2
-                ? setMenuType2(results.menu)
+                ? setMenuType2(results.data)
                 : idType === 3
-                ? setMenuType3(results.menu)
-                : setMenuType4(results.menu);
+                ? setMenuType3(results.data)
+                : setMenuType4(results.data);
         }
         setLoading(false);
+    };
+    const getListToppingByType = async (idType) => {
+        const results = await adminService.getListToppingByType(idType);
+        if (results) {
+            idType === 1
+                ? setTopping1(results.data)
+                : idType === 2
+                ? setTopping2(results.data)
+                : idType === 3
+                ? setTopping3(results.data)
+                : setTopping4(results.data);
+        }
     };
     useEffect(() => {
         getMenuDataByType(1);
         getMenuDataByType(2);
         getMenuDataByType(3);
         getMenuDataByType(4);
+        getListToppingByType(1);
+        getListToppingByType(2);
+        getListToppingByType(3);
+        getListToppingByType(4);
     }, []);
-    const getListToppingByType = async () => {
-        const results = await adminService.getListToppingByType();
-        if (results) {
-            setListToppingByType(results.listType);
-        }
-    };
-    useEffect(() => {
-        getListToppingByType();
-    }, []);
+
     const getAllTopping = async () => {
         const results = await menuService.getMenuByType(5);
         if (results) {
-            setAllTopping(results.menu);
+            setAllTopping(results.data);
         }
     };
     useEffect(() => {
@@ -77,9 +88,7 @@ function MenuPage() {
                             allTopping={allTopping || []}
                             idType={1}
                             onUpdateTopping={async () => await getListToppingByType()}
-                            topping={
-                                listToppingByType && listToppingByType.find((type) => type.idType === 1).listToppings
-                            }
+                            topping={topping1}
                             titleIcon={<SiBuymeacoffee className={cx('icon')} />}
                             menuData={menuType1}
                             title="Thức uống"
@@ -90,9 +99,7 @@ function MenuPage() {
                             allTopping={allTopping || []}
                             idType={2}
                             onUpdateTopping={async () => await getListToppingByType()}
-                            topping={
-                                listToppingByType && listToppingByType.find((type) => type.idType === 2).listToppings
-                            }
+                            topping={topping2}
                             titleIcon={<GiCoffeeBeans className={cx('icon')} />}
                             menuData={menuType2}
                             title="Cà phê"
@@ -103,9 +110,7 @@ function MenuPage() {
                             allTopping={allTopping || []}
                             idType={3}
                             onUpdateTopping={async () => await getListToppingByType()}
-                            topping={
-                                listToppingByType && listToppingByType.find((type) => type.idType === 3).listToppings
-                            }
+                            topping={topping3}
                             titleIcon={<TbPaperBag className={cx('icon')} />}
                             menuData={menuType3}
                             title="Trà túi"
@@ -116,9 +121,7 @@ function MenuPage() {
                             allTopping={allTopping || []}
                             idType={4}
                             onUpdateTopping={async () => await getListToppingByType()}
-                            topping={
-                                listToppingByType && listToppingByType.find((type) => type.idType === 4).listToppings
-                            }
+                            topping={topping4}
                             titleIcon={<SiCakephp className={cx('icon')} />}
                             menuData={menuType4}
                             title="Bakery"
@@ -171,7 +174,7 @@ function ContentWrapper({ title, titleIcon, menuData, topping }) {
                     }}
                 />
                 <div className={cx('content-subtitle')}>
-                    {tab === 0 ? menu && menu.length : topping && topping.length} món
+                    {(tab === 0 ? menu && menu.length : topping && topping.length) || 0} món
                 </div>
             </div>
             <div className={cx('content-body')}>

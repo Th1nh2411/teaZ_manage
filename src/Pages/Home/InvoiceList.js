@@ -7,27 +7,26 @@ import { useContext, useEffect, useState } from 'react';
 import * as orderService from '../../services/orderService';
 import { StoreContext, actions } from '../../store';
 import { priceFormat, timeGap } from '../../utils/format';
-import { BsClipboardCheckFill } from 'react-icons/bs';
-import { HiDocumentMinus } from 'react-icons/hi2';
-import { RiEBike2Fill } from 'react-icons/ri';
 import { FaFileInvoiceDollar } from 'react-icons/fa';
-import { Select } from 'antd';
-
+import { Badge, Select } from 'antd';
 import Tippy from '@tippyjs/react';
 import dayjs from 'dayjs';
 import { DatePicker } from 'antd';
+const { RangePicker } = DatePicker;
 const cx = classNames.bind(styles);
 
 const { Option } = Select;
 
 function InvoiceList() {
     const [invoices, setInvoices] = useState();
-    const [fromdate, setFromdate] = useState(dayjs().format('YYYY-MM-DD'));
-    const [todate, setTodate] = useState(dayjs().format('YYYY-MM-DD'));
-    const [status, setStatus] = useState('');
+    const [fromdate, setFromdate] = useState(dayjs());
+    const [todate, setTodate] = useState(dayjs());
 
     const getAllInvoiceByDate = async () => {
-        const results = await orderService.getAllInvoiceByDateAndStatus(fromdate, todate, status);
+        const results = await orderService.getAllInvoiceByDateAndStatus(
+            fromdate.format('YYYY-MM-DD'),
+            todate.format('YYYY-MM-DD'),
+        );
         console.log(results);
         if (results) {
             setInvoices(results.data);
@@ -36,7 +35,7 @@ function InvoiceList() {
 
     useEffect(() => {
         getAllInvoiceByDate();
-    }, [fromdate, todate, status]);
+    }, [fromdate, todate]);
     return (
         <div className={cx('content-wrapper')}>
             <div className={cx('content-header')}>
@@ -44,41 +43,19 @@ function InvoiceList() {
                     <FaFileInvoiceDollar className={cx('icon', 'highlight')} />
                     Danh sách hóa đơn
                 </div>
-                <div>
-                    <DatePicker
-                        size="large"
-                        value={dayjs(fromdate)}
-                        onChange={(fromdate) => {
-                            if (fromdate) setFromdate(fromdate.format('YYYY-MM-DD'));
-                        }}
-                    />
-                </div>
-                <div>
-                    <DatePicker
-                        size="large"
-                        value={dayjs(todate)}
-                        onChange={(todate) => {
-                            if (todate) setTodate(todate.format('YYYY-MM-DD'));
-                        }}
-                    />
-                </div>
-                <div>
-                    Trạng thái hoá đơn
-                    <Select
-                        size="large"
-                        value={status}
-                        onChange={(value) => {
-                            setStatus(value);
-                        }}
-                    >
-                        <Option value="0">Chưa xác nhận</Option>
-                        <Option value="1">Đã xác nhận</Option>
-                        <Option value="2">Đang giao</Option>
-                        <Option value="3">Hoàn thành</Option>
-                        <Option value="4">Đã huỷ</Option>
-                    </Select>
-                </div>
-                <div className={cx('content-subtitle')}>{invoices && invoices.length} đơn</div>
+                <RangePicker
+                    disabledDate={(current) => {
+                        return current && current > dayjs().endOf('day');
+                    }}
+                    value={[fromdate, todate]}
+                    size="large"
+                    onChange={(dates) => {
+                        setFromdate(dates[0]);
+                        setTodate(dates[1]);
+                    }}
+                />
+
+                <div className={cx('content-subtitle')}>{invoices ? invoices.length : 0} đơn</div>
             </div>
             <div className={cx('content-body')}>
                 {invoices && invoices.length !== 0 ? (
@@ -91,20 +68,46 @@ function InvoiceList() {
 
                                 <div className={cx('order-subtitle')}>Total: {priceFormat(invoice.total)}đ</div>
                             </div>
-                            {invoice.products.map((item, index) => (
-                                <div key={index} className={cx('order-item-wrapper')}>
-                                    <Image src={item.image} className={cx('order-item-img')} />
-                                    <div className={cx('order-item-info')}>
-                                        <div className={cx('order-item-name')}>
-                                            {item.name}({item.size ? 'L' : 'M'}) x{item.quantity}
-                                        </div>
-                                        <div className={cx('order-item-topping')}>
-                                            Topping :{' '}
-                                            {item.toppings.map((topping) => topping.name).join(', ') || 'Không'}
+                            <Badge
+                                status={
+                                    invoice.status === 0
+                                        ? 'error'
+                                        : invoice.status === 1
+                                        ? 'warning'
+                                        : invoice.status === 2
+                                        ? 'processing'
+                                        : invoice.status === 3
+                                        ? 'success'
+                                        : 'default'
+                                }
+                                text={
+                                    invoice.status === 0
+                                        ? 'Chưa xác nhận'
+                                        : invoice.status === 1
+                                        ? 'Đã xác nhận'
+                                        : invoice.status === 2
+                                        ? 'Đang giao'
+                                        : invoice.status === 3
+                                        ? 'Đã giao'
+                                        : 'Đã huỷ đơn'
+                                }
+                            />
+                            <div style={{ marginTop: 5 }}>
+                                {invoice.products.map((item, index) => (
+                                    <div key={index} className={cx('order-item-wrapper')}>
+                                        <Image src={item.image} className={cx('order-item-img')} />
+                                        <div className={cx('order-item-info')}>
+                                            <div className={cx('order-item-name')}>
+                                                {item.name}({item.size ? 'L' : 'M'}) x{item.quantity}
+                                            </div>
+                                            <div className={cx('order-item-topping')}>
+                                                Topping :{' '}
+                                                {item.toppings.map((topping) => topping.name).join(', ') || 'Không'}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
                         </div>
                     ))
                 ) : (

@@ -85,7 +85,6 @@ function Home() {
             getAllInvoice();
         }
     };
-    console.log(incompleteOrders);
     return (
         <>
             {showDetailReceipt && <ReceiptDetail data={receiptData} onCloseModal={() => setShowDetailReceipt(false)} />}
@@ -99,7 +98,7 @@ function Home() {
                                     Đơn hàng chưa xác nhận
                                 </div>
                                 <div className={cx('content-subtitle')}>
-                                    {incompleteOrders && incompleteOrders.length} đơn
+                                    {incompleteOrders ? incompleteOrders.length : 0} đơn
                                 </div>
                             </div>
                             <div className={cx('content-body')}>
@@ -160,12 +159,17 @@ function Home() {
                                                     )}
                                                 </div>
                                             </div>
+
                                             <Badge
                                                 status={
                                                     order.status === 0
                                                         ? 'error'
                                                         : order.status === 1
+                                                        ? 'warning'
+                                                        : order.status === 2
                                                         ? 'processing'
+                                                        : order.status === 3
+                                                        ? 'success'
                                                         : 'default'
                                                 }
                                                 text={
@@ -173,6 +177,10 @@ function Home() {
                                                         ? 'Chưa xác nhận'
                                                         : order.status === 1
                                                         ? 'Đã xác nhận'
+                                                        : order.status === 2
+                                                        ? 'Đang giao'
+                                                        : order.status === 3
+                                                        ? 'Đã giao'
                                                         : 'Đã huỷ đơn'
                                                 }
                                             />
@@ -215,7 +223,7 @@ function Home() {
                                     Đơn hàng đang giao
                                 </div>
                                 <div className={cx('content-subtitle')}>
-                                    {completeOrders && completeOrders.length} đơn
+                                    {completeOrders ? completeOrders.length : 0} đơn
                                 </div>
                             </div>
                             <div className={cx('content-body')}>

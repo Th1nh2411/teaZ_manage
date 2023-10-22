@@ -49,7 +49,7 @@ function OrderItem({ data = {}, onUpdateRecipe = () => {} }) {
                         }}
                     />
                 )}
-                {data.discount !== 0 && <div className={cx('sale-off')}>-{100 - data.discount}%</div>}
+                {data.discount !== 100 && <div className={cx('sale-off')}>-{100 - data.discount}%</div>}
                 <div className={cx('order-content')}>
                     <div className={cx('order-img-wrapper')}>
                         <Image src={data.image} className={cx('order-img')} />

@@ -20,9 +20,9 @@ function IngredientPage() {
     const getIngredients = async () => {
         setLoading(true);
         const results = await ingredientService.getListIngredient();
-        if (results && results.ingredients) {
-            setDefaultIngredients(results.ingredients.sort((a, b) => a.quantity - b.quantity));
-            setIngredients(results.ingredients.sort((a, b) => a.quantity - b.quantity));
+        if (results) {
+            setDefaultIngredients(results.data.sort((a, b) => a.quantity - b.quantity));
+            setIngredients(results.data.sort((a, b) => a.quantity - b.quantity));
         }
         setLoading(false);
     };
@@ -74,7 +74,7 @@ function IngredientPage() {
                                     />
                                 </div>
                                 <div className={cx('content-subtitle')}>
-                                    {ingredients && ingredients.length} nguyên liệu
+                                    {ingredients ? ingredients.length : 0} nguyên liệu
                                 </div>
                             </div>
                             <div className={cx('content-body')}>

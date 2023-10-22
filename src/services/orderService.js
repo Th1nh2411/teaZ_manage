@@ -92,21 +92,14 @@ export const completeInvoice = async (id) => {
 
 export const getAllInvoiceByDateAndStatus = async (fromdate, todate, status) => {
     try {
-        if (fromdate && todate) {
-            if (status) {
-                const res = await httpRequest.get(`invoice/?fromdate=${fromdate}&todate=${todate}&status=${status}`);
-                return res;
-            } else {
-                const res = await httpRequest.get(`invoice/?fromdate=${fromdate}&todate=${todate}`);
-                return res;
-            }
-        }
-        if (status) {
-            const res = await httpRequest.get(`invoice/?status=${status}`);
-            return res;
-        }
-        const res = await httpRequest.get(`invoice`);
-        console.log('đây');
+        const config = {
+            params: {
+                fromdate,
+                todate,
+                status,
+            },
+        };
+        const res = await httpRequest.get(`invoice`, config);
         return res;
     } catch (error) {
         console.log(error);
