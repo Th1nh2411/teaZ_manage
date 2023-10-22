@@ -11,7 +11,6 @@ import { StoreContext, actions } from '../../store';
 import Tippy from '@tippyjs/react';
 import { GiMilkCarton } from 'react-icons/gi';
 import { BiImport, BiExport, BiEdit, BiTrash } from 'react-icons/bi';
-import LocalStorageManager from '../../utils/LocalStorageManager';
 import Input from '../../components/Input/Input';
 import { ingredientFormat, onlyNumber } from '../../utils/format';
 import IngredientForm from './IngredientForm';
@@ -34,8 +33,7 @@ function AdminIngredientPage() {
     const [showIngredientForm, setShowIngredientForm] = useState();
     const [showImportForm, setShowImportForm] = useState();
     const [showExportForm, setShowExportForm] = useState();
-    const localStorageManage = LocalStorageManager.getInstance();
-    const userRole = localStorageManage.getItem('userInfo').role;
+    const userRole = state.userInfo.role;
     const getIngredients = async () => {
         setLoading(true);
         const results = await adminService.getAllIngredient();

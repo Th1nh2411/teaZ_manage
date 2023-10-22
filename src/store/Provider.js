@@ -2,13 +2,11 @@ import { useEffect, useReducer } from 'react';
 import UserContext from './Context';
 import reducer from './reducer';
 import { actions } from '.';
-import LocalStorageManager from '../utils/LocalStorageManager';
+import Cookies from 'js-cookie';
 
 function Provider({ children }) {
-    const localStorageManager = LocalStorageManager.getInstance();
-
     const initState = {
-        userInfo: null,
+        userInfo: JSON.parse(Cookies.get('userInfo') || null),
         detailItem: { show: false, data: null, editing: false },
         toast: { show: false, content: '', title: '' },
     };

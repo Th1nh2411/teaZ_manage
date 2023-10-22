@@ -11,14 +11,14 @@ import { RiCake3Fill, RiFileList3Fill } from 'react-icons/ri';
 import { GiMilkCarton } from 'react-icons/gi';
 import { AiFillShop } from 'react-icons/ai';
 import images from '../../../assets/images';
-import { useEffect, useRef } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import Tippy from '@tippyjs/react';
-import LocalStorageManager from '../../../utils/LocalStorageManager';
+import { StoreContext } from '../../../store';
 const cx = classNames.bind(styles);
 function SideBar({ className, sideBarShrink }) {
+    const [state, dispatch] = useContext(StoreContext);
     const logoRef = useRef();
-    const localStorageManage = LocalStorageManager.getInstance();
-    const userRole = localStorageManage.getItem('userInfo').role;
+    const userRole = state.userInfo.role;
     useEffect(() => {
         if (logoRef.current) {
             if (sideBarShrink) {

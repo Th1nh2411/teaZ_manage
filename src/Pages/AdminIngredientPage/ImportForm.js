@@ -6,7 +6,6 @@ import { useContext, useEffect, useState } from 'react';
 import * as ingredientService from '../../services/ingredientService';
 import { StoreContext, actions } from '../../store';
 import { BiImport, BiExport } from 'react-icons/bi';
-import LocalStorageManager from '../../utils/LocalStorageManager';
 import Input from '../../components/Input/Input';
 import { ingredientFormat, onlyNumber } from '../../utils/format';
 import { InputNumber } from 'antd';
@@ -16,28 +15,24 @@ function ImportForm({ selectedIngredient, onCloseModal = () => {} }) {
     const [priceValue, setPriceValue] = useState('');
     const [quantityValue, setQuantityValue] = useState(1);
     const [state, dispatch] = useContext(StoreContext);
-    const localStorageManage = LocalStorageManager.getInstance();
 
     const importIngredients = async (e) => {
         e.preventDefault();
-        const token = localStorageManage.getItem('token');
-        if (token) {
-            const results = await ingredientService.importIngredient(
-                priceValue,
-                selectedIngredient.unitName === 'pcs' ? quantityValue : quantityValue * 1000,
-                selectedIngredient.idIngredient,
-                token,
+
+        const results = await ingredientService.importIngredient(
+            priceValue,
+            selectedIngredient.unitName === 'pcs' ? quantityValue : quantityValue * 1000,
+            selectedIngredient.idIngredient,
+        );
+        if (results) {
+            dispatch(
+                actions.setToast({
+                    show: true,
+                    content: 'Đã nhập thêm nguyên liệu',
+                    title: 'Thành công',
+                }),
             );
-            if (results) {
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: 'Đã nhập thêm nguyên liệu',
-                        title: 'Thành công',
-                    }),
-                );
-                onCloseModal(true);
-            }
+            onCloseModal(true);
         }
     };
 

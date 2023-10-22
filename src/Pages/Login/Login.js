@@ -9,8 +9,8 @@ import * as authService from '../../services/authService';
 import Input from '../../components/Input/Input';
 import Card from '../../components/Card/Card';
 import dayjs from 'dayjs';
-import LocalStorageManager from '../../utils/LocalStorageManager';
 import { StoreContext, actions } from '../../store';
+import Cookies from 'js-cookie';
 const cx = classNames.bind(styles);
 const Login = ({ setAuth }) => {
     const navigate = useNavigate();
@@ -18,16 +18,13 @@ const Login = ({ setAuth }) => {
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [state, dispatch] = useContext(StoreContext);
-    const localStorageManage = LocalStorageManager.getInstance();
     const handleSubmit = (event) => {
         event.preventDefault();
         const getTokenApi = async () => {
             const results = await authService.login({ phone, password });
-            console.log(results.userInfo);
             if (results && results.userInfo && results.userInfo.role !== 0) {
                 const expirationDate = dayjs().add(results.expireTime, 'second');
-                localStorageManage.setItem('expireDate', expirationDate.format());
-                localStorageManage.setItem('userInfo', results.userInfo);
+                Cookies.set('userInfo', JSON.stringify(results.userInfo));
                 dispatch(actions.setUserInfo(results.userInfo));
                 dispatch(
                     actions.setToast({

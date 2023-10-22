@@ -7,7 +7,6 @@ import { useContext, useEffect, useState } from 'react';
 import * as menuService from '../../services/menuService';
 import * as adminService from '../../services/adminService';
 import { StoreContext, actions } from '../../store';
-import LocalStorageManager from '../../utils/LocalStorageManager';
 import Tippy from '@tippyjs/react';
 import OrderItem from '../../components/OrderItem/OrderItem';
 import { SiBuymeacoffee, SiCakephp } from 'react-icons/si';
@@ -26,23 +25,19 @@ function MenuPage() {
     const [menuType4, setMenuType4] = useState([]);
     const [allTopping, setAllTopping] = useState();
     const [listToppingByType, setListToppingByType] = useState();
-    const localStorageManage = LocalStorageManager.getInstance();
     const getMenuDataByType = async (idType) => {
-        const token = localStorageManage.getItem('token');
-        if (token) {
-            setLoading(true);
-            const results = await menuService.getMenuByType(idType, token);
-            if (results) {
-                idType === 1
-                    ? setMenuType1(results.menu)
-                    : idType === 2
-                    ? setMenuType2(results.menu)
-                    : idType === 3
-                    ? setMenuType3(results.menu)
-                    : setMenuType4(results.menu);
-            }
-            setLoading(false);
+        setLoading(true);
+        const results = await menuService.getMenuByType(idType);
+        if (results) {
+            idType === 1
+                ? setMenuType1(results.menu)
+                : idType === 2
+                ? setMenuType2(results.menu)
+                : idType === 3
+                ? setMenuType3(results.menu)
+                : setMenuType4(results.menu);
         }
+        setLoading(false);
     };
     useEffect(() => {
         getMenuDataByType(1);
@@ -60,12 +55,9 @@ function MenuPage() {
         getListToppingByType();
     }, []);
     const getAllTopping = async () => {
-        const token = localStorageManage.getItem('token');
-        if (token) {
-            const results = await menuService.getMenuByType(5, token);
-            if (results) {
-                setAllTopping(results.menu);
-            }
+        const results = await menuService.getMenuByType(5);
+        if (results) {
+            setAllTopping(results.menu);
         }
     };
     useEffect(() => {

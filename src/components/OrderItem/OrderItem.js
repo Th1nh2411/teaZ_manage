@@ -7,7 +7,6 @@ import Button from '../Button';
 import { Col, Form } from 'react-bootstrap';
 import { MdOutlineAddShoppingCart } from 'react-icons/md';
 import { useContext, useEffect, useState } from 'react';
-import LocalStorageManager from '../../utils/LocalStorageManager';
 import * as adminService from '../../services/adminService';
 import Tippy from '@tippyjs/react';
 import { MdOutlineInfo } from 'react-icons/md';
@@ -18,15 +17,12 @@ import DetailForm from './DetailForm';
 const cx = classNames.bind(styles);
 
 function OrderItem({ data = {}, onUpdateRecipe = () => {} }) {
+    const [state, dispatch] = useContext(StoreContext);
     const [active, setActive] = useState(data.isActive);
     const [showEditForm, setShowEditForm] = useState();
-    const localStorageManage = LocalStorageManager.getInstance();
-    const userRole = localStorageManage.getItem('userInfo').role;
+    const userRole = state.userInfo.role;
     const editMenuItem = async (activeValue = active) => {
-        const token = localStorageManage.getItem('token');
-        if (token) {
-            const results = await adminService.editRecipe(data.idRecipe, token, { isActive: activeValue });
-        }
+        const results = await adminService.editRecipe(data.idRecipe, { isActive: activeValue });
     };
 
     const handleCheckBoxActive = (e) => {

@@ -7,7 +7,6 @@ import Button from '../../components/Button';
 import { Col, Form, Row } from 'react-bootstrap';
 import { MdOutlineAddShoppingCart } from 'react-icons/md';
 import { useContext, useEffect, useState } from 'react';
-import LocalStorageManager from '../../utils/LocalStorageManager';
 import * as adminService from '../../services/adminService';
 import Tippy from '@tippyjs/react';
 import { MdOutlineInfo } from 'react-icons/md';
@@ -22,41 +21,29 @@ function ListIngredient({ detailRecipe, onUpdateIngredient = () => {} }) {
     const [showAllIngredient, setShowAllIngredient] = useState();
     const [allIngredient, setAllIngredient] = useState();
     const [state, dispatch] = useContext(StoreContext);
-    const localStorageManage = LocalStorageManager.getInstance();
     const updateIngredientQuantity = async (idIngredient, quantity) => {
-        const token = localStorageManage.getItem('token');
-        if (token) {
-            const results = await adminService.editIngredientFromRecipe(
-                detailRecipe.idRecipe,
-                idIngredient,
-                quantity,
-                token,
+        const results = await adminService.editIngredientFromRecipe(detailRecipe.idRecipe, idIngredient, quantity);
+        if (results) {
+            dispatch(
+                actions.setToast({
+                    show: true,
+                    content: 'Cập nhật thành công',
+                    title: 'Thành công',
+                }),
             );
-            if (results) {
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: 'Cập nhật thành công',
-                        title: 'Thành công',
-                    }),
-                );
-            }
         }
     };
     const getIngredients = async () => {
-        const token = localStorageManage.getItem('token');
-        if (token) {
-            const results = await adminService.getAllIngredient(token);
-            if (results && results.listIngredient) {
-                setAllIngredient(
-                    results.listIngredient.filter(
-                        (item) =>
-                            !detailRecipe.ingredients.some(
-                                (ingredientRecipe) => ingredientRecipe.idIngredient === item.idIngredient,
-                            ),
-                    ),
-                );
-            }
+        const results = await adminService.getAllIngredient();
+        if (results && results.listIngredient) {
+            setAllIngredient(
+                results.listIngredient.filter(
+                    (item) =>
+                        !detailRecipe.ingredients.some(
+                            (ingredientRecipe) => ingredientRecipe.idIngredient === item.idIngredient,
+                        ),
+                ),
+            );
         }
     };
     return (

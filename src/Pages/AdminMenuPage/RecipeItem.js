@@ -2,27 +2,24 @@ import styles from './AdminMenuPage.module.scss';
 import classNames from 'classnames/bind';
 import Image from '../../components/Image';
 import { Col, Form } from 'react-bootstrap';
-import { useEffect, useState } from 'react';
-import LocalStorageManager from '../../utils/LocalStorageManager';
+import { useContext, useEffect, useState } from 'react';
 import * as adminService from '../../services/adminService';
 import Tippy from '@tippyjs/react';
 import { MdOutlineInfo } from 'react-icons/md';
 import { priceFormat } from '../../utils/format';
 import RecipeForm from './RecipeForm';
+import { StoreContext } from '../../store';
 const cx = classNames.bind(styles);
 
 function RecipeItem({ data = {}, onClickEditRecipe = () => {} }) {
+    const [state, dispatch] = useContext(StoreContext);
     const [active, setActive] = useState(data.isActive);
     useEffect(() => {
         setActive(data.isActive);
     }, [data]);
-    const localStorageManage = LocalStorageManager.getInstance();
-    const userRole = localStorageManage.getItem('userInfo').role;
+    const userRole = state.userInfo.role;
     const editMenuItem = async (activeValue) => {
-        const token = localStorageManage.getItem('token');
-        if (token) {
-            const results = await adminService.editRecipe(data.idRecipe, token, { isActive: activeValue });
-        }
+        const results = await adminService.editRecipe(data.idRecipe, { isActive: activeValue });
     };
 
     const handleCheckBoxActive = (e) => {

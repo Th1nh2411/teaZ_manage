@@ -6,7 +6,6 @@ import Button from '../Button';
 import { Col, Form, Row } from 'react-bootstrap';
 import { MdOutlineAddShoppingCart } from 'react-icons/md';
 import { useContext, useEffect, useState } from 'react';
-import LocalStorageManager from '../../utils/LocalStorageManager';
 import * as adminService from '../../services/adminService';
 import Tippy from '@tippyjs/react';
 import { MdOutlineInfo } from 'react-icons/md';

@@ -5,7 +5,6 @@ import { Line } from 'react-chartjs-2';
 import dayjs from 'dayjs';
 import { Chart, registerables } from 'chart.js';
 import { formatNumber, formatPrice } from '../../utils/format';
-import LocalStorageManager from '../../utils/LocalStorageManager';
 import * as reportService from '../../services/reportService';
 Chart.register(...registerables);
 
@@ -15,17 +14,13 @@ const ProfitTracker = ({ className }) => {
     const [allProfit, setAllProfit] = useState([]);
     const [allImport, setAllImport] = useState([]);
     const [monthIndex, setMonthIndex] = useState([]);
-    const localStorageManager = LocalStorageManager.getInstance();
 
     const getAllReport = async () => {
-        const token = localStorageManager.getItem('token');
-        if (token) {
-            const results = await reportService.get6PrevMonthReport(token);
-            if (results && results.listTotalAndTotalAmountImport) {
-                setAllProfit(results.listTotalAndTotalAmountImport.map((item) => item.total));
-                setAllImport(results.listTotalAndTotalAmountImport.map((item) => item.totalAmountImport));
-                setMonthIndex(results.listTotalAndTotalAmountImport.map((item) => item.month));
-            }
+        const results = await reportService.get6PrevMonthReport();
+        if (results && results.listTotalAndTotalAmountImport) {
+            setAllProfit(results.listTotalAndTotalAmountImport.map((item) => item.total));
+            setAllImport(results.listTotalAndTotalAmountImport.map((item) => item.totalAmountImport));
+            setMonthIndex(results.listTotalAndTotalAmountImport.map((item) => item.month));
         }
     };
     useEffect(() => {

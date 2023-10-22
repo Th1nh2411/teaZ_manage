@@ -6,7 +6,6 @@ import { Col, Row } from 'react-bootstrap';
 import { useContext, useEffect, useState } from 'react';
 import * as reportService from '../../services/reportService';
 import { StoreContext, actions } from '../../store';
-import LocalStorageManager from '../../utils/LocalStorageManager';
 import { formatNumber, formatPrice, priceFormat, timeGap } from '../../utils/format';
 
 import Tippy from '@tippyjs/react';
@@ -38,21 +37,16 @@ function ReportPage() {
     const [type, setType] = useState(2);
 
     const [loading, setLoading] = useState(false);
-    const localStorageManager = LocalStorageManager.getInstance();
     const getReport = async () => {
-        const token = localStorageManager.getItem('token');
-        if (token) {
-            setLoading(true);
-            const results = await reportService.getReportByDate(
-                date,
-                token,
-                10,
-                type === 1 ? 'day' : type === 2 ? 'month' : 'year',
-            );
-            setLoading(false);
-            if (results) {
-                setReports(results);
-            }
+        setLoading(true);
+        const results = await reportService.getReportByDate(
+            date,
+            10,
+            type === 1 ? 'day' : type === 2 ? 'month' : 'year',
+        );
+        setLoading(false);
+        if (results) {
+            setReports(results);
         }
     };
     useEffect(() => {

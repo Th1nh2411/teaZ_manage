@@ -6,7 +6,6 @@ import { useContext, useEffect, useState } from 'react';
 import * as ingredientService from '../../services/ingredientService';
 import { StoreContext, actions } from '../../store';
 import { BiImport, BiExport } from 'react-icons/bi';
-import LocalStorageManager from '../../utils/LocalStorageManager';
 import Input from '../../components/Input/Input';
 import { onlyNumber } from '../../utils/format';
 import { InputNumber, Select } from 'antd';
@@ -16,28 +15,24 @@ function ExportForm({ selectedIngredient, onCloseModal = () => {} }) {
     const [infoValue, setInfoValue] = useState('Hết HSD');
     const [quantityValue, setQuantityValue] = useState(1);
     const [state, dispatch] = useContext(StoreContext);
-    const localStorageManage = LocalStorageManager.getInstance();
 
     const importIngredients = async (e) => {
         e.preventDefault();
-        const token = localStorageManage.getItem('token');
-        if (token) {
-            const results = await ingredientService.exportIngredient(
-                infoValue,
-                selectedIngredient.unitName === 'pcs' ? quantityValue : quantityValue * 1000,
-                selectedIngredient.idIngredient,
-                token,
+
+        const results = await ingredientService.exportIngredient(
+            infoValue,
+            selectedIngredient.unitName === 'pcs' ? quantityValue : quantityValue * 1000,
+            selectedIngredient.idIngredient,
+        );
+        if (results) {
+            dispatch(
+                actions.setToast({
+                    show: true,
+                    content: 'Xuất nguyên liệu thành công',
+                    title: 'Thành công',
+                }),
             );
-            if (results) {
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: 'Xuất nguyên liệu thành công',
-                        title: 'Thành công',
-                    }),
-                );
-                onCloseModal(true);
-            }
+            onCloseModal(true);
         }
     };
 

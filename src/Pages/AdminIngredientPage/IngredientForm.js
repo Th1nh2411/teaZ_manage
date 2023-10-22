@@ -6,7 +6,6 @@ import { useContext, useEffect, useState } from 'react';
 import * as adminService from '../../services/adminService';
 import { StoreContext, actions } from '../../store';
 import { BiImport, BiExport, BiUpload } from 'react-icons/bi';
-import LocalStorageManager from '../../utils/LocalStorageManager';
 import Input from '../../components/Input/Input';
 import { onlyNumber } from '../../utils/format';
 import { Upload, Button, message, Select } from 'antd';
@@ -22,8 +21,6 @@ function IngredientForm({ data, onCloseModal = () => {} }) {
     const [valueChange, setValueChange] = useState(false);
     const [loading, setLoading] = useState(false);
     const [state, dispatch] = useContext(StoreContext);
-    const localStorageManage = LocalStorageManager.getInstance();
-    const userRole = localStorageManage.getItem('userInfo').role;
     const editIngredient = async () => {
         setLoading(true);
         const res = await adminService.uploadFile(imageValue);

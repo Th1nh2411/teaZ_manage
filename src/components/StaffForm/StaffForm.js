@@ -5,58 +5,43 @@ import Input from '../Input';
 import Button from '../Button';
 import { Col, Form, Row } from 'react-bootstrap';
 import { useContext, useEffect, useState } from 'react';
-import LocalStorageManager from '../../utils/LocalStorageManager';
 import * as shopService from '../../services/shopService';
 import * as authService from '../../services/authService';
 import { onlyNumber, priceFormat } from '../../utils/format';
 import { StoreContext, actions } from '../../store';
+import Cookies from 'js-cookie';
 
 const cx = classNames.bind(styles);
 
 function StaffForm({ data, onCloseModal = () => {} }) {
-    const [nameValue, setNameValue] = useState(data ? data.name : '');
+    const [name, setNameValue] = useState(data ? data.name : '');
     const [phone, setPhoneValue] = useState(data ? data.phone : '');
-    const [mail, setMailValue] = useState(data ? data.mail : '');
-    const [passwordValue, setPasswordValue] = useState('');
+    const [password, setPasswordValue] = useState('');
     const [valueChange, setValueChange] = useState(false);
     const [state, dispatch] = useContext(StoreContext);
-    const localStorageManage = LocalStorageManager.getInstance();
-    const userRole = localStorageManage.getItem('userInfo').role;
+    const userRole = state.userInfo.role;
     const editStaff = async () => {
-        const token = localStorageManage.getItem('token');
-        if (token) {
-            const results = await shopService.editStaff(data.idUser, token, phone, mail, nameValue, passwordValue);
-            if (results) {
-                if (data.role === 2) {
-                    const results2 = await authService.refreshToken(mail);
-                    if (results2 && results2.isSuccess) {
-                        localStorageManage.setItem('token', results2.token);
-                        localStorageManage.setItem('userInfo', results2.userInfo);
-                        dispatch(actions.setUserInfo(results2.userInfo));
-                    }
+        const results = await shopService.editStaff(data.idUser, { phone, name, password });
+        if (results) {
+            if (data.role === 2) {
+                const results2 = await authService.refreshToken(phone);
+                if (results2) {
+                    Cookies.set('userInfo', JSON.stringify(results.userInfo));
+                    dispatch(actions.setUserInfo(results2.userInfo));
                 }
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: 'Cập nhật thông tin nhân viên thành công',
-                        title: 'Thành công',
-                    }),
-                );
-                onCloseModal(true);
-            } else {
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: results.message,
-                        title: 'Thất bại',
-                        type: 'error',
-                    }),
-                );
             }
+            dispatch(
+                actions.setToast({
+                    show: true,
+                    content: 'Cập nhật thông tin nhân viên thành công',
+                    title: 'Thành công',
+                }),
+            );
+            onCloseModal(true);
         }
     };
     const addNewStaff = async () => {
-        const results = await shopService.addStaff(phone, mail, nameValue, passwordValue);
+        const results = await shopService.addStaff(phone, name, password);
         if (results) {
             dispatch(
                 actions.setToast({
@@ -66,26 +51,15 @@ function StaffForm({ data, onCloseModal = () => {} }) {
                 }),
             );
             onCloseModal(true);
-        } else {
-            dispatch(
-                actions.setToast({
-                    show: true,
-                    content: results.message,
-                    title: 'Thất bại',
-                    type: 'error',
-                }),
-            );
         }
     };
     const handleCancelEdit = () => {
         if (data) {
             setNameValue(data.name);
             setPhoneValue(data.phone);
-            setMailValue(data.mail);
         } else {
             setNameValue('');
             setPhoneValue('');
-            setMailValue('');
         }
         setPasswordValue('');
     };
@@ -100,13 +74,13 @@ function StaffForm({ data, onCloseModal = () => {} }) {
 
     useEffect(() => {
         if (data) {
-            if (data.name !== nameValue || data.phone !== phone || data.mail !== mail || passwordValue !== '') {
+            if (data.name !== name || data.phone !== phone || password !== '') {
                 setValueChange(true);
             } else {
                 setValueChange(false);
             }
         }
-    }, [nameValue, phone, passwordValue, mail]);
+    }, [name, phone, password]);
     return (
         <Modal
             handleClickOutside={() => {
@@ -125,21 +99,11 @@ function StaffForm({ data, onCloseModal = () => {} }) {
                             setNameValue(event.target.value);
                             setValueChange(true);
                         }}
-                        value={nameValue}
+                        value={name}
                         title="Tên nhân viên"
                         type="text"
                     />
 
-                    <Input
-                        className={cx('price-input')}
-                        onChange={(event) => {
-                            setMailValue(event.target.value);
-                            setValueChange(true);
-                        }}
-                        value={mail}
-                        title="Tài khoản gmail"
-                        type="email"
-                    />
                     <div className={cx('item-price-wrapper')}>
                         <Input
                             className={cx('price-input')}
@@ -160,7 +124,7 @@ function StaffForm({ data, onCloseModal = () => {} }) {
                                 setPasswordValue(event.target.value);
                                 setValueChange(true);
                             }}
-                            value={passwordValue}
+                            value={password}
                             title="Mật khẩu mới"
                             type="text"
                         />

@@ -4,7 +4,6 @@ import DefaultLayout from './layout/DefaultLayout';
 import { Fragment, useEffect, useState } from 'react';
 import config from './config';
 import dayjs from 'dayjs';
-import LocalStorageManager from './utils/LocalStorageManager';
 
 function App() {
     const titles = {
@@ -20,7 +19,6 @@ function App() {
     };
     const location = useLocation();
     const navigate = useNavigate();
-    const localStorageManage = LocalStorageManager.getInstance();
     useEffect(() => {
         const expireDate = dayjs(localStorage.getItem('expireDate'));
         if (dayjs().isAfter(expireDate)) {
@@ -47,13 +45,9 @@ function App() {
                             key={index}
                             path={route.path}
                             element={
-                                localStorageManage.getItem('userInfo') ? (
-                                    <Layout>
-                                        <Element />
-                                    </Layout>
-                                ) : (
-                                    <Navigate to={config.routes.login} replace />
-                                )
+                                <Layout>
+                                    <Element />
+                                </Layout>
                             }
                         />
                     );

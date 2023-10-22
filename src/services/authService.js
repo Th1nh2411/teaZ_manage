@@ -1,6 +1,6 @@
 import * as httpRequest from '../utils/httpRequest';
 
-export const login = async (data = {}, token) => {
+export const login = async (data = {}) => {
     try {
         const res = await httpRequest.post('auth/login', data);
         return res;

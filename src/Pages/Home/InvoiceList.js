@@ -6,7 +6,6 @@ import { Col, Row } from 'react-bootstrap';
 import { useContext, useEffect, useState } from 'react';
 import * as orderService from '../../services/orderService';
 import { StoreContext, actions } from '../../store';
-import LocalStorageManager from '../../utils/LocalStorageManager';
 import { priceFormat, timeGap } from '../../utils/format';
 import { BsClipboardCheckFill } from 'react-icons/bs';
 import { HiDocumentMinus } from 'react-icons/hi2';

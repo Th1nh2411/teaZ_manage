@@ -4,7 +4,6 @@ import Image from '../../components/Image';
 import images from '../../assets/images';
 import { useContext, useEffect, useState } from 'react';
 import * as reportService from '../../services/reportService';
-import LocalStorageManager from '../../utils/LocalStorageManager';
 import { priceFormat, timeGap } from '../../utils/format';
 import { FaFileInvoiceDollar } from 'react-icons/fa';
 
@@ -87,45 +86,41 @@ function QuantityChange() {
     const [exports, setExports] = useState([]);
     const [type, setType] = useState('day');
     const [date, setDate] = useState(dayjs().format('YYYY-MM-DD'));
-    const localStorageManager = LocalStorageManager.getInstance();
 
     const getIngredientReport = async () => {
-        const token = localStorageManager.getItem('token');
         setLoading(true);
-        if (token) {
-            const results = await reportService.getIngredientReportByDate(date, token, type);
-            if (results) {
-                setImports(
-                    results.imports.map((item) => {
-                        return {
-                            ...item,
-                            quantity:
-                                item.unitName === 'g' || item.unitName === 'ml' ? item.quantity / 1000 : item.quantity,
-                            unitName: item.unitName === 'g' ? 'kg' : item.unitName === 'ml' ? 'lít' : 'pcs',
-                            total: priceFormat(item.total) + 'đ',
-                            date: item.date,
-                        };
-                    }),
-                );
-                setExports(
-                    results.exportsWithoutBH.map((item) => {
-                        return {
-                            ...item,
-                            quantity: item.quantity / 1000,
-                            unitName: item.unitName === 'g' ? 'kg' : item.unitName === 'ml' ? 'lít' : 'pcs',
-                            date: item.date,
-                        };
-                    }),
-                );
-                setExportsFromBH(
-                    results.exportsBH.map((item) => {
-                        return {
-                            ...item,
-                            date: item.date,
-                        };
-                    }),
-                );
-            }
+        const results = await reportService.getIngredientReportByDate(date, type);
+        if (results) {
+            setImports(
+                results.imports.map((item) => {
+                    return {
+                        ...item,
+                        quantity:
+                            item.unitName === 'g' || item.unitName === 'ml' ? item.quantity / 1000 : item.quantity,
+                        unitName: item.unitName === 'g' ? 'kg' : item.unitName === 'ml' ? 'lít' : 'pcs',
+                        total: priceFormat(item.total) + 'đ',
+                        date: item.date,
+                    };
+                }),
+            );
+            setExports(
+                results.exportsWithoutBH.map((item) => {
+                    return {
+                        ...item,
+                        quantity: item.quantity / 1000,
+                        unitName: item.unitName === 'g' ? 'kg' : item.unitName === 'ml' ? 'lít' : 'pcs',
+                        date: item.date,
+                    };
+                }),
+            );
+            setExportsFromBH(
+                results.exportsBH.map((item) => {
+                    return {
+                        ...item,
+                        date: item.date,
+                    };
+                }),
+            );
         }
         setLoading(false);
     };

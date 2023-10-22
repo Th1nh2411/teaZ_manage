@@ -24,7 +24,6 @@ function ManagerForm({ data, onCloseModal = () => {}, listShop }) {
     const [state, dispatch] = useContext(StoreContext);
     const localStorageManage = LocalStorageManager.getInstance();
     const editManager = async (activeValue) => {
-        const token = localStorageManage.getItem('token');
         if (token) {
             const results = await adminService.editManager(
                 data.idStaff,
@@ -47,7 +46,6 @@ function ManagerForm({ data, onCloseModal = () => {}, listShop }) {
         }
     };
     const addNewManager = async (activeValue) => {
-        const token = localStorageManage.getItem('token');
         if (token) {
             const results = await adminService.addManager(idShop, phoneValue, passwordValue, nameValue, token);
             if (results) {

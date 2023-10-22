@@ -7,7 +7,6 @@ import { useContext, useEffect, useState } from 'react';
 import * as adminService from '../../services/adminService';
 import * as menuService from '../../services/menuService';
 import { StoreContext, actions } from '../../store';
-import LocalStorageManager from '../../utils/LocalStorageManager';
 import HeadlessTippy from '@tippyjs/react/headless';
 import RecipeItem from './RecipeItem';
 import { RiAddCircleFill, RiCloseCircleFill } from 'react-icons/ri';
@@ -194,7 +193,6 @@ function ContentWrapper({
     const [tab, setTab] = useState(0);
     const [menu, setMenu] = useState(menuData || []);
     const [searchValue, setSearchValue] = useState('');
-    const localStorageManage = LocalStorageManager.getInstance();
     const [showAllTopping, setShowAllTopping] = useState(false);
     useEffect(() => {
         setMenu(menuData);
@@ -204,19 +202,13 @@ function ContentWrapper({
         topping &&
         allTopping.filter((item) => !topping.some((item2) => item2.idRecipe === item.idRecipe));
     const addToppingToType = async (idRecipe) => {
-        const token = localStorageManage.getItem('token');
-        if (token) {
-            const results = await adminService.addToppingToType(idRecipe, idType, token);
-            if (results) {
-            }
+        const results = await adminService.addToppingToType(idRecipe, idType);
+        if (results) {
         }
     };
     const deleteToppingFromType = async (idRecipe) => {
-        const token = localStorageManage.getItem('token');
-        if (token) {
-            const results = await adminService.delToppingFromType(idRecipe, idType, token);
-            if (results) {
-            }
+        const results = await adminService.delToppingFromType(idRecipe, idType);
+        if (results) {
         }
     };
     return (

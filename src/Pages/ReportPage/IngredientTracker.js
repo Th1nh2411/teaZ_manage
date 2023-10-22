@@ -5,7 +5,6 @@ import { Bar, Line } from 'react-chartjs-2';
 import dayjs from 'dayjs';
 import { Chart, registerables } from 'chart.js';
 import { formatNumber } from '../../utils/format';
-import LocalStorageManager from '../../utils/LocalStorageManager';
 import * as reportService from '../../services/reportService';
 Chart.register(...registerables);
 
@@ -14,20 +13,15 @@ const IngredientTracker = ({ className, date, type }) => {
     const [imports, setImports] = useState();
     const [exportsFromBH, setExportsFromBH] = useState();
     const [exports, setExports] = useState();
-    const localStorageManager = LocalStorageManager.getInstance();
     const getIngredientReport = async () => {
-        const token = localStorageManager.getItem('token');
-        if (token) {
-            const results = await reportService.getIngredientReportByDate(
-                date,
-                token,
-                type === 1 ? 'day' : type === 2 ? 'month' : 'year',
-            );
-            if (results) {
-                setImports(results.imports);
-                setExportsFromBH(results.exportsBH);
-                setExports(results.exportsWithoutBH);
-            }
+        const results = await reportService.getIngredientReportByDate(
+            date,
+            type === 1 ? 'day' : type === 2 ? 'month' : 'year',
+        );
+        if (results) {
+            setImports(results.imports);
+            setExportsFromBH(results.exportsBH);
+            setExports(results.exportsWithoutBH);
         }
     };
     useEffect(() => {

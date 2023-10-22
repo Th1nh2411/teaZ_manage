@@ -7,7 +7,6 @@ import dayjs from 'dayjs';
 import { Col, Form, Row } from 'react-bootstrap';
 import { useContext, useEffect, useState } from 'react';
 import { StoreContext, actions } from '../../store';
-import LocalStorageManager from '../../utils/LocalStorageManager';
 import * as shopService from '../../services/shopService';
 import { BsShop } from 'react-icons/bs';
 import { RiDeleteBin2Fill, RiEditCircleFill, RiImageAddFill, RiAddCircleFill } from 'react-icons/ri';
@@ -28,9 +27,8 @@ function StaffPage() {
     const [staffData, setStaffData] = useState();
     const [showConfirmDelStaff, setShowConfirmDelStaff] = useState();
     const [showShopForm, setShowShopForm] = useState();
-    const localStorageManager = LocalStorageManager.getInstance();
-    const userRole = localStorageManager.getItem('userInfo').role;
     const [state, dispatch] = useContext(StoreContext);
+    const userRole = state.userInfo.role;
     const getShopInfo = async () => {
         setLoading(true);
         const results = await shopService.getInfoShop();
@@ -42,19 +40,16 @@ function StaffPage() {
     };
 
     const editShopInfo = async (isActive = shopInfo.isActive) => {
-        const token = localStorageManager.getItem('token');
-        if (token) {
-            const results = await shopService.editInfoShop({ isActive }, token);
-            if (results) {
-                setActive(isActive);
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: 'Cập nhật thông tin cửa hàng thành công',
-                        title: 'Thành công',
-                    }),
-                );
-            }
+        const results = await shopService.editInfoShop({ isActive });
+        if (results) {
+            setActive(isActive);
+            dispatch(
+                actions.setToast({
+                    show: true,
+                    content: 'Cập nhật thông tin cửa hàng thành công',
+                    title: 'Thành công',
+                }),
+            );
         }
     };
     const getListStaff = async () => {
@@ -73,15 +68,6 @@ function StaffPage() {
                     show: true,
                     content: results.message,
                     title: 'Thành công',
-                }),
-            );
-        } else {
-            dispatch(
-                actions.setToast({
-                    show: true,
-                    content: results.message,
-                    title: 'Thất bại',
-                    type: 'error',
                 }),
             );
         }

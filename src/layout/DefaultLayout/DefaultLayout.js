@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 import styles from './DefaultLayout.module.scss';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import LocalStorageManager from '../../utils/LocalStorageManager';
 import { StoreContext, actions } from '../../store';
 import Toast from '../../components/Toast/Toast';
 import config from '../../config';
@@ -11,16 +10,12 @@ import SideBar from '../components/SideBar';
 import Header from '../components/Header/Header';
 const cx = classNames.bind(styles);
 function DefaultLayout({ children }) {
-    const localStorageManager = LocalStorageManager.getInstance();
     const [state, dispatch] = useContext(StoreContext);
     const [sideBarShrink, setSideBarShrink] = useState(false);
     const [mobileMode, setMobileMode] = useState(false);
     const currentPath = useLocation().pathname;
     const root_theme = document.querySelector(':root');
-    const setStorageData = () => {
-        const userData = localStorageManager.getItem('userInfo');
-        dispatch(actions.setUserInfo(userData));
-    };
+
     const handleToggleSideBar = () => {
         setSideBarShrink(!sideBarShrink);
     };
@@ -36,7 +31,6 @@ function DefaultLayout({ children }) {
         }
     }, [sideBarShrink, mobileMode]);
     useEffect(() => {
-        setStorageData();
         function updateSize() {
             if (window.innerWidth < 892) {
                 // setSideBarShrink(true);

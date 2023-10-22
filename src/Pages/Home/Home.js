@@ -6,7 +6,6 @@ import { Col, Row } from 'react-bootstrap';
 import { useContext, useEffect, useState } from 'react';
 import * as orderService from '../../services/orderService';
 import { StoreContext, actions } from '../../store';
-import LocalStorageManager from '../../utils/LocalStorageManager';
 import { timeGap } from '../../utils/format';
 import { BsClipboardCheckFill, BsInfoCircle, BsXCircleFill } from 'react-icons/bs';
 import { HiDocumentMinus } from 'react-icons/hi2';
@@ -25,32 +24,23 @@ function Home() {
     const [showDetailReceipt, setShowDetailReceipt] = useState(false);
     const [receiptData, setReceiptData] = useState(false);
 
-    const localStorageManager = LocalStorageManager.getInstance();
     const getAllInvoice = async () => {
         const results1 = await orderService.getAllUnConfirmedInvoice();
         const results2 = await orderService.getAllConfirmedInvoice();
-        if (results1.data && results2.data) {
-            const results = [...results1.data, ...results2.data];
-            setIncompleteOrders(results);
-            return;
+        if (results1 && results2) {
+            if (results1.data) {
+                setIncompleteOrders([...results1.data]);
+            }
+            if (results2.data) {
+                setIncompleteOrders((prev) => [prev, ...results2.data]);
+            }
         }
-        if (results1.data) {
-            setIncompleteOrders(results1.data);
-            return;
-        }
-        if (results2.data) {
-            setIncompleteOrders(results2.data);
-            return;
-        }
-        setIncompleteOrders(null);
     };
     const getAllInvoiceInTransit = async () => {
         const results = await orderService.getAllInvoiceInTransit();
-        if (results.data) {
+        if (results) {
             setCompleteOrders(results.data);
-            return;
         }
-        setCompleteOrders(null);
     };
     const completeOrder = async (order) => {
         const results = await orderService.confirmInvoice(order.id);
@@ -65,27 +55,15 @@ function Home() {
         getAllInvoiceInTransit();
     };
     const completeShipping = async (id) => {
-        const token = localStorageManager.getItem('token');
-        if (token) {
-            const results = await orderService.completeInvoice(id, token);
-            if (results.isSuccess) {
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: 'Giao hàng thành công',
-                        title: 'Thành công',
-                    }),
-                );
-            } else {
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: results.message,
-                        title: 'Thất bại',
-                        type: 'error',
-                    }),
-                );
-            }
+        const results = await orderService.completeInvoice(id);
+        if (results.isSuccess) {
+            dispatch(
+                actions.setToast({
+                    show: true,
+                    content: 'Giao hàng thành công',
+                    title: 'Thành công',
+                }),
+            );
         }
         getAllInvoiceInTransit();
     };
@@ -108,6 +86,7 @@ function Home() {
             dispatch(actions.setToast({ show: true, title: 'Hủy đơn', content: error.response.message, type: 'info' }));
         }
     };
+    console.log(incompleteOrders);
     return (
         <>
             {showDetailReceipt && <ReceiptDetail data={receiptData} onCloseModal={() => setShowDetailReceipt(false)} />}

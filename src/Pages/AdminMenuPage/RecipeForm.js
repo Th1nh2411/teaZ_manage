@@ -7,7 +7,6 @@ import Input from '../../components/Input';
 import { Col, Form, Row } from 'react-bootstrap';
 import { MdOutlineAddShoppingCart } from 'react-icons/md';
 import { useContext, useEffect, useState } from 'react';
-import LocalStorageManager from '../../utils/LocalStorageManager';
 import * as adminService from '../../services/adminService';
 import Tippy from '@tippyjs/react';
 import { MdOutlineInfo } from 'react-icons/md';
@@ -32,9 +31,7 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
     const [loading, setLoading] = useState(false);
     const [valueChange, setValueChange] = useState(false);
     const [state, dispatch] = useContext(StoreContext);
-    const localStorageManage = LocalStorageManager.getInstance();
     const editMenuItem = async () => {
-        const token = localStorageManage.getItem('token');
         if (!name) {
             messageApi.open({
                 type: 'error',
@@ -45,28 +42,26 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
             });
             return;
         }
-        if (token) {
-            setLoading(true);
-            const res = image && (await adminService.uploadFile(image));
-            const results = await adminService.editRecipe(idRecipe, token, {
-                name,
-                image: res && res.url,
-                info,
-                price,
-                discount: 100 - discount,
-                idType,
-            });
-            setLoading(false);
-            if (results) {
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: 'Cập nhật thông tin sản phẩm thành công',
-                        title: 'Thành công',
-                    }),
-                );
-                onCloseModal(true);
-            }
+        setLoading(true);
+        const res = image && (await adminService.uploadFile(image));
+        const results = await adminService.editRecipe(idRecipe, {
+            name,
+            image: res && res.url,
+            info,
+            price,
+            discount: 100 - discount,
+            idType,
+        });
+        setLoading(false);
+        if (results) {
+            dispatch(
+                actions.setToast({
+                    show: true,
+                    content: 'Cập nhật thông tin sản phẩm thành công',
+                    title: 'Thành công',
+                }),
+            );
+            onCloseModal(true);
         }
     };
     const addNewMenuItem = async () => {
@@ -80,37 +75,32 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
             });
             return;
         }
-        const token = localStorageManage.getItem('token');
-        if (token) {
-            setLoading(true);
-            const res = await adminService.uploadFile(image);
-            const results = await adminService.addRecipe(name, res.url, info, price, 100 - discount, idType, token);
-            setLoading(false);
-            if (results) {
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: 'Thêm mới sản phẩm thành công',
-                        title: 'Thành công',
-                    }),
-                );
-                onCloseModal(true);
-            } else {
-            }
+
+        setLoading(true);
+        const res = await adminService.uploadFile(image);
+        const results = await adminService.addRecipe(name, res.url, info, price, 100 - discount, idType);
+        setLoading(false);
+        if (results) {
+            dispatch(
+                actions.setToast({
+                    show: true,
+                    content: 'Thêm mới sản phẩm thành công',
+                    title: 'Thành công',
+                }),
+            );
+            onCloseModal(true);
+        } else {
         }
     };
     const getDetailRecipe = async () => {
-        const token = localStorageManage.getItem('token');
-        if (token) {
-            const results = await adminService.getDetailRecipe(idRecipe, token);
-            if (results && results.detailRecipe) {
-                setDetailRecipe(results.detailRecipe);
-                setNameValue(results.detailRecipe.name);
-                setInfoValue(results.detailRecipe.info);
-                setPriceValue(results.detailRecipe.price);
-                setDiscountValue(100 - results.detailRecipe.discount);
-                setType(results.detailRecipe.idType);
-            }
+        const results = await adminService.getDetailRecipe(idRecipe);
+        if (results && results.detailRecipe) {
+            setDetailRecipe(results.detailRecipe);
+            setNameValue(results.detailRecipe.name);
+            setInfoValue(results.detailRecipe.info);
+            setPriceValue(results.detailRecipe.price);
+            setDiscountValue(100 - results.detailRecipe.discount);
+            setType(results.detailRecipe.idType);
         }
     };
 
