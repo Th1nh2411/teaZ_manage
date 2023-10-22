@@ -66,23 +66,9 @@ function ShopForm({ data, onCloseModal = () => {} }) {
         const results = await shopService.editInfoShop({ address, latitude, longitude, image: res && res.url });
         setLoading(false);
         if (results) {
-            dispatch(
-                actions.setToast({
-                    show: true,
-                    content: 'Cập nhật thông tin cửa hàng thành công',
-                    title: 'Thành công',
-                }),
-            );
+            state.showToast(results.message);
+
             onCloseModal(true);
-        } else {
-            dispatch(
-                actions.setToast({
-                    show: true,
-                    content: results.message || 'Cập nhật thất bại',
-                    title: 'Thất bại',
-                    type: 'error',
-                }),
-            );
         }
     };
 

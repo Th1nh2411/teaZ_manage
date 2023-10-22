@@ -6,7 +6,6 @@ import Button from '../Button';
 import { Col, Form, Row } from 'react-bootstrap';
 import { MdOutlineAddShoppingCart } from 'react-icons/md';
 import { useContext, useEffect, useState } from 'react';
-import LocalStorageManager from '../../utils/LocalStorageManager';
 import * as adminService from '../../services/adminService';
 import Tippy from '@tippyjs/react';
 import { MdOutlineInfo } from 'react-icons/md';
@@ -22,51 +21,20 @@ function ManagerForm({ data, onCloseModal = () => {}, listShop }) {
     const [idShop, setIdShop] = useState(data ? data.idShop : '');
     const [valueChange, setValueChange] = useState(false);
     const [state, dispatch] = useContext(StoreContext);
-    const localStorageManage = LocalStorageManager.getInstance();
     const editManager = async (activeValue) => {
-        if (token) {
-            const results = await adminService.editManager(
-                data.idStaff,
-                idShop,
-                token,
-                phoneValue,
-                passwordValue,
-                nameValue,
-            );
-            if (results) {
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: `'Cập nhật thông tin nhân viên thành công'`,
-                        title: 'Thành công',
-                    }),
-                );
-                onCloseModal(true);
-            }
+        const results = await adminService.editManager(data.idStaff, idShop, phoneValue, passwordValue, nameValue);
+        if (results) {
+            state.showToast('Cập nhật', results.message);
+
+            onCloseModal(true);
         }
     };
     const addNewManager = async (activeValue) => {
-        if (token) {
-            const results = await adminService.addManager(idShop, phoneValue, passwordValue, nameValue, token);
-            if (results) {
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: 'Đăng kí tài khoản nhân viên thành công',
-                        title: 'Thành công',
-                    }),
-                );
-                onCloseModal(true);
-            } else {
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: 'Số điện thoại đã được đăng kí',
-                        title: 'Thất bại',
-                        type: 'error',
-                    }),
-                );
-            }
+        const results = await adminService.addManager(idShop, phoneValue, passwordValue, nameValue);
+        if (results) {
+            state.showToast('Tạo tài khoản', results.message);
+
+            onCloseModal(true);
         }
     };
     const handleCancelEdit = () => {

@@ -3,7 +3,6 @@ import classNames from 'classnames/bind';
 import styles from './DefaultLayout.module.scss';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { StoreContext, actions } from '../../store';
-import Toast from '../../components/Toast/Toast';
 import config from '../../config';
 import { useLocation } from 'react-router';
 import SideBar from '../components/SideBar';
@@ -65,15 +64,6 @@ function DefaultLayout({ children }) {
                     <div className={cx('content')}>{children}</div>
                 </div>
             </div>
-
-            {state.toast.show && (
-                <Toast
-                    content={state.toast.content}
-                    title={state.toast.title}
-                    type={state.toast.type}
-                    onClose={() => dispatch(actions.setToast({ show: false }))}
-                />
-            )}
         </>
     );
 }

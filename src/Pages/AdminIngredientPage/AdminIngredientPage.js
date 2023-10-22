@@ -46,26 +46,10 @@ function AdminIngredientPage() {
 
     const handleDeleteIngredient = async () => {
         const results = await adminService.deleteIngredient(selectedIngredient.id);
-        if (results && results.message) {
-            dispatch(
-                actions.setToast({
-                    show: true,
-                    content: results.message,
-                    title: 'Thành công',
-                }),
-            );
+        if (results) {
+            state.showToast(results.message);
+
             getIngredients();
-        } else {
-            if (results && results.message) {
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: results.message,
-                        title: 'Thất bại',
-                    }),
-                );
-                getIngredients();
-            }
         }
     };
 

@@ -54,13 +54,8 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
         });
         setLoading(false);
         if (results) {
-            dispatch(
-                actions.setToast({
-                    show: true,
-                    content: 'Cập nhật thông tin sản phẩm thành công',
-                    title: 'Thành công',
-                }),
-            );
+            state.showToast(results.message);
+
             onCloseModal(true);
         }
     };
@@ -81,15 +76,9 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
         const results = await adminService.addRecipe(name, res.url, info, price, 100 - discount, idType);
         setLoading(false);
         if (results) {
-            dispatch(
-                actions.setToast({
-                    show: true,
-                    content: 'Thêm mới sản phẩm thành công',
-                    title: 'Thành công',
-                }),
-            );
+            state.showToast('Thêm mới', results.message);
+
             onCloseModal(true);
-        } else {
         }
     };
     const getDetailRecipe = async () => {

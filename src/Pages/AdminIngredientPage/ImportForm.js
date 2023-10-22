@@ -25,13 +25,8 @@ function ImportForm({ selectedIngredient, onCloseModal = () => {} }) {
             selectedIngredient.idIngredient,
         );
         if (results) {
-            dispatch(
-                actions.setToast({
-                    show: true,
-                    content: 'Đã nhập thêm nguyên liệu',
-                    title: 'Thành công',
-                }),
-            );
+            state.showToast('Nhập nguyên liệu', results.message);
+
             onCloseModal(true);
         }
     };

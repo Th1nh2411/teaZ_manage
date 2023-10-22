@@ -23,7 +23,6 @@ import {
     BarChartIcon,
 } from '../../components/Icons/Icons';
 import { BsClipboardCheckFill } from 'react-icons/bs';
-import OrderItem from '../../components/OrderItem';
 import ProfitTracker from './ProfitTracker';
 import IngredientTracker from './IngredientTracker';
 import Button from '../../components/Button/Button';

@@ -24,15 +24,15 @@ function DetailForm({ idRecipe = 1, onCloseModal = () => {} }) {
     const [valueChange, setValueChange] = useState(false);
     const [state, dispatch] = useContext(StoreContext);
     const userRole = state.userInfo.role;
-    const editMenuItem = async () => {
-        const results = await adminService.editRecipe(idRecipe, detailRecipe.isActive, 100 - discountValue);
-    };
+
     const getDetailRecipe = async () => {
         const results = await menuService.getDetailRecipe(idRecipe);
-        setDetailRecipe(results.recipe);
-        setNameValue(results.recipe.name);
-        setPriceValue(results.recipe.price);
-        setDiscountValue(100 - results.recipe.discount);
+        if (results) {
+            setDetailRecipe(results.recipe);
+            setNameValue(results.recipe.name);
+            setPriceValue(results.recipe.price);
+            setDiscountValue(100 - results.recipe.discount);
+        }
     };
     const handleCancelEdit = () => {
         setNameValue(detailRecipe.name);
@@ -40,8 +40,8 @@ function DetailForm({ idRecipe = 1, onCloseModal = () => {} }) {
         setDiscountValue(100 - detailRecipe.discount);
     };
     const handleClickConfirm = async () => {
-        await editMenuItem();
-        dispatch(actions.setToast({ show: true, title: 'Sửa món', content: 'Sửa món thành cống' }));
+        const results = await adminService.editRecipe(idRecipe, detailRecipe.isActive, 100 - discountValue);
+        if (results) state.showToast('Sửa món', results.message);
         onCloseModal(true);
     };
     useEffect(() => {

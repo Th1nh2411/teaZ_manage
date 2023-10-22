@@ -1,6 +1,6 @@
 import * as httpRequest from '../utils/httpRequest';
 
-export const getAllInvoice = async (token) => {
+export const getAllInvoice = async () => {
     try {
         const res = await httpRequest.get('invoice');
         return res;
@@ -10,7 +10,7 @@ export const getAllInvoice = async (token) => {
     }
 };
 
-export const getAllInvoiceInTransit = async (token) => {
+export const getAllInvoiceInTransit = async () => {
     try {
         const res = await httpRequest.get('invoice/?status=2');
         return res;
@@ -20,7 +20,7 @@ export const getAllInvoiceInTransit = async (token) => {
     }
 };
 
-export const getAllConfirmedInvoice = async (token) => {
+export const getAllConfirmedInvoice = async () => {
     try {
         const res = await httpRequest.get('invoice/?status=1');
         return res;
@@ -30,7 +30,7 @@ export const getAllConfirmedInvoice = async (token) => {
     }
 };
 
-export const getAllCompletedInvoice = async (token) => {
+export const getAllCompletedInvoice = async () => {
     try {
         const res = await httpRequest.get('invoice/?status=1');
         return res;
@@ -40,7 +40,7 @@ export const getAllCompletedInvoice = async (token) => {
     }
 };
 
-export const getAllUnConfirmedInvoice = async (token) => {
+export const getAllUnConfirmedInvoice = async () => {
     try {
         const res = await httpRequest.get('invoice/?status=0');
         return res;
@@ -50,7 +50,7 @@ export const getAllUnConfirmedInvoice = async (token) => {
     }
 };
 
-export const cancelInvoice = async (id, token) => {
+export const cancelInvoice = async (id) => {
     try {
         const res = await httpRequest.del(`invoice/cancel/${id}`);
         return res;
@@ -60,7 +60,7 @@ export const cancelInvoice = async (id, token) => {
     }
 };
 
-export const confirmInvoice = async (id, token) => {
+export const confirmInvoice = async (id) => {
     try {
         const res = await httpRequest.get(`invoice/confirm/${id}`);
         return res;
@@ -70,7 +70,7 @@ export const confirmInvoice = async (id, token) => {
     }
 };
 
-export const receiveInvoice = async (id, token) => {
+export const doneCookInvoice = async (id) => {
     try {
         const res = await httpRequest.get(`invoice/receive/${id}`);
         return res;
@@ -80,9 +80,9 @@ export const receiveInvoice = async (id, token) => {
     }
 };
 
-export const completeInvoice = async (id, token) => {
+export const completeInvoice = async (id) => {
     try {
-        const res = await httpRequest.put(`invoice/complete/${id}`);
+        const res = await httpRequest.get(`invoice/complete/${id}`);
         return res;
     } catch (error) {
         console.log(error);

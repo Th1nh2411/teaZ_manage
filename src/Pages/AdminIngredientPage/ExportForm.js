@@ -25,13 +25,8 @@ function ExportForm({ selectedIngredient, onCloseModal = () => {} }) {
             selectedIngredient.idIngredient,
         );
         if (results) {
-            dispatch(
-                actions.setToast({
-                    show: true,
-                    content: 'Xuất nguyên liệu thành công',
-                    title: 'Thành công',
-                }),
-            );
+            state.showToast('Xuất nguyên liệu', results.message);
+
             onCloseModal(true);
         }
     };

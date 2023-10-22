@@ -30,26 +30,16 @@ function StaffForm({ data, onCloseModal = () => {} }) {
                     dispatch(actions.setUserInfo(results2.userInfo));
                 }
             }
-            dispatch(
-                actions.setToast({
-                    show: true,
-                    content: 'Cập nhật thông tin nhân viên thành công',
-                    title: 'Thành công',
-                }),
-            );
+            state.showToast(results.message);
+
             onCloseModal(true);
         }
     };
     const addNewStaff = async () => {
         const results = await shopService.addStaff(phone, name, password);
         if (results) {
-            dispatch(
-                actions.setToast({
-                    show: true,
-                    content: 'Đăng kí tài khoản nhân viên thành công',
-                    title: 'Thành công',
-                }),
-            );
+            state.showToast(results.message);
+
             onCloseModal(true);
         }
     };

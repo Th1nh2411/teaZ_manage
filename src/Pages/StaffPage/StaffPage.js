@@ -43,13 +43,7 @@ function StaffPage() {
         const results = await shopService.editInfoShop({ isActive });
         if (results) {
             setActive(isActive);
-            dispatch(
-                actions.setToast({
-                    show: true,
-                    content: 'Cập nhật thông tin cửa hàng thành công',
-                    title: 'Thành công',
-                }),
-            );
+            state.showToast(results.message);
         }
     };
     const getListStaff = async () => {
@@ -63,13 +57,7 @@ function StaffPage() {
     const delStaff = async () => {
         const results = await shopService.deleteStaff(staffData.id);
         if (results) {
-            dispatch(
-                actions.setToast({
-                    show: true,
-                    content: results.message,
-                    title: 'Thành công',
-                }),
-            );
+            state.showToast(results.message);
         }
         getListStaff();
     };

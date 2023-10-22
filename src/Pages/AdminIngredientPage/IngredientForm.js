@@ -31,13 +31,8 @@ function IngredientForm({ data, onCloseModal = () => {} }) {
         });
         setLoading(false);
         if (results) {
-            dispatch(
-                actions.setToast({
-                    show: true,
-                    content: results.message,
-                    title: 'Thành công',
-                }),
-            );
+            state.showToast(results.message);
+
             onCloseModal(true);
         }
     };
@@ -54,23 +49,9 @@ function IngredientForm({ data, onCloseModal = () => {} }) {
         const results = await adminService.addIngredient({ name: nameValue, unitName: unitValue, image: res.url });
         setLoading(false);
         if (results) {
-            dispatch(
-                actions.setToast({
-                    show: true,
-                    content: results.message,
-                    title: 'Thành công',
-                }),
-            );
+            state.showToast(results.message);
+
             onCloseModal(true);
-        } else {
-            dispatch(
-                actions.setToast({
-                    show: true,
-                    content: 'Thêm mới nguyên liệu thất bại',
-                    title: 'Thất bại',
-                    type: 'error',
-                }),
-            );
         }
     };
     const handleCancelEdit = () => {

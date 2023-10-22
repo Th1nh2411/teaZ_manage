@@ -26,13 +26,8 @@ const Login = ({ setAuth }) => {
                 const expirationDate = dayjs().add(results.expireTime, 'second');
                 Cookies.set('userInfo', JSON.stringify(results.userInfo));
                 dispatch(actions.setUserInfo(results.userInfo));
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: 'Đăng nhập thành công',
-                        title: 'Đăng nhập',
-                    }),
-                );
+                state.showToast('Đăng nhập', results.message);
+
                 navigate(config.routes.order);
             } else {
                 setPassword('');

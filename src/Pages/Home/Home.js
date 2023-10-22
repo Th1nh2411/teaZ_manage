@@ -7,7 +7,7 @@ import { useContext, useEffect, useState } from 'react';
 import * as orderService from '../../services/orderService';
 import { StoreContext, actions } from '../../store';
 import { timeGap } from '../../utils/format';
-import { BsClipboardCheckFill, BsInfoCircle, BsXCircleFill } from 'react-icons/bs';
+import { BsClipboardCheckFill, BsFillCartCheckFill, BsInfoCircle, BsXCircleFill } from 'react-icons/bs';
 import { HiDocumentMinus } from 'react-icons/hi2';
 import { RiEBike2Fill } from 'react-icons/ri';
 import { FaFileInvoiceDollar } from 'react-icons/fa';
@@ -15,6 +15,7 @@ import { FaFileInvoiceDollar } from 'react-icons/fa';
 import Tippy from '@tippyjs/react';
 import InvoiceList from './InvoiceList';
 import ReceiptDetail from '../../components/ReceiptDetail/ReceiptDetail';
+import { Badge } from 'antd';
 const cx = classNames.bind(styles);
 
 function Home() {
@@ -32,7 +33,7 @@ function Home() {
                 setIncompleteOrders([...results1.data]);
             }
             if (results2.data) {
-                setIncompleteOrders((prev) => [prev, ...results2.data]);
+                setIncompleteOrders((prev) => [...results2.data, ...prev]);
             }
         }
     };
@@ -44,28 +45,28 @@ function Home() {
     };
     const completeOrder = async (order) => {
         const results = await orderService.confirmInvoice(order.id);
-        dispatch(
-            actions.setToast({
-                show: true,
-                content: results.message,
-                title: 'Thành công',
-            }),
-        );
-        getAllInvoice();
-        getAllInvoiceInTransit();
+        if (results) {
+            state.showToast(results.message);
+
+            getAllInvoice();
+        }
+    };
+    const donePreparedOrder = async (order) => {
+        const results = await orderService.doneCookInvoice(order.id);
+        if (results) {
+            state.showToast(results.message);
+
+            getAllInvoice();
+            getAllInvoiceInTransit();
+        }
     };
     const completeShipping = async (id) => {
         const results = await orderService.completeInvoice(id);
-        if (results.isSuccess) {
-            dispatch(
-                actions.setToast({
-                    show: true,
-                    content: 'Giao hàng thành công',
-                    title: 'Thành công',
-                }),
-            );
+        if (results) {
+            state.showToast(results.message);
+
+            getAllInvoiceInTransit();
         }
-        getAllInvoiceInTransit();
     };
     useEffect(() => {
         getAllInvoice();
@@ -73,17 +74,15 @@ function Home() {
 
         const checkOrderInterval = setInterval(() => {
             getAllInvoice();
-        }, 10000);
+        }, 50000);
 
         return () => clearInterval(checkOrderInterval);
     }, []);
     const handleCancelInvoice = async (id) => {
-        try {
-            const results = await orderService.cancelInvoice(id);
-            dispatch(actions.setToast({ show: true, title: 'Hủy đơn', content: results.message }));
+        const results = await orderService.cancelInvoice(id);
+        if (results) {
+            state.showToast('Hủy đơn', results.message);
             getAllInvoice();
-        } catch (error) {
-            dispatch(actions.setToast({ show: true, title: 'Hủy đơn', content: error.response.message, type: 'info' }));
         }
     };
     console.log(incompleteOrders);
@@ -118,45 +117,85 @@ function Home() {
                                                         }}
                                                     />
                                                 </div>
+
                                                 <div className={cx('d-flex', 'align-items-center')}>
-                                                    <Tippy content="Xác nhận đơn hàng" placement="bottom" duration={0}>
-                                                        <div
-                                                            onClick={() => completeOrder(order)}
+                                                    <Tippy
+                                                        content={
+                                                            order.status === 0
+                                                                ? 'Xác nhận đơn hàng'
+                                                                : 'Hoàn thành pha chế'
+                                                        }
+                                                        placement="bottom"
+                                                        duration={0}
+                                                    >
+                                                        <span
+                                                            onClick={() =>
+                                                                order.status === 0
+                                                                    ? completeOrder(order)
+                                                                    : donePreparedOrder(order)
+                                                            }
                                                             className={cx('order-item-actions')}
                                                         >
-                                                            <BsClipboardCheckFill />
-                                                        </div>
+                                                            {order.status === 0 ? (
+                                                                <BsFillCartCheckFill />
+                                                            ) : (
+                                                                <BsClipboardCheckFill />
+                                                            )}
+                                                        </span>
                                                     </Tippy>
-                                                    <Tippy content="Huỷ đơn" placement="bottom" duration={0}>
-                                                        <div
-                                                            onClick={async () => {
-                                                                if (window.confirm('Xác nhận huỷ đơn này?')) {
-                                                                    await handleCancelInvoice(order.id);
-                                                                }
-                                                            }}
-                                                            style={{ color: 'red' }}
-                                                            className={cx('order-item-actions')}
-                                                        >
-                                                            <BsXCircleFill />
-                                                        </div>
-                                                    </Tippy>
+                                                    {order.status === 0 && (
+                                                        <Tippy content="Huỷ đơn" placement="bottom" duration={0}>
+                                                            <span
+                                                                onClick={async () => {
+                                                                    if (window.confirm('Xác nhận huỷ đơn này?')) {
+                                                                        await handleCancelInvoice(order.id);
+                                                                    }
+                                                                }}
+                                                                style={{ color: 'red' }}
+                                                                className={cx('order-item-actions')}
+                                                            >
+                                                                <BsXCircleFill />
+                                                            </span>
+                                                        </Tippy>
+                                                    )}
                                                 </div>
                                             </div>
-                                            {order.products.map((item, index) => (
-                                                <div key={index} className={cx('order-item-wrapper')}>
-                                                    <Image src={item.image} className={cx('order-item-img')} />
-                                                    <div className={cx('order-item-info')}>
-                                                        <div className={cx('order-item-name')}>
-                                                            {item.name}({item.size ? 'L' : 'M'}) x{item.quantity}
+                                            <Badge
+                                                status={
+                                                    order.status === 0
+                                                        ? 'error'
+                                                        : order.status === 1
+                                                        ? 'processing'
+                                                        : 'default'
+                                                }
+                                                text={
+                                                    order.status === 0
+                                                        ? 'Chưa xác nhận'
+                                                        : order.status === 1
+                                                        ? 'Đã xác nhận'
+                                                        : 'Đã huỷ đơn'
+                                                }
+                                            />
+                                            <div style={{ marginTop: 5 }}>
+                                                {order.products &&
+                                                    order.products.map((item, index) => (
+                                                        <div key={index} className={cx('order-item-wrapper')}>
+                                                            <Image src={item.image} className={cx('order-item-img')} />
+                                                            <div className={cx('order-item-info')}>
+                                                                <div className={cx('order-item-name')}>
+                                                                    {item.name}({item.size ? 'L' : 'M'}) x
+                                                                    {item.quantity}
+                                                                </div>
+                                                                <div className={cx('order-item-topping')}>
+                                                                    Topping :{' '}
+                                                                    {item.toppings
+                                                                        .map((topping) => topping.name)
+                                                                        .join(', ') || 'Không'}
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                        <div className={cx('order-item-topping')}>
-                                                            Topping :{' '}
-                                                            {item.toppings.map((topping) => topping.name).join(', ') ||
-                                                                'Không'}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))}
+                                                    ))}
+                                            </div>
                                         </div>
                                     ))
                                 ) : (

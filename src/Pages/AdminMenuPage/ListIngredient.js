@@ -24,13 +24,7 @@ function ListIngredient({ detailRecipe, onUpdateIngredient = () => {} }) {
     const updateIngredientQuantity = async (idIngredient, quantity) => {
         const results = await adminService.editIngredientFromRecipe(detailRecipe.idRecipe, idIngredient, quantity);
         if (results) {
-            dispatch(
-                actions.setToast({
-                    show: true,
-                    content: 'Cập nhật thành công',
-                    title: 'Thành công',
-                }),
-            );
+            state.showToast(results.message);
         }
     };
     const getIngredients = async () => {

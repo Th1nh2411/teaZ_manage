@@ -24,7 +24,7 @@ export const get = async (path, config = {}) => {
         } else {
             notification.open({
                 message: error.response ? error.response.data.message : 'Lỗi kết nối',
-                placement: 'bottomRight',
+                placement: 'bottomLeft',
                 type: 'error',
             });
         }
@@ -47,7 +47,7 @@ export const post = async (path, body = {}, config = {}) => {
         } else {
             notification.open({
                 message: error.response ? error.response.data.message : 'Lỗi kết nối',
-                placement: 'bottomRight',
+                placement: 'bottomLeft',
                 type: 'error',
             });
         }
@@ -70,7 +70,7 @@ export const del = async (path, config = {}) => {
         } else {
             notification.open({
                 message: error.response ? error.response.data.message : 'Lỗi kết nối',
-                placement: 'bottomRight',
+                placement: 'bottomLeft',
                 type: 'error',
             });
         }
@@ -93,7 +93,7 @@ export const put = async (path, body = {}, config = {}) => {
         } else {
             notification.open({
                 message: error.response ? error.response.data.message : 'Lỗi kết nối',
-                placement: 'bottomRight',
+                placement: 'bottomLeft',
                 type: 'error',
             });
         }
@@ -116,7 +116,7 @@ export const patch = async (path, body = {}, config = {}) => {
         } else {
             notification.open({
                 message: error.response ? error.response.data.message : 'Lỗi kết nối',
-                placement: 'bottomRight',
+                placement: 'bottomLeft',
                 type: 'error',
             });
         }
