@@ -33,7 +33,7 @@ function AdminIngredientPage() {
     const [showIngredientForm, setShowIngredientForm] = useState();
     const [showImportForm, setShowImportForm] = useState();
     const [showExportForm, setShowExportForm] = useState();
-    const userRole = state.userInfo.role;
+    const userRole = state.userInfo && state.userInfo.role;
     const getIngredients = async () => {
         setLoading(true);
         const results = await adminService.getAllIngredient();
@@ -143,11 +143,12 @@ function AdminIngredientPage() {
                                                     return {
                                                         id: item.idIngredient,
                                                         Tên: item.name,
-                                                        'Trạng thái': item.isActive
-                                                            ? 'Đang sử dụng'
-                                                            : item.quantity === 0
-                                                            ? 'Hết hàng'
-                                                            : 'Không sử dụng',
+                                                        'Trạng thái':
+                                                            item.quantity === 0
+                                                                ? 'Hết hàng'
+                                                                : item.isActive
+                                                                ? 'Đang sử dụng'
+                                                                : 'Không sử dụng',
                                                         'Số lượng': item.quantity,
                                                         ĐVT: item.unitName,
                                                     };

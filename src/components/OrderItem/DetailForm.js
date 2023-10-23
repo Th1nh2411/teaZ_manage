@@ -23,7 +23,7 @@ function DetailForm({ idRecipe = 1, onCloseModal = () => {} }) {
     const [discountValue, setDiscountValue] = useState('');
     const [valueChange, setValueChange] = useState(false);
     const [state, dispatch] = useContext(StoreContext);
-    const userRole = state.userInfo.role;
+    const userRole = state.userInfo && state.userInfo.role;
 
     const getDetailRecipe = async () => {
         const results = await menuService.getDetailRecipe(idRecipe);

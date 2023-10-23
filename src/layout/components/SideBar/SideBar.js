@@ -18,7 +18,7 @@ const cx = classNames.bind(styles);
 function SideBar({ className, sideBarShrink }) {
     const [state, dispatch] = useContext(StoreContext);
     const logoRef = useRef();
-    const userRole = state.userInfo.role;
+    const userRole = state.userInfo && state.userInfo.role;
     useEffect(() => {
         if (logoRef.current) {
             if (sideBarShrink) {

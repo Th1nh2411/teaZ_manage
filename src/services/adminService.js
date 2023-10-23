@@ -72,9 +72,10 @@ export const getAllShopDataForChart = async () => {
         return error.response && error.response.data;
     }
 };
-export const getAllIngredient = async () => {
+export const getAllIngredient = async (name) => {
     try {
-        const res = await httpRequest.get(`ingredient`);
+        const config = { params: { name } };
+        const res = await httpRequest.get(`ingredient`, config);
         return res;
     } catch (error) {
         console.log(error);

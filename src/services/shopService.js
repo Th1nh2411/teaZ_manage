@@ -18,7 +18,7 @@ export const editInfoShop = async (body) => {
         return error.response && error.response.data;
     }
 };
-export const getListStaff = async (token) => {
+export const getListStaff = async () => {
     try {
         const res = await httpRequest.get('staff');
         return res;

@@ -20,7 +20,7 @@ function OrderItem({ data = {}, onUpdateRecipe = () => {} }) {
     const [state, dispatch] = useContext(StoreContext);
     const [active, setActive] = useState(data.isActive);
     const [showEditForm, setShowEditForm] = useState();
-    const userRole = state.userInfo.role;
+    const userRole = state.userInfo && state.userInfo.role;
     const editMenuItem = async (activeValue = active) => {
         const results = await adminService.editRecipe(data.idRecipe, { isActive: activeValue });
     };

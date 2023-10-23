@@ -19,7 +19,7 @@ function StaffForm({ data, onCloseModal = () => {} }) {
     const [password, setPasswordValue] = useState('');
     const [valueChange, setValueChange] = useState(false);
     const [state, dispatch] = useContext(StoreContext);
-    const userRole = state.userInfo.role;
+    const userRole = state.userInfo && state.userInfo.role;
     const editStaff = async () => {
         const results = await shopService.editStaff(data.idUser, { phone, name, password });
         if (results) {

@@ -19,15 +19,14 @@ const { Option } = Select;
 
 function InvoiceList() {
     const [invoices, setInvoices] = useState();
-    const [fromdate, setFromdate] = useState(dayjs());
-    const [todate, setTodate] = useState(dayjs());
+    const [fromdate, setFromdate] = useState();
+    const [todate, setTodate] = useState();
 
     const getAllInvoiceByDate = async () => {
         const results = await orderService.getAllInvoiceByDateAndStatus(
-            fromdate.format('YYYY-MM-DD'),
-            todate.format('YYYY-MM-DD'),
+            fromdate && fromdate.format('YYYY-MM-DD'),
+            todate && todate.format('YYYY-MM-DD'),
         );
-        console.log(results);
         if (results) {
             setInvoices(results.data);
         }
@@ -50,9 +49,10 @@ function InvoiceList() {
                     value={[fromdate, todate]}
                     size="large"
                     onChange={(dates) => {
-                        setFromdate(dates[0]);
-                        setTodate(dates[1]);
+                        setFromdate(dates ? dates[0] : null);
+                        setTodate(dates ? dates[1] : null);
                     }}
+                    format="DD/MM/YYYY"
                 />
 
                 <div className={cx('content-subtitle')}>{invoices ? invoices.length : 0} đơn</div>

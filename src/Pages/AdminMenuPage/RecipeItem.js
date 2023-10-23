@@ -17,7 +17,7 @@ function RecipeItem({ data = {}, onClickEditRecipe = () => {} }) {
     useEffect(() => {
         setActive(data.isActive);
     }, [data]);
-    const userRole = state.userInfo.role;
+    const userRole = state.userInfo && state.userInfo.role;
     const editMenuItem = async (activeValue) => {
         const results = await adminService.editRecipe(data.idRecipe, { isActive: activeValue });
     };

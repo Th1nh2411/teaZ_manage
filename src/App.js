@@ -1,11 +1,13 @@
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { privateRoutes, publicRoutes } from './Routes';
 import DefaultLayout from './layout/DefaultLayout';
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useContext, useEffect, useState } from 'react';
 import config from './config';
 import dayjs from 'dayjs';
+import { StoreContext } from './store';
 
 function App() {
+    const [state, dispatch] = useContext(StoreContext);
     const titles = {
         [config.routes.login]: 'TeaZ - Đăng nhập',
         [config.routes.order]: 'TeaZ - Đơn hàng',
@@ -45,9 +47,13 @@ function App() {
                             key={index}
                             path={route.path}
                             element={
-                                <Layout>
-                                    <Element />
-                                </Layout>
+                                state.userInfo ? (
+                                    <Layout>
+                                        <Element />
+                                    </Layout>
+                                ) : (
+                                    <Navigate to={config.routes.login} replace />
+                                )
                             }
                         />
                     );

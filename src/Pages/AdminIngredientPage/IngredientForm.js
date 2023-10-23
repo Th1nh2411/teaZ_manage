@@ -46,13 +46,15 @@ function IngredientForm({ data, onCloseModal = () => {} }) {
         }
         setLoading(true);
         const res = await adminService.uploadFile(imageValue);
-        const results = await adminService.addIngredient({ name: nameValue, unitName: unitValue, image: res.url });
-        setLoading(false);
-        if (results) {
-            state.showToast(results.message);
+        if (res) {
+            const results = await adminService.addIngredient({ name: nameValue, unitName: unitValue, image: res.url });
+            if (results) {
+                state.showToast(results.message);
 
-            onCloseModal(true);
+                onCloseModal(true);
+            }
         }
+        setLoading(false);
     };
     const handleCancelEdit = () => {
         setImageValue(null);
@@ -62,7 +64,7 @@ function IngredientForm({ data, onCloseModal = () => {} }) {
             setIsActive(data.isActive);
         } else {
             setNameValue('');
-            setUnitValue('');
+            setUnitValue('g');
             setIsActive(0);
         }
     };
@@ -125,7 +127,7 @@ function IngredientForm({ data, onCloseModal = () => {} }) {
                         {/* </div> */}
 
                         {/* <div className={cx('d-flex', 'align-items-start', 'justify-content-between', 'mt-8')}> */}
-                        <div className={cx('d-flex', 'align-items-center', 'mt-8')}>
+                        <div style={{ marginLeft: 2 }} className={cx('d-flex', 'align-items-center', 'mt-16')}>
                             <h4>Đơn vị tính : </h4>
                             <Select
                                 className={cx('ml-16')}
@@ -154,7 +156,7 @@ function IngredientForm({ data, onCloseModal = () => {} }) {
                                 ]}
                             />
                         </div>
-                        <div className={cx('d-flex', 'mt-16')}>
+                        <div style={{ marginLeft: 2 }} className={cx('d-flex', 'align-items-center', 'mt-16')}>
                             <h4>Ảnh hiển thị : </h4>
                             <Upload
                                 className={cx('ml-16')}

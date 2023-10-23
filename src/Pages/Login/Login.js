@@ -23,7 +23,6 @@ const Login = ({ setAuth }) => {
         const getTokenApi = async () => {
             const results = await authService.login({ phone, password });
             if (results && results.userInfo && results.userInfo.role !== 0) {
-                const expirationDate = dayjs().add(results.expireTime, 'second');
                 Cookies.set('userInfo', JSON.stringify(results.userInfo));
                 dispatch(actions.setUserInfo(results.userInfo));
                 state.showToast('Đăng nhập', results.message);

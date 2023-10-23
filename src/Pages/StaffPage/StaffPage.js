@@ -28,7 +28,7 @@ function StaffPage() {
     const [showConfirmDelStaff, setShowConfirmDelStaff] = useState();
     const [showShopForm, setShowShopForm] = useState();
     const [state, dispatch] = useContext(StoreContext);
-    const userRole = state.userInfo.role;
+    const userRole = state.userInfo && state.userInfo.role;
     const getShopInfo = async () => {
         setLoading(true);
         const results = await shopService.getInfoShop();

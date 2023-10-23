@@ -70,9 +70,10 @@ export const getDetailExport = async (id) => {
     }
 };
 
-export const getAllImport = async (id) => {
+export const getAllImport = async (params) => {
     try {
-        const res = await httpRequest.get(`import`);
+        const config = { params };
+        const res = await httpRequest.get(`import`, config);
         return res;
     } catch (error) {
         console.log(error);
@@ -80,9 +81,10 @@ export const getAllImport = async (id) => {
     }
 };
 
-export const getAllExport = async (id) => {
+export const getAllExport = async (params) => {
     try {
-        const res = await httpRequest.get(`export`);
+        const config = { params };
+        const res = await httpRequest.get(`export`, config);
         return res;
     } catch (error) {
         console.log(error);

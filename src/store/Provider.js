@@ -20,7 +20,7 @@ function Provider({ children }) {
         showToast,
     };
     const [state, dispatch] = useReducer(reducer, initState);
-
+    console.log(state);
     return (
         <UserContext.Provider value={[state, dispatch]}>
             {contextHolder}
