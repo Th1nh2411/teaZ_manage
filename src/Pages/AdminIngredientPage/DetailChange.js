@@ -4,14 +4,16 @@ import classNames from 'classnames/bind';
 import Modal from '../../components/Modal';
 import { useContext, useEffect, useState } from 'react';
 import * as ingredientService from '../../services/ingredientService';
-import { Badge, Descriptions } from 'antd';
+import { Badge, Col, Descriptions, Row, Table } from 'antd';
 import dayjs from 'dayjs';
 
 const cx = classNames.bind(styles);
 
 function DetailChange({ id, onCloseModal = () => {}, type = 'import' }) {
+    const [loading, setLoading] = useState(false);
     const [data, setData] = useState(null);
     const getDetailChange = async () => {
+        setLoading(true);
         const results =
             type === 'import'
                 ? await ingredientService.getDetailImport(id)
@@ -19,6 +21,7 @@ function DetailChange({ id, onCloseModal = () => {}, type = 'import' }) {
         if (results) {
             setData(results);
         }
+        setLoading(false);
     };
     console.log(data && data.isCompleted);
     console.log(data);
@@ -41,15 +44,12 @@ function DetailChange({ id, onCloseModal = () => {}, type = 'import' }) {
         {
             key: '4',
             label: 'Trạng thái',
-            children: (
+            children: data && (
                 <Badge
-                // text={
-                //     data && data.isCompleted === 1
-                //         ? 'Đã hoàn thành'
-                //         : data.isCompleted === 0
-                //         ? 'Chưa hoàn thành'
-                //         : 'Đã huỷ'
-                // }
+                    status={data.isCompleted === 1 ? 'success' : data.isCompleted === 0 ? 'error' : 'default'}
+                    text={
+                        data.isCompleted === 1 ? 'Đã hoàn thành' : data.isCompleted === 0 ? 'Chưa hoàn thành' : 'Đã huỷ'
+                    }
                 />
             ),
         },
@@ -62,6 +62,28 @@ function DetailChange({ id, onCloseModal = () => {}, type = 'import' }) {
     useEffect(() => {
         getDetailChange();
     }, []);
+    const tableColumns = [
+        {
+            title: 'id',
+            dataIndex: 'id',
+            key: 'id',
+        },
+        {
+            title: 'Tên',
+            dataIndex: 'name',
+            key: 'name',
+        },
+        {
+            title: 'Số lượng',
+            dataIndex: 'quantity',
+            key: 'quantity',
+        },
+        {
+            title: 'ĐVT',
+            dataIndex: 'unitName',
+            key: 'unitName',
+        },
+    ];
     return (
         <>
             <Modal
@@ -71,10 +93,39 @@ function DetailChange({ id, onCloseModal = () => {}, type = 'import' }) {
                 className={cx('form-wrapper')}
             >
                 <div className={cx('form-title')}>Chi tiết {type === 'import' ? 'nhập hàng' : 'xuất hàng'}</div>
-
-                <div className={cx('form-body')}>
-                    <Descriptions title="User Info" items={items} />
-                </div>
+                {loading ? (
+                    <div className={cx('loader')}>
+                        <span></span>
+                        <span></span>
+                    </div>
+                ) : (
+                    <Row gutter={[40, 40]}>
+                        <Col>
+                            <div className={cx('body-title')}>Danh sách nguyên liệu</div>
+                            <Table
+                                size="small"
+                                pagination={{
+                                    defaultPageSize: 5,
+                                    showSizeChanger: true,
+                                    pageSizeOptions: ['10', '20', '30'],
+                                }}
+                                loading={loading}
+                                bordered
+                                columns={tableColumns}
+                                dataSource={data && data.ingredients}
+                            />
+                        </Col>
+                        <Col>
+                            <div className={cx('body-title')}>Thông tin hoá đơn</div>
+                            {items.map((item) => (
+                                <p style={{ color: '#666', fontSize: 16 }}>
+                                    {item.label} :{' '}
+                                    <span style={{ color: '#000', fontWeight: 500 }}>{item.children}</span>
+                                </p>
+                            ))}
+                        </Col>
+                    </Row>
+                )}
             </Modal>
         </>
     );

@@ -11,7 +11,7 @@ import { FaFileInvoiceDollar } from 'react-icons/fa';
 import Tippy from '@tippyjs/react';
 import dayjs from 'dayjs';
 import { DatePicker, Divider, Select, Table } from 'antd';
-import { Col, Row } from 'react-bootstrap';
+import { Col, Row } from 'antd';
 import ExportFile from '../../components/ExportFile/ExportFile';
 import staticMethods from 'antd/es/message';
 import { StoreContext } from '../../store';
@@ -172,9 +172,9 @@ function QuantityChange() {
                         </div>
                     </div>
                 </div>
-                <div className={cx('content-body')}>
-                    <Row>
-                        <Col>
+                <div style={{ maxHeight: 'fit-content' }} className={cx('content-body')}>
+                    <Row gutter={[15, 15]}>
+                        <Col xs={24} xl={12}>
                             <Divider>
                                 <div className={cx('d-flex', 'align-items-center')}>
                                     Nhập hàng{' '}
@@ -212,7 +212,7 @@ function QuantityChange() {
                                 dataSource={imports}
                             />
                         </Col>
-                        <Col>
+                        <Col xs={24} xl={12}>
                             <Divider>
                                 <div className={cx('d-flex', 'align-items-center')}>
                                     Xuất hàng{' '}
