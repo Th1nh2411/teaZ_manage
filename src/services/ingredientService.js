@@ -132,9 +132,9 @@ export const createExportIngredient = async (body) => {
     }
 };
 
-export const deleteImportIngredient = async (body) => {
+export const deleteImportIngredient = async (id) => {
     try {
-        const res = await httpRequest.del(`import/ingredient`, body);
+        const res = await httpRequest.del(`import/ingredient/${id}`);
         return res;
     } catch (error) {
         console.log(error);
@@ -173,7 +173,7 @@ export const completeImport = async (id, token) => {
 
 export const cancelImport = async (id, token) => {
     try {
-        const res = await httpRequest.del(`import/cancel/${id}`);
+        const res = await httpRequest.del(`import/${id}`);
         return res;
     } catch (error) {
         console.log(error);

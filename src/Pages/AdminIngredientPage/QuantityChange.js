@@ -131,7 +131,7 @@ function QuantityChange() {
     const getListStaff = async () => {
         const results = await shopService.getListStaff();
         if (results) {
-            setStaffs(results.data.concat(state.userInfo));
+            setStaffs(results.data);
         }
     };
 

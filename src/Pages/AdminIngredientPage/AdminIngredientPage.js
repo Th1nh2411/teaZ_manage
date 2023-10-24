@@ -61,7 +61,6 @@ function AdminIngredientPage() {
         <div className={cx('wrapper')}>
             {showImportForm && (
                 <ImportForm
-                    selectedIngredient={selectedIngredient}
                     onCloseModal={(update) => {
                         if (update) {
                             getIngredients();
@@ -72,7 +71,6 @@ function AdminIngredientPage() {
             )}
             {showExportForm && (
                 <ExportForm
-                    selectedIngredient={selectedIngredient}
                     onCloseModal={(update) => {
                         if (update) {
                             getIngredients();
@@ -162,6 +160,32 @@ function AdminIngredientPage() {
                                     </div>
                                 </div>
                                 <div className={cx('content-body')}>
+                                    <div
+                                        style={{ margin: '15px 0' }}
+                                        className={cx('d-flex', 'justify-content-center')}
+                                    >
+                                        <Button
+                                            disable={userRole < 2}
+                                            onClick={() => {
+                                                setShowImportForm(true);
+                                            }}
+                                            primary
+                                            rightIcon={<BiImport />}
+                                            className={cx('action')}
+                                        >
+                                            Nhập hàng
+                                        </Button>
+                                        <Button
+                                            disable={userRole < 2}
+                                            onClick={() => {
+                                                setShowExportForm(true);
+                                            }}
+                                            rightIcon={<BiExport />}
+                                            className={cx('action')}
+                                        >
+                                            Xuất hàng
+                                        </Button>
+                                    </div>
                                     {ingredients && ingredients.length !== 0 ? (
                                         ingredients.map((ingredient, index) => (
                                             <div
@@ -205,29 +229,6 @@ function AdminIngredientPage() {
                                                     </div>
                                                 </div>
                                                 <div className={cx('ingredient-actions')}>
-                                                    <Button
-                                                        disable={userRole < 2}
-                                                        onClick={() => {
-                                                            setShowImportForm(true);
-                                                            setSelectedIngredient(ingredient);
-                                                        }}
-                                                        primary
-                                                        rightIcon={<BiImport />}
-                                                        className={cx('action')}
-                                                    >
-                                                        Nhập hàng
-                                                    </Button>
-                                                    <Button
-                                                        disable={userRole < 2}
-                                                        onClick={() => {
-                                                            setShowExportForm(true);
-                                                            setSelectedIngredient(ingredient);
-                                                        }}
-                                                        rightIcon={<BiExport />}
-                                                        className={cx('action')}
-                                                    >
-                                                        Xuất hàng
-                                                    </Button>
                                                     <Tippy content="Chỉnh sửa" placement="bottom" duration={0}>
                                                         <div className={cx('edit-btn')}>
                                                             <BiEdit

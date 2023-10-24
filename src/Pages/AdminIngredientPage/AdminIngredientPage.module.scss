@@ -252,6 +252,23 @@
         font-size: 1.8rem;
     }
 }
+.data-input {
+    width: 100%;
+    flex: 1;
+}
+.dynamic-delete-button {
+    position: relative;
+    top: 4px;
+    margin: 0 8px;
+    color: #999;
+    font-size: 2rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.dynamic-delete-button:hover {
+    color: #777;
+}
+
 @media (max-width: 892px) {
     .content-header {
         flex-direction: column;

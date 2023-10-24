@@ -3,7 +3,7 @@ import UserContext from './Context';
 import reducer from './reducer';
 import { actions } from '.';
 import Cookies from 'js-cookie';
-import { notification } from 'antd';
+import { ConfigProvider, notification } from 'antd';
 
 function Provider({ children }) {
     const [api, contextHolder] = notification.useNotification();
@@ -22,10 +22,18 @@ function Provider({ children }) {
     const [state, dispatch] = useReducer(reducer, initState);
     console.log(state);
     return (
-        <UserContext.Provider value={[state, dispatch]}>
-            {contextHolder}
-            {children}
-        </UserContext.Provider>
+        <ConfigProvider
+            theme={{
+                token: {
+                    fontFamily: 'Nunito, sans-serif',
+                },
+            }}
+        >
+            <UserContext.Provider value={[state, dispatch]}>
+                {contextHolder}
+                {children}
+            </UserContext.Provider>
+        </ConfigProvider>
     );
 }
 

@@ -123,6 +123,10 @@ a[href] {
 .ml-16 {
     margin-left: 16px;
 }
+.content-end {
+    justify-content: end;
+    display: flex;
+}
 .sep {
     &::before {
         content: '';
@@ -137,8 +141,9 @@ a[href] {
 .ant-message {
     z-index: 10000000;
 }
-.ant-col {
-    font-family: Nunito, sans-serif;
+
+.ant-btn-primary {
+    background-color: var(--primary-color);
 }
 body {
     .tippy-box {
