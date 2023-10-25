@@ -160,10 +160,7 @@ function AdminIngredientPage() {
                                     </div>
                                 </div>
                                 <div className={cx('content-body')}>
-                                    <div
-                                        style={{ margin: '15px 0' }}
-                                        className={cx('d-flex', 'justify-content-center')}
-                                    >
+                                    <div className={cx('change-actions')}>
                                         <Button
                                             disable={userRole < 2}
                                             onClick={() => {

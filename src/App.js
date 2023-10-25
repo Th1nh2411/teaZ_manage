@@ -37,6 +37,11 @@ function App() {
                 token: {
                     fontFamily: 'Nunito, sans-serif',
                 },
+                components: {
+                    Form: {
+                        marginLG: 16,
+                    },
+                },
             }}
         >
             <div className="App">

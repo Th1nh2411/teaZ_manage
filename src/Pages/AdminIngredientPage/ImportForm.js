@@ -9,24 +9,32 @@ import { ingredientFormat, onlyNumber, priceFormat } from '../../utils/format';
 import { Badge, Button, Form, Input, InputNumber, Popconfirm, Select, Skeleton, Space, Spin } from 'antd';
 import { BsCheckCircle, BsDashCircle, BsPlusCircle } from 'react-icons/bs';
 import dayjs from 'dayjs';
+import TextArea from 'antd/es/input/TextArea';
 const cx = classNames.bind(styles);
 
 function ImportForm({ onCloseModal = () => {} }) {
     const [loading, setLoading] = useState(false);
     const [importData, setImportData] = useState(false);
     const [ingredients, setIngredients] = useState(false);
+    const [description, setDescription] = useState('');
     const [state, dispatch] = useContext(StoreContext);
     const [form] = Form.useForm();
 
-    const confirmImportIngredients = async () => {
-        console.log(form.getFieldValue());
-        // setLoading(true);
-        // const results = await ingredientService.importIngredient();
-        // if (results) {
-        //     state.showToast('Nhập nguyên liệu', results.message);
-        //     onCloseModal(true);
-        // }
-        // setLoading(false);
+    const confirmImportIngredients = async (values) => {
+        if (values.ingredients && values.ingredients.length) {
+            addIngredientImport();
+        }
+
+        if (importData.description !== values.description) {
+            updateDescription(values.description);
+        }
+        setLoading(true);
+        const results = await ingredientService.completeImport(importData.id);
+        if (results) {
+            state.showToast('Nhập nguyên liệu', results.message);
+            onCloseModal(true);
+        }
+        setLoading(false);
     };
     const createNewImport = async () => {
         setLoading(true);
@@ -35,6 +43,7 @@ function ImportForm({ onCloseModal = () => {} }) {
             const results2 = await ingredientService.getDetailImport(results.data.id);
             if (results2) {
                 setImportData(results2);
+                setDescription(results2.description);
             }
         }
         setLoading(false);
@@ -58,9 +67,11 @@ function ImportForm({ onCloseModal = () => {} }) {
         }
     };
     const delIngredientImport = async (ingredientId) => {
-        const results = await ingredientService.deleteImportIngredient(ingredientId);
+        const results = await ingredientService.deleteImportIngredient({ importId: importData.id, ingredientId });
         if (results) {
             state.showToast(results.message);
+            createNewImport();
+            getImportIngredient();
         }
     };
     const cancelImport = async () => {
@@ -68,6 +79,12 @@ function ImportForm({ onCloseModal = () => {} }) {
         if (results) {
             state.showToast(results.message);
             onCloseModal();
+        }
+    };
+    const updateDescription = async (description) => {
+        const results = await ingredientService.updateImport(importData.id, { description });
+        if (results) {
+            state.showToast(results.message);
         }
     };
     const getImportIngredient = async () => {
@@ -95,16 +112,11 @@ function ImportForm({ onCloseModal = () => {} }) {
         },
         {
             key: '2',
-            label: 'Mô tả',
-            children: importData && importData.description,
-        },
-        {
-            key: '3',
             label: 'Nhân viên xử lý',
             children: importData && importData.staff && importData.staff.name,
         },
         {
-            key: '4',
+            key: '3',
             label: 'Trạng thái',
             children: importData && (
                 <Badge
@@ -131,69 +143,73 @@ function ImportForm({ onCloseModal = () => {} }) {
                         {item.label} : <span style={{ color: '#000', fontWeight: 500 }}>{item.children}</span>
                     </p>
                 ))}
-                {importData &&
-                    importData.import_ingredients.map((item, index) => {
-                        return (
-                            <div
-                                key={index}
-                                style={{ gap: 10, marginBottom: 12 }}
-                                className={cx('align-items-baseline', 'd-flex')}
-                            >
-                                <Input
-                                    style={{ flex: 1, minWidth: 150 }}
-                                    defaultValue={item.ingredient.name}
-                                    size="large"
-                                    disabled
-                                />
-                                <Input
-                                    style={{ width: 120 }}
-                                    addonAfter={
-                                        item.ingredient.unitName === 'g'
-                                            ? 'kg'
-                                            : item.ingredient.unitName === 'ml'
-                                            ? 'l'
-                                            : 'pcs'
-                                    }
-                                    defaultValue={item.quantity / 1000}
-                                    size="large"
-                                    disabled
-                                />
-                                <Input
-                                    style={{ width: 180 }}
-                                    addonAfter={'VND'}
-                                    defaultValue={priceFormat(item.price)}
-                                    formatter={(value) => value.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                                    parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
-                                    size="large"
-                                    disabled
-                                />
-
-                                <BsDashCircle
-                                    className={cx('dynamic-delete-button')}
-                                    onClick={() => delIngredientImport(item.id)}
-                                />
-                            </div>
-                        );
-                    })}
-                <Form
-                    form={form}
-                    size="large"
-                    onFinish={confirmImportIngredients}
-                    initialValues={{ ingredients: [{}] }}
-                >
-                    <Form.List
-                        name="ingredients"
-                        rules={[
-                            {
-                                validator: async (_, ingredients) => {
-                                    if (!ingredients || ingredients.length < 1) {
-                                        return Promise.reject(new Error('Phải có ít nhất 1 trường'));
-                                    }
+                <Form form={form} size="large" onFinish={confirmImportIngredients}>
+                    {importData.description && (
+                        <Form.Item
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Vui lòng nhập mô tả nhập hàng',
                                 },
-                            },
-                        ]}
-                    >
-                        {(fields, { add, remove }, { errors }) => (
+                            ]}
+                            label="Mô tả : "
+                            name="description"
+                            initialValue={importData.description}
+                        >
+                            <Input style={{ flex: 1, minWidth: 150 }} size="large" />
+                        </Form.Item>
+                    )}
+                    {importData &&
+                        importData.import_ingredients.map((item, index) => {
+                            return (
+                                <div
+                                    key={index}
+                                    style={{ gap: 10, marginBottom: 12 }}
+                                    className={cx('align-items-baseline', 'd-flex')}
+                                >
+                                    <Input
+                                        style={{ flex: 1, minWidth: 150 }}
+                                        defaultValue={item.ingredient.name}
+                                        size="large"
+                                        disabled
+                                    />
+                                    <Input
+                                        style={{ width: 120 }}
+                                        addonAfter={
+                                            item.ingredient.unitName === 'g'
+                                                ? 'kg'
+                                                : item.ingredient.unitName === 'ml'
+                                                ? 'l'
+                                                : 'pcs'
+                                        }
+                                        defaultValue={item.quantity / 1000}
+                                        size="large"
+                                        disabled
+                                    />
+                                    <Input
+                                        style={{ width: 180 }}
+                                        addonAfter={'VND'}
+                                        defaultValue={priceFormat(item.price)}
+                                        size="large"
+                                        disabled
+                                    />
+
+                                    <Popconfirm
+                                        title="Huỷ món"
+                                        description="Bạn chắc chắn huỷ món này?"
+                                        onConfirm={() => delIngredientImport(item.ingredient.id)}
+                                        okButtonProps={{ loading: loading }}
+                                        okText="Huỷ món"
+                                        cancelText="Quay lại"
+                                    >
+                                        <BsDashCircle className={cx('dynamic-delete-button')} />
+                                    </Popconfirm>
+                                </div>
+                            );
+                        })}
+
+                    <Form.List name="ingredients" initialValues={[{}]}>
+                        {(fields, { add, remove }) => (
                             <>
                                 {fields.map((field, index) => {
                                     return (
@@ -238,8 +254,6 @@ function ImportForm({ onCloseModal = () => {} }) {
                                         </Button>
                                     </div>
                                 </Form.Item>
-
-                                <Form.ErrorList errors={errors} />
                             </>
                         )}
                     </Form.List>
@@ -247,19 +261,20 @@ function ImportForm({ onCloseModal = () => {} }) {
                         <Popconfirm
                             title="Huỷ đơn"
                             description="Bạn chắc chắn huỷ đơn này?"
-                            onConfirm={() => {
-                                form.setFieldsValue(['']);
-                                cancelImport();
-                            }}
+                            onConfirm={() => cancelImport()}
                             okButtonProps={{ loading: loading }}
                             okText="Huỷ đơn"
                             cancelText="Quay lại"
                         >
-                            <Button size="large">Huỷ đơn</Button>
+                            <Form.Item style={{ margin: 0 }}>
+                                <Button size="large">Huỷ đơn</Button>
+                            </Form.Item>
                         </Popconfirm>
-                        <Button loading={loading} size="large" type="primary" htmlType="submit">
-                            Hoàn thành
-                        </Button>
+                        <Form.Item style={{ margin: 0 }}>
+                            <Button loading={loading} size="large" type="primary" htmlType="submit">
+                                Hoàn thành
+                            </Button>
+                        </Form.Item>
                     </Space>
                 </Form>
             </Spin>
@@ -268,7 +283,8 @@ function ImportForm({ onCloseModal = () => {} }) {
 }
 
 export default ImportForm;
-function ImportItem({ field, disabled, ingredients }) {
+function ImportItem({ field, ingredients }) {
+    const { key, ...restField } = field;
     const [unit, setUnit] = useState();
     const filterOption = (input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
     const onChangeIngredient = (value) => {
@@ -278,12 +294,12 @@ function ImportItem({ field, disabled, ingredients }) {
     return (
         <>
             <Form.Item
-                // {...field}
+                {...restField}
                 validateTrigger={['onChange', 'onBlur']}
                 rules={[
                     {
                         required: true,
-                        message: 'Vui lòng nhập trường này hoặc xoá nó đi',
+                        message: 'Vui lòng nhập',
                     },
                 ]}
                 noStyle
@@ -295,7 +311,7 @@ function ImportItem({ field, disabled, ingredients }) {
                     options={
                         ingredients &&
                         ingredients.map((item) => {
-                            return { label: item.name, value: item.id };
+                            return { label: item.name + ' (' + item.quantity / 1000 + ')', value: item.id };
                         })
                     }
                     style={{ flex: 1, minWidth: 150 }}
@@ -304,6 +320,7 @@ function ImportItem({ field, disabled, ingredients }) {
                 />
             </Form.Item>
             <Form.Item
+                {...restField}
                 validateTrigger={['onChange', 'onBlur']}
                 rules={[
                     {
@@ -325,11 +342,12 @@ function ImportItem({ field, disabled, ingredients }) {
                 />
             </Form.Item>
             <Form.Item
+                {...restField}
                 validateTrigger={['onChange', 'onBlur']}
                 rules={[
                     {
                         required: true,
-                        message: 'Vui lòng nhập trường này',
+                        message: 'Vui lòng nhập',
                     },
                 ]}
                 noStyle

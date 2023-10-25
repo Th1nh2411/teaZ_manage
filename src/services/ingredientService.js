@@ -1,6 +1,6 @@
 import * as httpRequest from '../utils/httpRequest';
 
-export const getListIngredient = async (token) => {
+export const getListIngredient = async () => {
     try {
         const res = await httpRequest.get('ingredient');
         return res;
@@ -30,9 +30,9 @@ export const getListIngredientToExport = async (id) => {
     }
 };
 
-export const updateImport = async (body) => {
+export const updateImport = async (id, body) => {
     try {
-        const res = await httpRequest.patch(`import`, body);
+        const res = await httpRequest.patch(`import/${id}`, body);
         return res;
     } catch (error) {
         console.log(error);
@@ -132,9 +132,10 @@ export const createExportIngredient = async (body) => {
     }
 };
 
-export const deleteImportIngredient = async (id) => {
+export const deleteImportIngredient = async (data) => {
+    const config = { data };
     try {
-        const res = await httpRequest.del(`import/ingredient/${id}`);
+        const res = await httpRequest.del(`import/ingredient`, config);
         return res;
     } catch (error) {
         console.log(error);
@@ -142,9 +143,10 @@ export const deleteImportIngredient = async (id) => {
     }
 };
 
-export const deleteExportIngredient = async (body) => {
+export const deleteExportIngredient = async (data) => {
+    const config = { data };
     try {
-        const res = await httpRequest.del(`export/ingredient`, body);
+        const res = await httpRequest.del(`export/ingredient`, data);
         return res;
     } catch (error) {
         console.log(error);
@@ -152,18 +154,18 @@ export const deleteExportIngredient = async (body) => {
     }
 };
 
-export const completeExport = async (id, token) => {
+export const completeExport = async (id) => {
     try {
-        const res = await httpRequest.put(`export/cancel/${id}`);
+        const res = await httpRequest.get(`export/complete/${id}`);
         return res;
     } catch (error) {
         console.log(error);
         return error.response && error.response.data;
     }
 };
-export const completeImport = async (id, token) => {
+export const completeImport = async (id) => {
     try {
-        const res = await httpRequest.put('invoice/completeInvoice');
+        const res = await httpRequest.get(`import/complete/${id}`);
         return res;
     } catch (error) {
         console.log(error);
@@ -171,7 +173,7 @@ export const completeImport = async (id, token) => {
     }
 };
 
-export const cancelImport = async (id, token) => {
+export const cancelImport = async (id) => {
     try {
         const res = await httpRequest.del(`import/${id}`);
         return res;
@@ -181,9 +183,9 @@ export const cancelImport = async (id, token) => {
     }
 };
 
-export const cancelExport = async (id, token) => {
+export const cancelExport = async (id) => {
     try {
-        const res = await httpRequest.del(`export/cancel/${id}`);
+        const res = await httpRequest.del(`export/${id}`);
         return res;
     } catch (error) {
         console.log(error);
@@ -191,7 +193,7 @@ export const cancelExport = async (id, token) => {
     }
 };
 
-export const importIngredient = async (price, quantity, idIngredient, token) => {
+export const importIngredient = async (price, quantity, idIngredient) => {
     const body = {
         price,
         quantity,
@@ -204,7 +206,7 @@ export const importIngredient = async (price, quantity, idIngredient, token) => 
         return error.response && error.response.data;
     }
 };
-export const exportIngredient = async (info, quantity, idIngredient, token) => {
+export const exportIngredient = async (info, quantity, idIngredient) => {
     const body = {
         info,
         quantity,
