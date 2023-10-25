@@ -40,8 +40,15 @@ function StaffPage() {
     };
 
     const editShopInfo = async (isActive = shopInfo.isActive) => {
-        const results = await shopService.editInfoShop({ isActive });
+        let results;
+        if (shopInfo.isActive) {
+            results = await shopService.editInfoShop({ isActive: 0 });
+        } else {
+            results = await shopService.editInfoShop({ isActive: 1 });
+        }
         if (results) {
+            getShopInfo();
+            getListStaff();
             setActive(isActive);
             state.showToast(results.message);
         }
@@ -67,9 +74,9 @@ function StaffPage() {
     }, []);
     const handleCheckBoxActive = (e) => {
         if (e.target.checked) {
-            editShopInfo(true);
+            editShopInfo(0);
         } else {
-            editShopInfo(false);
+            editShopInfo(1);
         }
     };
 
@@ -218,9 +225,6 @@ function StaffPage() {
                                             <th>Họ và tên</th>
                                             <th className={cx('text-center')}>Chức danh</th>
                                             <th className={cx('text-center')}>Số điện thoại</th>
-                                            <th className={cx('text-center', 'hidden-mb')}>Giới tính</th>
-                                            <th className={cx('text-center', 'hidden-mb')}>Ngày sinh</th>
-                                            <th className={cx('text-center', 'hidden-mb')}>Ngày vào làm</th>
                                             <th className={cx('text-end')}>Hành động</th>
                                         </tr>
                                     </thead>
@@ -236,21 +240,14 @@ function StaffPage() {
                                                                 yellow: staff.role === 1,
                                                             })}
                                                         >
-                                                            {staff.role == 1
+                                                            {staff.role === 1
                                                                 ? 'Nhân viên'
-                                                                : staff.role == 2
+                                                                : staff.role === 2
                                                                 ? 'Admin'
                                                                 : 'Quản lý'}
                                                         </div>
                                                     </td>
                                                     <td className={cx('text-center')}>{staff.phone}</td>
-                                                    <td className={cx('text-center', 'hidden-mb')}>{staff.gender}</td>
-                                                    <td className={cx('text-center')}>
-                                                        {dayjs(staff.birthday).format('YYYY-MM-DD')}
-                                                    </td>
-                                                    <td className={cx('text-center')}>
-                                                        {dayjs(staff.hiredate).format('YYYY-MM-DD')}
-                                                    </td>
                                                     <td className={cx('text-end')}>
                                                         <div className={cx('staff-actions')}>
                                                             <Tippy content="Chỉnh sửa" placement="bottom" duration={0}>

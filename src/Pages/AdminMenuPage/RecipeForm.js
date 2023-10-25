@@ -73,7 +73,7 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
 
         setLoading(true);
         const res = await adminService.uploadFile(image);
-        const results = await adminService.addRecipe(name, res.url, info, price, 100 - discount, idType);
+        const results = await adminService.addRecipe({ name, image: res.url, info, price, discount, idType });
         setLoading(false);
         if (results) {
             state.showToast('Thêm mới', results.message);

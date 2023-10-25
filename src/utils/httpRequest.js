@@ -2,7 +2,7 @@ import { Modal, notification } from 'antd';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 const httpRequest = axios.create({
-    baseURL: 'http://localhost:4000/api/v1/',
+    baseURL: 'http://localhost:4000/api/v1',
     withCredentials: true,
     headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' },
     credentials: 'include',

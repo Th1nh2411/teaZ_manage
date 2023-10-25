@@ -21,7 +21,7 @@ function StaffForm({ data, onCloseModal = () => {} }) {
     const [state, dispatch] = useContext(StoreContext);
     const userRole = state.userInfo && state.userInfo.role;
     const editStaff = async () => {
-        const results = await shopService.editStaff(data.idUser, { phone, name, password });
+        const results = await shopService.editStaff(data.id, { phone, name, password });
         if (results) {
             if (data.role === 2) {
                 const results2 = await authService.refreshToken(phone);
@@ -36,7 +36,8 @@ function StaffForm({ data, onCloseModal = () => {} }) {
         }
     };
     const addNewStaff = async () => {
-        const results = await shopService.addStaff(phone, name, password);
+        console.log(phone, name, password);
+        const results = await shopService.addStaff({ phone, name, password });
         if (results) {
             state.showToast(results.message);
 
@@ -115,7 +116,7 @@ function StaffForm({ data, onCloseModal = () => {} }) {
                                 setValueChange(true);
                             }}
                             value={password}
-                            title="Mật khẩu mới"
+                            title="Mật khẩu"
                             type="text"
                         />
                     </div>

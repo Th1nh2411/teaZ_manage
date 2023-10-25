@@ -136,7 +136,7 @@ export const addRecipe = async (name, image, info, price, discount, idType) => {
         idType,
     };
     try {
-        const res = await httpRequest.post(`admin/addRecipe`, body);
+        const res = await httpRequest.post(`recipe`, body);
         return res;
     } catch (error) {
         console.log(error);
@@ -145,7 +145,7 @@ export const addRecipe = async (name, image, info, price, discount, idType) => {
 };
 export const editRecipe = async (idRecipe, body) => {
     try {
-        const res = await httpRequest.patch(`admin/editRecipe/${idRecipe}`, body);
+        const res = await httpRequest.patch(`recipe/${idRecipe}`, body);
         return res;
     } catch (error) {
         console.log(error);

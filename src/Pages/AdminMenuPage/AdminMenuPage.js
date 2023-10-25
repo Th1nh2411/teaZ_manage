@@ -62,18 +62,19 @@ function AdminMenuPage() {
     }, []);
     const getListToppingByType = async (id) => {
         const results = await adminService.getListToppingByType(id);
+        console.log(results);
         if (results) {
             setListToppingByType(results.data);
         }
     };
     useEffect(() => {
-        getListToppingByType();
+        getListToppingByType(1);
     }, []);
     return (
         <div className={cx('wrapper')}>
             {showEditForm && (
                 <RecipeForm
-                    idRecipe={selectedRecipe.idRecipe}
+                    id={selectedRecipe.id}
                     onCloseModal={(updated) => {
                         if (updated) {
                             getMenuDataByType(1);
@@ -101,9 +102,7 @@ function AdminMenuPage() {
                             onUpdateTopping={async () => await getListToppingByType()}
                             idType={1}
                             titleIcon={<SiBuymeacoffee className={cx('icon')} />}
-                            topping={
-                                listToppingByType && listToppingByType.find((type) => type.idType === 1).listToppings
-                            }
+                            topping={listToppingByType && listToppingByType.find((type) => type.idType === 1)}
                             menuData={menuType1}
                             title="Trà sữa"
                             onShowEditForm={(data) => {
@@ -118,9 +117,7 @@ function AdminMenuPage() {
                             onUpdateTopping={async () => await getListToppingByType()}
                             idType={2}
                             titleIcon={<GiCoffeeBeans className={cx('icon')} />}
-                            topping={
-                                listToppingByType && listToppingByType.find((type) => type.idType === 2).listToppings
-                            }
+                            topping={listToppingByType && listToppingByType.find((type) => type.idType === 2)}
                             menuData={menuType2}
                             title="Cà phê"
                             onShowEditForm={(data) => {
@@ -135,9 +132,7 @@ function AdminMenuPage() {
                             onUpdateTopping={async () => await getListToppingByType()}
                             idType={3}
                             titleIcon={<TbPaperBag className={cx('icon')} />}
-                            topping={
-                                listToppingByType && listToppingByType.find((type) => type.idType === 3).listToppings
-                            }
+                            topping={listToppingByType && listToppingByType.find((type) => type.idType === 3)}
                             menuData={menuType3}
                             title="Trà trái cây"
                             onShowEditForm={(data) => {
@@ -152,9 +147,7 @@ function AdminMenuPage() {
                             onUpdateTopping={async () => await getListToppingByType()}
                             idType={4}
                             titleIcon={<SiCakephp className={cx('icon')} />}
-                            topping={
-                                listToppingByType && listToppingByType.find((type) => type.idType === 4).listToppings
-                            }
+                            topping={listToppingByType && listToppingByType.find((type) => type.idType === 4)}
                             menuData={menuType4}
                             title="Bakery"
                             onShowEditForm={(data) => {
@@ -198,16 +191,14 @@ function ContentWrapper({
         setMenu(menuData);
     }, [menuData]);
     const listAddToppingFiltered =
-        allTopping &&
-        topping &&
-        allTopping.filter((item) => !topping.some((item2) => item2.idRecipe === item.idRecipe));
-    const addToppingToType = async (idRecipe) => {
-        const results = await adminService.addToppingToType(idRecipe, idType);
+        allTopping && topping && allTopping.filter((item) => !topping.some((item2) => item2.id === item.id));
+    const addToppingToType = async (id) => {
+        const results = await adminService.addToppingToType(id, idType);
         if (results) {
         }
     };
-    const deleteToppingFromType = async (idRecipe) => {
-        const results = await adminService.delToppingFromType(idRecipe, idType);
+    const deleteToppingFromType = async (id) => {
+        const results = await adminService.delToppingFromType(id, idType);
         if (results) {
         }
     };
@@ -242,7 +233,7 @@ function ContentWrapper({
                             menu &&
                             menu.map((item) => {
                                 return {
-                                    id: item.idRecipe,
+                                    id: item.id,
                                     Tên: item.name,
                                     'Mô tả': item.info,
                                     Giá: item.price,
@@ -273,7 +264,7 @@ function ContentWrapper({
                                     listAddToppingFiltered.map((item, index) => (
                                         <div
                                             onClick={async () => {
-                                                await addToppingToType(item.idRecipe);
+                                                await addToppingToType(item.id);
                                                 setShowAllTopping(false);
                                                 onUpdateTopping();
                                             }}
@@ -338,7 +329,7 @@ function ContentWrapper({
                                         <div
                                             onClick={async () => {
                                                 if (window.confirm('Remove the item?')) {
-                                                    await deleteToppingFromType(item.idRecipe);
+                                                    await deleteToppingFromType(item.id);
                                                     onUpdateTopping();
                                                 }
                                             }}
