@@ -137,7 +137,7 @@ function AdminIngredientPage() {
                                         <ExportFile
                                             csvData={
                                                 ingredients &&
-                                                ingredients.map((item) => {
+                                                ingredients.map((item, index) => {
                                                     return {
                                                         id: item.idIngredient,
                                                         Tên: item.name,

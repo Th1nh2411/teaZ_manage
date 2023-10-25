@@ -5,6 +5,7 @@ import { Fragment, useContext, useEffect, useState } from 'react';
 import config from './config';
 import dayjs from 'dayjs';
 import { StoreContext } from './store';
+import { ConfigProvider } from 'antd';
 
 function App() {
     const [state, dispatch] = useContext(StoreContext);
@@ -31,56 +32,64 @@ function App() {
         document.title = titles[location.pathname] ?? 'TeaZ - Manage';
     }, [location]);
     return (
-        <div className="App">
-            <Routes>
-                {privateRoutes.map((route, index) => {
-                    let Layout = DefaultLayout;
-                    if (route.layout) {
-                        Layout = route.layout;
-                    } else if (route.layout === null) {
-                        Layout = Fragment;
-                    }
-                    const Element = route.component;
-                    return (
-                        <Route
-                            exact
-                            key={index}
-                            path={route.path}
-                            element={
-                                state.userInfo ? (
+        <ConfigProvider
+            theme={{
+                token: {
+                    fontFamily: 'Nunito, sans-serif',
+                },
+            }}
+        >
+            <div className="App">
+                <Routes>
+                    {privateRoutes.map((route, index) => {
+                        let Layout = DefaultLayout;
+                        if (route.layout) {
+                            Layout = route.layout;
+                        } else if (route.layout === null) {
+                            Layout = Fragment;
+                        }
+                        const Element = route.component;
+                        return (
+                            <Route
+                                exact
+                                key={index}
+                                path={route.path}
+                                element={
+                                    state.userInfo ? (
+                                        <Layout>
+                                            <Element />
+                                        </Layout>
+                                    ) : (
+                                        <Navigate to={config.routes.login} replace />
+                                    )
+                                }
+                            />
+                        );
+                    })}
+                    {publicRoutes.map((route, index) => {
+                        let Layout = DefaultLayout;
+                        if (route.layout) {
+                            Layout = route.layout;
+                        } else if (route.layout === null) {
+                            Layout = Fragment;
+                        }
+                        const Element = route.component;
+                        return (
+                            <Route
+                                exact
+                                key={index}
+                                path={route.path}
+                                element={
                                     <Layout>
                                         <Element />
                                     </Layout>
-                                ) : (
-                                    <Navigate to={config.routes.login} replace />
-                                )
-                            }
-                        />
-                    );
-                })}
-                {publicRoutes.map((route, index) => {
-                    let Layout = DefaultLayout;
-                    if (route.layout) {
-                        Layout = route.layout;
-                    } else if (route.layout === null) {
-                        Layout = Fragment;
-                    }
-                    const Element = route.component;
-                    return (
-                        <Route
-                            exact
-                            key={index}
-                            path={route.path}
-                            element={
-                                <Layout>
-                                    <Element />
-                                </Layout>
-                            }
-                        />
-                    );
-                })}
-            </Routes>
-        </div>
+                                }
+                            />
+                        );
+                    })}
+                </Routes>
+            </div>
+        </ConfigProvider>
     );
 }
 

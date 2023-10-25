@@ -63,8 +63,8 @@ function QuantityChange() {
             title: 'Nhân viên',
             dataIndex: 'staff',
             key: 'staff',
-            filters: staffs.map((item) => {
-                return { text: item.name, value: item.name };
+            filters: staffs.map((item, index) => {
+                return { text: item.name, value: item.name, key: index };
             }),
             onFilter: (value, record) => record.staff === value,
         },

@@ -6,7 +6,7 @@ import { Col, Row } from 'react-bootstrap';
 import { useContext, useEffect, useState } from 'react';
 import * as reportService from '../../services/reportService';
 import { StoreContext, actions } from '../../store';
-import { formatNumber, formatPrice, priceFormat, timeGap } from '../../utils/format';
+import { formatNumber, priceFormatReport, priceFormat, timeGap } from '../../utils/format';
 
 import Tippy from '@tippyjs/react';
 import dayjs, { Dayjs } from 'dayjs';
@@ -90,7 +90,7 @@ function ReportPage() {
                                     <div className={cx('report-info')}>
                                         <div className={cx('report-title')}>Doanh thu</div>
                                         <div className={cx('report-num')}>
-                                            {formatPrice(reports ? reports.total : 0)}
+                                            {priceFormatReport(reports ? reports.total : 0)}
                                         </div>
                                     </div>
                                 </div>

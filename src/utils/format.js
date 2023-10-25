@@ -25,7 +25,7 @@ export const onlyNumber = (input) => {
     var regex = /^(\d+(\.\d*)?|)$/;
     return regex.test(input);
 };
-export function formatPrice(number) {
+export function priceFormatReport(number) {
     // Kiểm tra nếu số nhỏ hơn 1000, không cần thay đổi
     if (typeof number !== 'number') {
         return 0;
