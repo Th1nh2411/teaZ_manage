@@ -22,15 +22,17 @@ const Login = ({ setAuth }) => {
         event.preventDefault();
         const getTokenApi = async () => {
             const results = await authService.login({ phone, password });
-            if (results && results.userInfo && results.userInfo.role !== 0) {
+            if(results && results.userInfo && results.userInfo.role === 0){
+                state.showToast('Đăng nhập', 'Sai tài khoản hoặc mật khẩu','error');
+            }
+            else if (results && results.userInfo && results.userInfo.role !== 0) {
                 Cookies.set('userInfo', JSON.stringify(results.userInfo));
                 dispatch(actions.setUserInfo(results.userInfo));
                 state.showToast('Đăng nhập', results.message);
 
                 navigate(config.routes.order);
-            } else {
+            } else  {
                 setPassword('');
-                setErrorMessage(results.message);
             }
         };
         getTokenApi();
