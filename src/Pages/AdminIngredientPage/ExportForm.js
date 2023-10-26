@@ -5,7 +5,7 @@ import { useContext, useEffect, useState } from 'react';
 import * as ingredientService from '../../services/ingredientService';
 import { StoreContext, actions } from '../../store';
 import { BiImport, BiExport } from 'react-icons/bi';
-import { ingredientFormat, onlyNumber, priceFormat } from '../../utils/format';
+import { ingredientFormat, onlyNumber, priceFormat, unitFormatL } from '../../utils/format';
 import { Badge, Button, Form, Input, InputNumber, Popconfirm, Select, Skeleton, Space, Spin } from 'antd';
 import { BsCheckCircle, BsDashCircle, BsPlusCircle } from 'react-icons/bs';
 import dayjs from 'dayjs';
@@ -176,13 +176,7 @@ function ExportForm({ onCloseModal = () => {} }) {
                                     />
                                     <Input
                                         style={{ width: 120 }}
-                                        addonAfter={
-                                            item.ingredient && item.ingredient.unitName === 'g'
-                                                ? 'kg'
-                                                : item.ingredient && item.ingredient.unitName === 'ml'
-                                                ? 'l'
-                                                : 'pcs'
-                                        }
+                                        addonAfter={item.ingredient && unitFormatL(item.ingredient.unitName)}
                                         defaultValue={item.quantity / 1000}
                                         size="large"
                                         disabled
@@ -313,12 +307,7 @@ function ExportItem({ field, ingredients }) {
                         ingredients &&
                         ingredients.map((item) => {
                             return {
-                                label:
-                                    item.name +
-                                    ' (' +
-                                    item.quantity / 1000 +
-                                    (item.unitName === 'g' ? 'kg' : item.unitName === 'ml' ? 'l' : 'pcs') +
-                                    ' left)',
+                                label: item.name + ' (' + item.quantity / 1000 + unitFormatL(item.unitName) + ' left)',
                                 value: item.id,
                             };
                         })
@@ -347,7 +336,7 @@ function ExportItem({ field, ingredients }) {
                     min={0}
                     placeholder="Số lượng"
                     controls={false}
-                    addonAfter={unit === 'g' ? 'kg' : unit === 'ml' ? 'l' : 'pcs'}
+                    addonAfter={unitFormatL(unit)}
                 />
             </Form.Item>
             <Form.Item

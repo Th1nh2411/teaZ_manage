@@ -154,6 +154,7 @@ function IngredientForm({ data, onCloseModal = () => {} }) {
                                         label: 'pcs',
                                     },
                                 ]}
+                                style={{ minWidth: 100 }}
                             />
                         </div>
                         <div style={{ marginLeft: 2 }} className={cx('d-flex', 'align-items-center', 'mt-16')}>

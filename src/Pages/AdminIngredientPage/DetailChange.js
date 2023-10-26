@@ -6,6 +6,7 @@ import { useContext, useEffect, useState } from 'react';
 import * as ingredientService from '../../services/ingredientService';
 import { Badge, Col, Descriptions, Row, Table } from 'antd';
 import dayjs from 'dayjs';
+import { priceFormat, unitFormatL } from '../../utils/format';
 
 const cx = classNames.bind(styles);
 
@@ -23,8 +24,6 @@ function DetailChange({ id, onCloseModal = () => {}, type = 'import' }) {
         }
         setLoading(false);
     };
-    console.log(data && data.isCompleted);
-    console.log(data);
     const items = [
         {
             key: '1',
@@ -83,6 +82,11 @@ function DetailChange({ id, onCloseModal = () => {}, type = 'import' }) {
             dataIndex: 'unitName',
             key: 'unitName',
         },
+        {
+            title: 'Giá',
+            dataIndex: 'price',
+            key: 'price',
+        },
     ];
     return (
         <>
@@ -112,7 +116,18 @@ function DetailChange({ id, onCloseModal = () => {}, type = 'import' }) {
                                 loading={loading}
                                 bordered
                                 columns={tableColumns}
-                                dataSource={data && data.ingredients}
+                                dataSource={
+                                    data &&
+                                    data.import_ingredients.map((item) => {
+                                        return {
+                                            ...item,
+                                            price: priceFormat(item.price) + 'đ',
+                                            name: item.ingredient.name,
+                                            unitName: unitFormatL(item.ingredient.unitName),
+                                            id: item.ingredient.id,
+                                        };
+                                    })
+                                }
                             />
                         </Col>
                         <Col>

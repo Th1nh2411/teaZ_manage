@@ -9,6 +9,9 @@ export function priceFormat(number) {
             .replace(/\B(?=(\d{3})+(?!\d))/g, '.')
     );
 }
+export function unitFormatL(unit) {
+    return unit === 'g' ? 'kg' : unit === 'ml' ? 'l' : 'pcs';
+}
 export function ingredientFormat(quantity, unit) {
     if (quantity >= 1000) {
         if (unit === 'g') {
