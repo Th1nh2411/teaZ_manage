@@ -1,11 +1,11 @@
 import * as httpRequest from '../utils/httpRequest';
 
-export const getReportByDate = async (date, token, quantity = 3, type = 'month') => {
+export const getReportByDate = async (fromdate, todate) => {
     const config = {
-        params: { quantity, type },
+        params: { fromdate, todate },
     };
     try {
-        const res = await httpRequest.get(`admin/reportByDate/${date}`, config);
+        const res = await httpRequest.get(`invoice/statistical/get`, config);
         return res;
     } catch (error) {
         console.log(error);

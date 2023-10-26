@@ -27,7 +27,7 @@ function RecipeForm({ id, onCloseModal = () => {} }) {
     const [info, setInfoValue] = useState('');
     const [price, setPriceValue] = useState('');
     const [discount, setDiscountValue] = useState('');
-    const [idType, setType] = useState(1);
+    const [typeId, setType] = useState(1);
     const [loading, setLoading] = useState(false);
     const [valueChange, setValueChange] = useState(false);
     const [state, dispatch] = useContext(StoreContext);
@@ -46,17 +46,17 @@ function RecipeForm({ id, onCloseModal = () => {} }) {
         const res = image && (await adminService.uploadFile(image));
         const results = await adminService.editRecipe(id, {
             name,
-            image: res && res.url,
+            image: res ? res.url : undefined,
             info,
             price,
             discount: 100 - discount,
-            idType,
+            typeId,
         });
         setLoading(false);
         if (results) {
             state.showToast(results.message);
-
-            onCloseModal(true);
+            console.log(typeId);
+            onCloseModal(typeId);
         }
     };
     const addNewMenuItem = async () => {
@@ -73,12 +73,12 @@ function RecipeForm({ id, onCloseModal = () => {} }) {
 
         setLoading(true);
         const res = await adminService.uploadFile(image);
-        const results = await adminService.addRecipe({ name, image: res.url, info, price, discount, idType });
+        const results = await adminService.addRecipe({ name, image: res.url, info, price, discount, typeId });
         setLoading(false);
         if (results) {
             state.showToast('Thêm mới', results.message);
 
-            onCloseModal(true);
+            onCloseModal(typeId);
         }
     };
     const getDetailRecipe = async () => {
@@ -89,7 +89,7 @@ function RecipeForm({ id, onCloseModal = () => {} }) {
             setInfoValue(results.data.info);
             setPriceValue(results.data.price);
             setDiscountValue(100 - results.data.discount);
-            setType(results.data.idType);
+            setType(results.data.typeId);
         }
     };
 
@@ -100,7 +100,7 @@ function RecipeForm({ id, onCloseModal = () => {} }) {
             setInfoValue(detailRecipe.info);
             setPriceValue(detailRecipe.price);
             setDiscountValue(100 - detailRecipe.discount);
-            setType(detailRecipe.idType);
+            setType(detailRecipe.typeId);
         } else {
             setNameValue('');
             setInfoValue('');
@@ -130,20 +130,20 @@ function RecipeForm({ id, onCloseModal = () => {} }) {
                 detailRecipe.info !== info ||
                 detailRecipe.price !== Number(price) ||
                 100 - detailRecipe.discount !== Number(discount) ||
-                detailRecipe.idType !== Number(idType)
+                detailRecipe.typeId !== Number(typeId)
             ) {
                 setValueChange(true);
             } else {
                 setValueChange(false);
             }
         } else {
-            if (name !== '' || image !== null || info !== '' || price !== '' || discount !== '' || idType !== 1) {
+            if (name !== '' || image !== null || info !== '' || price !== '' || discount !== '' || typeId !== 1) {
                 setValueChange(true);
             } else {
                 setValueChange(false);
             }
         }
-    }, [name, price, info, image, discount, idType]);
+    }, [name, price, info, image, discount, typeId]);
     return (
         <>
             <Modal
@@ -236,7 +236,7 @@ function RecipeForm({ id, onCloseModal = () => {} }) {
                             <Col md={4}>
                                 <select
                                     className={cx('custom-select')}
-                                    value={idType}
+                                    value={typeId}
                                     onChange={(event) => {
                                         setType(event.target.value);
                                     }}
@@ -293,7 +293,7 @@ function RecipeForm({ id, onCloseModal = () => {} }) {
                                 className={cx('confirm-btn')}
                                 type="primary"
                             >
-                                Cập nhật
+                                {id ? 'Cập nhật' : 'Thêm mới'}
                             </Button>
                         </div>
                     </div>

@@ -43,7 +43,9 @@ function AdminMenuPage() {
                 ? setMenuType2(results.data)
                 : idType === 3
                 ? setMenuType3(results.data)
-                : setMenuType4(results.data);
+                : idType === 4
+                ? setMenuType4(results.data)
+                : setAllTopping(results.data);
         }
         setLoading(false);
     };
@@ -64,34 +66,23 @@ function AdminMenuPage() {
         getMenuDataByType(2);
         getMenuDataByType(3);
         getMenuDataByType(4);
+        getMenuDataByType(5);
         getListToppingByType(1);
         getListToppingByType(2);
         getListToppingByType(3);
         getListToppingByType(4);
     }, []);
 
-    const getAllTopping = async () => {
-        const results = await menuService.getMenuByType(5);
-        if (results) {
-            setAllTopping(results.data);
-        }
-    };
-    useEffect(() => {
-        getAllTopping();
-    }, []);
     return (
         <div className={cx('wrapper')}>
             {showEditForm && (
                 <RecipeForm
                     id={selectedRecipe.id}
-                    onCloseModal={(updated) => {
-                        if (updated) {
-                            getMenuDataByType(1);
-                            getMenuDataByType(2);
-                            getMenuDataByType(3);
-                            getMenuDataByType(4);
+                    onCloseModal={(idUpdated) => {
+                        console.log(idUpdated);
+                        if (idUpdated) {
+                            getMenuDataByType(idUpdated);
                             // getListToppingByType();
-                            getAllTopping();
                         }
                         setShowEditForm(false);
                         setSelectedRecipe(false);

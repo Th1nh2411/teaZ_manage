@@ -44,7 +44,8 @@ function StaffForm({ data, onCloseModal = () => {} }) {
             onCloseModal(true);
         }
     };
-    const handleCancelEdit = () => {
+    const handleCancelEdit = (e) => {
+        e.preventDefault();
         if (data) {
             setNameValue(data.name);
             setPhoneValue(data.phone);

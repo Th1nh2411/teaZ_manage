@@ -79,7 +79,7 @@ function StaffPage() {
             editShopInfo(1);
         }
     };
-
+    console.log(listStaff);
     return (
         <div className={cx('wrapper')}>
             {showStaffForm && (
@@ -236,15 +236,10 @@ function StaffPage() {
                                                     <td>
                                                         <div
                                                             className={cx('staff-role', {
-                                                                blue: staff.role === 2,
-                                                                yellow: staff.role === 1,
+                                                                blue: staff.role === 1,
                                                             })}
                                                         >
-                                                            {staff.role === 1
-                                                                ? 'Nhân viên'
-                                                                : staff.role === 2
-                                                                ? 'Admin'
-                                                                : 'Quản lý'}
+                                                            {staff.role === 1 ? 'Nhân viên' : 'Quản lý'}
                                                         </div>
                                                     </td>
                                                     <td className={cx('text-center')}>{staff.phone}</td>
@@ -261,25 +256,19 @@ function StaffPage() {
                                                                     <RiEditCircleFill />
                                                                 </div>
                                                             </Tippy>
-                                                            {
-                                                                (staff.role = 2 && (
-                                                                    <Tippy
-                                                                        content="Xóa"
-                                                                        placement="bottom"
-                                                                        duration={0}
+                                                            {staff.role === 1 && (
+                                                                <Tippy content="Xóa" placement="bottom" duration={0}>
+                                                                    <div
+                                                                        onClick={() => {
+                                                                            setShowConfirmDelStaff(true);
+                                                                            setStaffData(staff);
+                                                                        }}
+                                                                        className={cx('icon', 'red')}
                                                                     >
-                                                                        <div
-                                                                            onClick={() => {
-                                                                                setShowConfirmDelStaff(true);
-                                                                                setStaffData(staff);
-                                                                            }}
-                                                                            className={cx('icon', 'red')}
-                                                                        >
-                                                                            <RiDeleteBin2Fill />
-                                                                        </div>
-                                                                    </Tippy>
-                                                                ))
-                                                            }
+                                                                        <RiDeleteBin2Fill />
+                                                                    </div>
+                                                                </Tippy>
+                                                            )}
                                                         </div>
                                                     </td>
                                                 </tr>

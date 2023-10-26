@@ -16,7 +16,6 @@ function ImportForm({ onCloseModal = () => {} }) {
     const [loading, setLoading] = useState(false);
     const [importData, setImportData] = useState(false);
     const [ingredients, setIngredients] = useState(false);
-    const [description, setDescription] = useState('');
     const [state, dispatch] = useContext(StoreContext);
     const [form] = Form.useForm();
 
@@ -43,7 +42,6 @@ function ImportForm({ onCloseModal = () => {} }) {
             const results2 = await ingredientService.getDetailImport(results.data.id);
             if (results2) {
                 setImportData(results2);
-                setDescription(results2.description);
             }
         }
         setLoading(false);

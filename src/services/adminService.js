@@ -126,15 +126,7 @@ export const getDetailRecipe = async (idRecipe) => {
         return error.response && error.response.data;
     }
 };
-export const addRecipe = async (name, image, info, price, discount, idType) => {
-    const body = {
-        name,
-        image,
-        info,
-        price,
-        discount,
-        idType,
-    };
+export const addRecipe = async (body) => {
     try {
         const res = await httpRequest.post(`recipe`, body);
         return res;
@@ -152,14 +144,27 @@ export const editRecipe = async (idRecipe, body) => {
         return error.response && error.response.data;
     }
 };
-export const editIngredientFromRecipe = async (idRecipe, idIngredient, quantity) => {
-    const body = {
-        idRecipe,
-        idIngredient,
-        quantity,
-    };
+export const addIngredientFromRecipe = async (body) => {
     try {
-        const res = await httpRequest.put(`admin/editRecipeIngredient`, body);
+        const res = await httpRequest.post(`recipe-ingredient`, body);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return error.response && error.response.data;
+    }
+};
+export const editIngredientFromRecipe = async (body) => {
+    try {
+        const res = await httpRequest.patch(`recipe-ingredient`, body);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return error.response && error.response.data;
+    }
+};
+export const removeIngredientFromRecipe = async (body) => {
+    try {
+        const res = await httpRequest.del(`recipe-ingredient`, { data: body });
         return res;
     } catch (error) {
         console.log(error);

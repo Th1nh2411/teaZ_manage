@@ -16,7 +16,6 @@ function ExportForm({ onCloseModal = () => {} }) {
     const [loading, setLoading] = useState(false);
     const [exportData, setExportData] = useState(false);
     const [ingredients, setIngredients] = useState(false);
-    const [description, setDescription] = useState('');
     const [state, dispatch] = useContext(StoreContext);
     const [form] = Form.useForm();
 
@@ -43,7 +42,6 @@ function ExportForm({ onCloseModal = () => {} }) {
             const results2 = await ingredientService.getDetailExport(results.data.id);
             if (results2) {
                 setExportData(results2);
-                setDescription(results2.description);
             }
         }
         setLoading(false);
