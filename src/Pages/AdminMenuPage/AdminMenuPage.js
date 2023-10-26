@@ -26,10 +26,13 @@ function AdminMenuPage() {
     const [menuType2, setMenuType2] = useState([]);
     const [menuType3, setMenuType3] = useState([]);
     const [menuType4, setMenuType4] = useState([]);
+    const [topping1, setTopping1] = useState();
+    const [topping2, setTopping2] = useState();
+    const [topping3, setTopping3] = useState();
+    const [topping4, setTopping4] = useState();
     const [allTopping, setAllTopping] = useState();
     const [showEditForm, setShowEditForm] = useState();
     const [selectedRecipe, setSelectedRecipe] = useState();
-    const [listToppingByType, setListToppingByType] = useState();
     const getMenuDataByType = async (idType) => {
         setLoading(true);
         const results = await menuService.getMenuByType(idType);
@@ -44,11 +47,27 @@ function AdminMenuPage() {
         }
         setLoading(false);
     };
+    const getListToppingByType = async (idType) => {
+        const results = await adminService.getListToppingByType(idType);
+        if (results) {
+            idType === 1
+                ? setTopping1(results.data)
+                : idType === 2
+                ? setTopping2(results.data)
+                : idType === 3
+                ? setTopping3(results.data)
+                : setTopping4(results.data);
+        }
+    };
     useEffect(() => {
         getMenuDataByType(1);
         getMenuDataByType(2);
         getMenuDataByType(3);
         getMenuDataByType(4);
+        getListToppingByType(1);
+        getListToppingByType(2);
+        getListToppingByType(3);
+        getListToppingByType(4);
     }, []);
 
     const getAllTopping = async () => {
@@ -59,16 +78,6 @@ function AdminMenuPage() {
     };
     useEffect(() => {
         getAllTopping();
-    }, []);
-    const getListToppingByType = async (id) => {
-        const results = await adminService.getListToppingByType(id);
-        console.log(results);
-        if (results) {
-            setListToppingByType(results.data);
-        }
-    };
-    useEffect(() => {
-        getListToppingByType(1);
     }, []);
     return (
         <div className={cx('wrapper')}>
@@ -102,7 +111,7 @@ function AdminMenuPage() {
                             onUpdateTopping={async () => await getListToppingByType()}
                             idType={1}
                             titleIcon={<SiBuymeacoffee className={cx('icon')} />}
-                            topping={listToppingByType && listToppingByType.find((type) => type.idType === 1)}
+                            topping={topping1}
                             menuData={menuType1}
                             title="Trà sữa"
                             onShowEditForm={(data) => {
@@ -117,7 +126,7 @@ function AdminMenuPage() {
                             onUpdateTopping={async () => await getListToppingByType()}
                             idType={2}
                             titleIcon={<GiCoffeeBeans className={cx('icon')} />}
-                            topping={listToppingByType && listToppingByType.find((type) => type.idType === 2)}
+                            topping={topping2}
                             menuData={menuType2}
                             title="Cà phê"
                             onShowEditForm={(data) => {
@@ -132,7 +141,7 @@ function AdminMenuPage() {
                             onUpdateTopping={async () => await getListToppingByType()}
                             idType={3}
                             titleIcon={<TbPaperBag className={cx('icon')} />}
-                            topping={listToppingByType && listToppingByType.find((type) => type.idType === 3)}
+                            topping={topping3}
                             menuData={menuType3}
                             title="Trà trái cây"
                             onShowEditForm={(data) => {
@@ -147,7 +156,7 @@ function AdminMenuPage() {
                             onUpdateTopping={async () => await getListToppingByType()}
                             idType={4}
                             titleIcon={<SiCakephp className={cx('icon')} />}
-                            topping={listToppingByType && listToppingByType.find((type) => type.idType === 4)}
+                            topping={topping4}
                             menuData={menuType4}
                             title="Bakery"
                             onShowEditForm={(data) => {

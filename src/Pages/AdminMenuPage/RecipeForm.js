@@ -19,7 +19,7 @@ import { BiUpload } from 'react-icons/bi';
 
 const cx = classNames.bind(styles);
 
-function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
+function RecipeForm({ id, onCloseModal = () => {} }) {
     const [messageApi, contextHolder] = message.useMessage();
     const [detailRecipe, setDetailRecipe] = useState({});
     const [name, setNameValue] = useState('');
@@ -44,7 +44,7 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
         }
         setLoading(true);
         const res = image && (await adminService.uploadFile(image));
-        const results = await adminService.editRecipe(idRecipe, {
+        const results = await adminService.editRecipe(id, {
             name,
             image: res && res.url,
             info,
@@ -82,20 +82,20 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
         }
     };
     const getDetailRecipe = async () => {
-        const results = await adminService.getDetailRecipe(idRecipe);
-        if (results && results.detailRecipe) {
-            setDetailRecipe(results.detailRecipe);
-            setNameValue(results.detailRecipe.name);
-            setInfoValue(results.detailRecipe.info);
-            setPriceValue(results.detailRecipe.price);
-            setDiscountValue(100 - results.detailRecipe.discount);
-            setType(results.detailRecipe.idType);
+        const results = await adminService.getDetailRecipe(id);
+        if (results) {
+            setDetailRecipe(results.data);
+            setNameValue(results.data.name);
+            setInfoValue(results.data.info);
+            setPriceValue(results.data.price);
+            setDiscountValue(100 - results.data.discount);
+            setType(results.data.idType);
         }
     };
 
     const handleCancelEdit = () => {
         setImageValue(null);
-        if (idRecipe) {
+        if (id) {
             setNameValue(detailRecipe.name);
             setInfoValue(detailRecipe.info);
             setPriceValue(detailRecipe.price);
@@ -111,19 +111,19 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
     };
     const handleClickConfirm = (e) => {
         e.preventDefault();
-        if (idRecipe) {
+        if (id) {
             editMenuItem();
         } else {
             addNewMenuItem();
         }
     };
     useEffect(() => {
-        if (idRecipe) {
+        if (id) {
             getDetailRecipe();
         }
     }, []);
     useEffect(() => {
-        if (idRecipe) {
+        if (id) {
             if (
                 detailRecipe.name !== name ||
                 image !== null ||
@@ -153,9 +153,9 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
                 className={cx('edit-form-wrapper')}
             >
                 {contextHolder}
-                <div className={cx('form-title')}>{idRecipe ? 'Cập nhật thông tin sản phẩm' : 'Thêm mới sản phẩm'}</div>
+                <div className={cx('form-title')}>{id ? 'Cập nhật thông tin sản phẩm' : 'Thêm mới sản phẩm'}</div>
                 <div className={cx('form-body')}>
-                    {idRecipe && (
+                    {id && (
                         <div className={cx('left-section')}>
                             <div className={cx('form-img-wrapper')}>
                                 <Image src={detailRecipe.image} className={cx('form-img')} />
@@ -249,7 +249,7 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
                                 </select>
                             </Col>
                         </Row>
-                        {!idRecipe && (
+                        {!id && (
                             <Upload
                                 fileList={image && [image]}
                                 accept="image/*"
@@ -273,7 +273,7 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
                                 </Button>
                             </Upload>
                         )}
-                        {idRecipe && (
+                        {id && (
                             <ListIngredient
                                 onUpdateIngredient={async () => await getDetailRecipe()}
                                 detailRecipe={detailRecipe}

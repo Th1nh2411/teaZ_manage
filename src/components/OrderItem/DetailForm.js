@@ -28,10 +28,10 @@ function DetailForm({ idRecipe = 1, onCloseModal = () => {} }) {
     const getDetailRecipe = async () => {
         const results = await menuService.getDetailRecipe(idRecipe);
         if (results) {
-            setDetailRecipe(results.recipe);
-            setNameValue(results.recipe.name);
-            setPriceValue(results.recipe.price);
-            setDiscountValue(100 - results.recipe.discount);
+            setDetailRecipe(results.data);
+            setNameValue(results.data.name);
+            setPriceValue(results.data.price);
+            setDiscountValue(100 - results.data.discount);
         }
     };
     const handleCancelEdit = () => {

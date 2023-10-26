@@ -40,7 +40,7 @@ function OrderItem({ data = {}, onUpdateRecipe = () => {} }) {
             <div className={cx('order-item', { inactive: !active })}>
                 {showEditForm && (
                     <DetailForm
-                        idRecipe={data.idRecipe}
+                        idRecipe={data.id}
                         onCloseModal={(updated) => {
                             if (updated) {
                                 onUpdateRecipe();

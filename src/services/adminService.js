@@ -119,7 +119,7 @@ export const getAllRecipe = async (idType) => {
 };
 export const getDetailRecipe = async (idRecipe) => {
     try {
-        const res = await httpRequest.get(`admin/getDetailRecipe/${idRecipe}`);
+        const res = await httpRequest.get(`recipe/${idRecipe}`);
         return res;
     } catch (error) {
         console.log(error);

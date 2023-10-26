@@ -170,16 +170,16 @@ function ExportForm({ onCloseModal = () => {} }) {
                                 >
                                     <Input
                                         style={{ flex: 1, minWidth: 150 }}
-                                        defaultValue={item.ingredient.name}
+                                        defaultValue={item.ingredient && item.ingredient.name}
                                         size="large"
                                         disabled
                                     />
                                     <Input
                                         style={{ width: 120 }}
                                         addonAfter={
-                                            item.ingredient.unitName === 'g'
+                                            item.ingredient && item.ingredient.unitName === 'g'
                                                 ? 'kg'
-                                                : item.ingredient.unitName === 'ml'
+                                                : item.ingredient && item.ingredient.unitName === 'ml'
                                                 ? 'l'
                                                 : 'pcs'
                                         }
@@ -198,7 +198,7 @@ function ExportForm({ onCloseModal = () => {} }) {
                                     <Popconfirm
                                         title="Huỷ món"
                                         description="Bạn chắc chắn huỷ món này?"
-                                        onConfirm={() => delIngredientExport(item.id)}
+                                        onConfirm={() => delIngredientExport(item.ingredient && item.ingredient.id)}
                                         okButtonProps={{ loading: loading }}
                                         okText="Huỷ món"
                                         cancelText="Quay lại"
