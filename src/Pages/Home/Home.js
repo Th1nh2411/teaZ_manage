@@ -147,6 +147,7 @@ function Home() {
                                                             description={'Huỷ đơn hàng này?'}
                                                             onConfirm={async () => {
                                                                 await handleCancelInvoice(order.id);
+                                                                await getAllInvoice();
                                                             }}
                                                             okText="Xác nhận"
                                                             cancelText="Huỷ"
