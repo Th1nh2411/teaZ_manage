@@ -22,11 +22,11 @@ function ExportForm({ onCloseModal = () => {} }) {
 
     const confirmExportIngredients = async (values) => {
         if (values.ingredients && values.ingredients.length) {
-            addIngredientExport();
+            await addIngredientExport();
         }
 
         if (exportData.description !== values.description) {
-            updateDescription(values.description);
+            await updateDescription(values.description);
         }
         setLoading(true);
         const results = await ingredientService.completeExport(exportData.id);
