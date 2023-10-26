@@ -15,7 +15,7 @@ import { FaFileInvoiceDollar } from 'react-icons/fa';
 import Tippy from '@tippyjs/react';
 import InvoiceList from './InvoiceList';
 import ReceiptDetail from '../../components/ReceiptDetail/ReceiptDetail';
-import { Badge } from 'antd';
+import { Badge, Popconfirm } from 'antd';
 const cx = classNames.bind(styles);
 
 function Home() {
@@ -48,7 +48,7 @@ function Home() {
         if (results) {
             state.showToast(results.message);
 
-            getAllInvoice();
+            await getAllInvoice();
         }
     };
     const donePreparedOrder = async (order) => {
@@ -56,8 +56,8 @@ function Home() {
         if (results) {
             state.showToast(results.message);
 
-            getAllInvoice();
-            getAllInvoiceInTransit();
+            await getAllInvoice();
+            await getAllInvoiceInTransit();
         }
     };
     const completeShipping = async (id) => {
@@ -65,7 +65,7 @@ function Home() {
         if (results) {
             state.showToast(results.message);
 
-            getAllInvoiceInTransit();
+            await getAllInvoiceInTransit();
         }
     };
     useEffect(() => {
@@ -118,44 +118,46 @@ function Home() {
                                                 </div>
 
                                                 <div className={cx('d-flex', 'align-items-center')}>
-                                                    <Tippy
-                                                        content={
+                                                    <Popconfirm
+                                                        title="Xác nhận"
+                                                        description={
                                                             order.status === 0
-                                                                ? 'Xác nhận đơn hàng'
-                                                                : 'Hoàn thành pha chế'
+                                                                ? 'Xác nhận đơn đặt này?'
+                                                                : 'Xác nhận hoàn thành pha chế đơn này?'
                                                         }
-                                                        placement="bottom"
-                                                        duration={0}
+                                                        onConfirm={() =>
+                                                            order.status === 0
+                                                                ? completeOrder(order)
+                                                                : donePreparedOrder(order)
+                                                        }
+                                                        okText="Xác nhận"
+                                                        cancelText="Huỷ"
                                                     >
-                                                        <span
-                                                            onClick={() =>
-                                                                order.status === 0
-                                                                    ? completeOrder(order)
-                                                                    : donePreparedOrder(order)
-                                                            }
-                                                            className={cx('order-item-actions')}
-                                                        >
+                                                        <span className={cx('order-item-actions')}>
                                                             {order.status === 0 ? (
                                                                 <BsFillCartCheckFill />
                                                             ) : (
                                                                 <BsClipboardCheckFill />
                                                             )}
                                                         </span>
-                                                    </Tippy>
+                                                    </Popconfirm>
                                                     {order.status === 0 && (
-                                                        <Tippy content="Huỷ đơn" placement="bottom" duration={0}>
+                                                        <Popconfirm
+                                                            title="Huỷ đơn"
+                                                            description={'Huỷ đơn hàng này?'}
+                                                            onConfirm={async () => {
+                                                                await handleCancelInvoice(order.id);
+                                                            }}
+                                                            okText="Xác nhận"
+                                                            cancelText="Huỷ"
+                                                        >
                                                             <span
-                                                                onClick={async () => {
-                                                                    if (window.confirm('Xác nhận huỷ đơn này?')) {
-                                                                        await handleCancelInvoice(order.id);
-                                                                    }
-                                                                }}
                                                                 style={{ color: 'red' }}
                                                                 className={cx('order-item-actions')}
                                                             >
                                                                 <BsXCircleFill />
                                                             </span>
-                                                        </Tippy>
+                                                        </Popconfirm>
                                                     )}
                                                 </div>
                                             </div>
@@ -241,14 +243,17 @@ function Home() {
                                                         }}
                                                     />
                                                 </div>
-                                                <Tippy content="Hoàn thành giao" placement="bottom" duration={0}>
-                                                    <div
-                                                        onClick={() => completeShipping(order.id)}
-                                                        className={cx('order-item-actions')}
-                                                    >
+                                                <Popconfirm
+                                                    title="Giao hàng"
+                                                    description={'Xác nhận giao xong đơn hàng này?'}
+                                                    onConfirm={() => completeShipping(order.id)}
+                                                    okText="Xác nhận"
+                                                    cancelText="Huỷ"
+                                                >
+                                                    <div className={cx('order-item-actions')}>
                                                         <BsClipboardCheckFill />
                                                     </div>
-                                                </Tippy>
+                                                </Popconfirm>
                                             </div>
                                             {order.products.map((item, index) => (
                                                 <div key={index} className={cx('order-item-wrapper')}>

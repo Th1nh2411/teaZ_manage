@@ -303,7 +303,10 @@ function ImportItem({ field, ingredients }) {
                     options={
                         ingredients &&
                         ingredients.map((item) => {
-                            return { label: item.name + ' (' + item.quantity / 1000 + ')', value: item.id };
+                            return {
+                                label: item.name + ' (' + item.quantity / 1000 + unitFormatL(item.unitName) + ' left)',
+                                value: item.id,
+                            };
                         })
                     }
                     style={{ flex: 1, minWidth: 150 }}
