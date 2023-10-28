@@ -2,7 +2,7 @@ import styles from './AdminIngredientPage.module.scss';
 import classNames from 'classnames/bind';
 // import Button from '../../components/Button';
 import Modal from '../../components/Modal';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import * as ingredientService from '../../services/ingredientService';
 import { Badge, Col, Descriptions, Row, Table } from 'antd';
 import dayjs from 'dayjs';
@@ -88,6 +88,31 @@ function DetailChange({ id, onCloseModal = () => {}, type = 'import' }) {
             key: 'price',
         },
     ];
+    const tableData = useMemo(() => {
+        if (data) {
+            return type === 'import'
+                ? data.import_ingredients.map((item) => {
+                      return {
+                          ...item,
+                          price: priceFormat(item.price) + 'đ',
+                          name: item.ingredient.name,
+                          unitName: unitFormatL(item.ingredient.unitName),
+                          id: item.ingredient.id,
+                          quantity: item.ingredient.unitName === 'pcs' ? item.quantity : item.quantity / 1000,
+                      };
+                  })
+                : data.export_ingredients.map((item) => {
+                      return {
+                          ...item,
+                          price: priceFormat(item.price) + 'đ',
+                          name: item.ingredient.name,
+                          unitName: unitFormatL(item.ingredient.unitName),
+                          id: item.ingredient.id,
+                          quantity: item.ingredient.unitName === 'pcs' ? item.quantity : item.quantity / 1000,
+                      };
+                  });
+        }
+    }, [data]);
     return (
         <>
             <Modal
@@ -116,18 +141,7 @@ function DetailChange({ id, onCloseModal = () => {}, type = 'import' }) {
                                 loading={loading}
                                 bordered
                                 columns={tableColumns}
-                                dataSource={
-                                    data &&
-                                    data.import_ingredients.map((item) => {
-                                        return {
-                                            ...item,
-                                            price: priceFormat(item.price) + 'đ',
-                                            name: item.ingredient.name,
-                                            unitName: unitFormatL(item.ingredient.unitName),
-                                            id: item.ingredient.id,
-                                        };
-                                    })
-                                }
+                                dataSource={tableData}
                             />
                         </Col>
                         <Col>

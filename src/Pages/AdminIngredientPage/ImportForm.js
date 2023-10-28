@@ -48,9 +48,15 @@ function ImportForm({ onCloseModal = () => {} }) {
     };
     const addIngredientImport = async () => {
         const importIngredient = form.getFieldsValue().ingredients || [];
-        const ingredientId = importIngredient.map((item) => item && item.id).join(',');
-        const quantity = importIngredient.map((item) => item && item.quantity * 1000).join(',');
-        const price = importIngredient.map((item) => item && item.price / 1000).join(',');
+        const ingredientId = importIngredient.map((item) => item.id).join(',');
+        const quantity = importIngredient
+            .map((item) => {
+                if (ingredients && ingredients.find((ingredient) => ingredient.id === item.id).unitName === 'pcs') {
+                    return item.quantity;
+                } else return item.quantity * 1000;
+            })
+            .join(',');
+        const price = importIngredient.map((item) => item.price / 1000).join(',');
         const results = await ingredientService.createImportIngredient({
             importId: importData.id,
             ingredientId,
@@ -304,7 +310,7 @@ function ImportItem({ field, ingredients }) {
                         ingredients &&
                         ingredients.map((item) => {
                             return {
-                                label: item.name + ' (' + item.quantity / 1000 + unitFormatL(item.unitName) + ' left)',
+                                label: item.name + ' (' + ingredientFormat(item.quantity, item.unitName) + ' left)',
                                 value: item.id,
                             };
                         })

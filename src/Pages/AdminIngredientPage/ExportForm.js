@@ -49,7 +49,13 @@ function ExportForm({ onCloseModal = () => {} }) {
     const addIngredientExport = async () => {
         const exportIngredient = form.getFieldsValue().ingredients || [];
         const ingredientId = exportIngredient.map((item) => item && item.id).join(',');
-        const quantity = exportIngredient.map((item) => item && item.quantity * 1000).join(',');
+        const quantity = exportIngredient
+            .map((item) => {
+                if (ingredients && ingredients.find((ingredient) => ingredient.id === item.id).unitName === 'pcs') {
+                    return item.quantity;
+                } else return item.quantity * 1000;
+            })
+            .join(',');
         const price = exportIngredient.map((item) => item && item.price / 1000).join(',');
         const results = await ingredientService.createExportIngredient({
             exportId: exportData.id,
@@ -305,7 +311,7 @@ function ExportItem({ field, ingredients }) {
                         ingredients &&
                         ingredients.map((item) => {
                             return {
-                                label: item.name + ' (' + item.quantity / 1000 + unitFormatL(item.unitName) + ' left)',
+                                label: item.name + ' (' + ingredientFormat(item.quantity, item.unitName) + ' left)',
                                 value: item.id,
                             };
                         })
