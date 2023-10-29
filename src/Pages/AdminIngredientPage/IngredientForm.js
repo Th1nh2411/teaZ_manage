@@ -139,15 +139,11 @@ function IngredientForm({ data, onCloseModal = () => {} }) {
                                 options={[
                                     {
                                         value: 'g',
-                                        label: 'Gram',
-                                    },
-                                    {
-                                        value: 'kg',
                                         label: 'Kilogram',
                                     },
                                     {
                                         value: 'ml',
-                                        label: 'Mililit',
+                                        label: 'Lít',
                                     },
                                     {
                                         value: 'pcs',

@@ -92,7 +92,7 @@
         left: -5px;
         height: 100%;
         width: 100%;
-        background-color: rgb(255 255 255 / 70%);
+        background-color: rgb(255 255 255 / 60%);
         pointer-events: none;
         z-index: 100;
     }
@@ -170,14 +170,13 @@
         border-radius: 10px;
         color: white;
     }
+
     .delete-btn {
         background-color: rgb(199, 41, 67);
         font-size: 2rem;
         padding: 5px;
         border-radius: 10px;
         color: white;
-    }
-    .delete-btn {
         display: flex;
         align-items: center;
         margin-left: 25px;
@@ -190,6 +189,9 @@
             cursor: pointer;
             opacity: 0.8;
         }
+    }
+    .delete-btn.active {
+        background-color: #43bb36;
     }
 }
 // Form

@@ -70,8 +70,9 @@ export function formatNumber(number) {
 }
 export const timeGap = (date) => {
     const today = dayjs();
-    const pastDate = dayjs(date);
+    const pastDate = dayjs(date).subtract(7, 'hours');
     const timeDiff = today.diff(pastDate, 'minutes');
+    console.log(dayjs(date).format('HH:mm DD/MM'));
     if (timeDiff < 1) {
         return 'mới đây';
     } else if (timeDiff < 60) {

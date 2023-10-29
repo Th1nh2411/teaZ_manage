@@ -79,7 +79,6 @@ function AdminMenuPage() {
                 <RecipeForm
                     id={selectedRecipe.id}
                     onCloseModal={(idUpdated) => {
-                        console.log(idUpdated);
                         if (idUpdated) {
                             getMenuDataByType(idUpdated);
                             // getListToppingByType();

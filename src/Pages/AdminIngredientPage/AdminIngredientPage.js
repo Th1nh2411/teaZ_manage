@@ -20,6 +20,8 @@ import ImportForm from './ImportForm';
 import ExportForm from './ExportForm';
 import ExportFile from '../../components/ExportFile';
 import QuantityChange from './QuantityChange';
+import { Popconfirm } from 'antd';
+import { TbMilk, TbMilkOff } from 'react-icons/tb';
 const cx = classNames.bind(styles);
 
 function AdminIngredientPage() {
@@ -44,12 +46,12 @@ function AdminIngredientPage() {
         setLoading(false);
     };
 
-    const handleDeleteIngredient = async () => {
-        const results = await adminService.deleteIngredient(selectedIngredient.id);
+    const handleChangeActive = async (id) => {
+        const results = await adminService.changeActive(id);
         if (results) {
             state.showToast(results.message);
 
-            getIngredients();
+            await getIngredients();
         }
     };
 
@@ -220,38 +222,43 @@ function AdminIngredientPage() {
                                                                     ? 'Hết nguyên liệu'
                                                                     : ingredient.isActive
                                                                     ? 'Đang sử dụng'
-                                                                    : 'Không'}
+                                                                    : 'Ngưng sử dụng'}
                                                             </span>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div className={cx('ingredient-actions')}>
                                                     <Tippy content="Chỉnh sửa" placement="bottom" duration={0}>
-                                                        <div className={cx('edit-btn')}>
-                                                            <BiEdit
-                                                                onClick={() => {
-                                                                    setShowIngredientForm(true);
-                                                                    setSelectedIngredient(ingredient);
-                                                                }}
-                                                            />
+                                                        <div
+                                                            onClick={() => {
+                                                                setShowIngredientForm(true);
+                                                                setSelectedIngredient(ingredient);
+                                                            }}
+                                                            className={cx('edit-btn')}
+                                                        >
+                                                            <BiEdit />
                                                         </div>
                                                     </Tippy>
-                                                    <Tippy content="Xoá" placement="bottom" duration={0}>
-                                                        <div className={cx('delete-btn')}>
-                                                            <BiTrash
-                                                                onClick={() => {
-                                                                    if (
-                                                                        window.confirm(
-                                                                            'Bạn có chắc chắn muốn xoá không?',
-                                                                        )
-                                                                    ) {
-                                                                        setSelectedIngredient(ingredient);
-                                                                        handleDeleteIngredient();
-                                                                    }
-                                                                }}
-                                                            />
+                                                    <Popconfirm
+                                                        title={ingredient.isActive ? 'Ngưng sử dụng' : 'Sử dụng'}
+                                                        description={
+                                                            ingredient.isActive
+                                                                ? 'Ngưng sử dụng nguyên liệu này?'
+                                                                : 'Sử dụng lại nguyên liệu này?'
+                                                        }
+                                                        onConfirm={() => handleChangeActive(ingredient.id)}
+                                                        okButtonProps={{ loading: loading }}
+                                                        okText={'Xác nhận'}
+                                                        cancelText="Huỷ"
+                                                    >
+                                                        <div
+                                                            className={cx('delete-btn', {
+                                                                active: !ingredient.isActive,
+                                                            })}
+                                                        >
+                                                            {ingredient.isActive ? <TbMilkOff /> : <TbMilk />}
                                                         </div>
-                                                    </Tippy>
+                                                    </Popconfirm>
                                                 </div>
                                             </div>
                                         ))

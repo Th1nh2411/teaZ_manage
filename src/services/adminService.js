@@ -10,7 +10,7 @@ export const getListManager = async () => {
     }
 };
 
-export const deleteIngredient = async (id) => {
+export const changeActive = async (id) => {
     try {
         const res = await httpRequest.del(`ingredient/${id}`);
         return res;

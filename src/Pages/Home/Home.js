@@ -31,6 +31,8 @@ function Home() {
         if (results1 && results2) {
             if (results1.data) {
                 setIncompleteOrders([...results1.data]);
+            } else {
+                setIncompleteOrders([]);
             }
             if (results2.data) {
                 setIncompleteOrders((prev) => [...results2.data, ...prev]);
@@ -147,7 +149,6 @@ function Home() {
                                                             description={'Huỷ đơn hàng này?'}
                                                             onConfirm={async () => {
                                                                 await handleCancelInvoice(order.id);
-                                                                await getAllInvoice();
                                                             }}
                                                             okText="Xác nhận"
                                                             cancelText="Huỷ"
@@ -162,7 +163,14 @@ function Home() {
                                                     )}
                                                 </div>
                                             </div>
-
+                                            {order.description && (
+                                                <h4 style={{ marginBottom: 0, color: '#333' }}>
+                                                    <span style={{ fontWeight: 600, textDecoration: 'underline' }}>
+                                                        Ghi chú :
+                                                    </span>{' '}
+                                                    {order.description}
+                                                </h4>
+                                            )}
                                             <Badge
                                                 status={
                                                     order.status === 0
@@ -187,6 +195,7 @@ function Home() {
                                                         : 'Đã huỷ đơn'
                                                 }
                                             />
+
                                             <div style={{ marginTop: 5 }}>
                                                 {order.products &&
                                                     order.products.map((item, index) => (
