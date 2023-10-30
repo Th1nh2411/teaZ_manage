@@ -18,6 +18,8 @@ import { priceFormat } from '../../utils/format';
 import Tippy from '@tippyjs/react';
 import ExportFile from '../../components/ExportFile/ExportFile';
 import Input from '../../components/Input/Input';
+import { Popconfirm } from 'antd';
+import { MdDeleteForever, MdDeleteOutline } from 'react-icons/md';
 const cx = classNames.bind(styles);
 
 function AdminMenuPage() {
@@ -203,12 +205,15 @@ function ContentWrapper({
         const results = await adminService.addToppingToType(id, idType);
         if (results) {
             state.showToast(results.message);
+            onUpdateTopping();
+            setShowAllTopping();
         }
     };
     const deleteToppingFromType = async (id) => {
         const results = await adminService.delToppingFromType(id, idType);
         if (results) {
             state.showToast(results.message);
+            onUpdateTopping();
         }
     };
     return (
@@ -271,17 +276,17 @@ function ContentWrapper({
                             <div className={cx('all-ingredients')}>
                                 {listAddToppingFiltered &&
                                     listAddToppingFiltered.map((item, index) => (
-                                        <div
-                                            onClick={async () => {
-                                                await addToppingToType(item.id);
-                                                setShowAllTopping(false);
-                                                onUpdateTopping();
-                                            }}
+                                        <Popconfirm
+                                            title={'Thêm topping'}
+                                            description={'Thêm topping này vào danh sách?'}
+                                            onConfirm={() => addToppingToType(item.id)}
+                                            okText={'Xác nhận'}
+                                            cancelText="Huỷ"
                                             key={index}
-                                            className={cx('ingredient-item')}
+                                            zIndex={10000}
                                         >
-                                            {item.name}
-                                        </div>
+                                            <div className={cx('ingredient-item')}>{item.name}</div>
+                                        </Popconfirm>
                                     ))}
                             </div>
                         )}
@@ -335,19 +340,17 @@ function ContentWrapper({
                                     </div>
                                 </div>
                                 <div className={cx('recipe-actions')}>
-                                    <Tippy content="Xóa khỏi danh sách" placement="bottom" duration={0}>
-                                        <div
-                                            onClick={async () => {
-                                                if (window.confirm('Remove the item?')) {
-                                                    await deleteToppingFromType(item.id);
-                                                    onUpdateTopping();
-                                                }
-                                            }}
-                                            className={cx('recipe-edit')}
-                                        >
-                                            <RiCloseCircleFill />
+                                    <Popconfirm
+                                        title={'Xoá topping'}
+                                        description={'Xoá topping này ra khỏi danh sách?'}
+                                        onConfirm={() => deleteToppingFromType(item.id)}
+                                        okText={'Xác nhận'}
+                                        cancelText="Huỷ"
+                                    >
+                                        <div className={cx('recipe-del')}>
+                                            <MdDeleteForever />
                                         </div>
-                                    </Tippy>
+                                    </Popconfirm>
                                 </div>
                             </div>
                         ))

@@ -179,7 +179,7 @@ function ImportForm({ onCloseModal = () => {} }) {
                                     className={cx('align-items-end', 'd-flex')}
                                 >
                                     <Input
-                                        style={{ flex: 1, width: 200 }}
+                                        style={{ flex: 1, width: 220 }}
                                         defaultValue={item.ingredient && item.ingredient.name}
                                         size="large"
                                         disabled
@@ -340,7 +340,7 @@ function ImportItem({ field, ingredients }) {
                             };
                         })
                     }
-                    style={{ flex: 1, width: 200 }}
+                    style={{ flex: 1, width: 220 }}
                     placeholder="Chọn nguyên liệu"
                     onChange={onChangeIngredient}
                 />

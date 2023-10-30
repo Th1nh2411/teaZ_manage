@@ -170,6 +170,21 @@
         opacity: 0.8;
     }
 }
+.recipe-del {
+    color: #fff;
+    background-color: #da4453;
+    font-size: 2rem;
+    padding: 4px;
+    margin-right: 10px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    &:hover {
+        cursor: pointer;
+        opacity: 0.8;
+    }
+}
 .sale-off {
     position: absolute;
     top: 10px;

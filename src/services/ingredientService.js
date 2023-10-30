@@ -146,7 +146,7 @@ export const deleteImportIngredient = async (data) => {
 export const deleteExportIngredient = async (data) => {
     const config = { data };
     try {
-        const res = await httpRequest.del(`export/ingredient`, data);
+        const res = await httpRequest.del(`export/ingredient`, config);
         return res;
     } catch (error) {
         console.log(error);

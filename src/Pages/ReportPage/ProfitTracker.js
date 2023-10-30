@@ -9,7 +9,7 @@ import * as reportService from '../../services/reportService';
 Chart.register(...registerables);
 
 const cx = classNames.bind(styles);
-const months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const ProfitTracker = ({ className, reportData }) => {
     const labels = useMemo(() => {
         const listMonths = reportData && reportData.totalImport.map((item, index) => months[index]);

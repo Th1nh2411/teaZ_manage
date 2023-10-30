@@ -52,14 +52,16 @@ function ExportForm({ onCloseModal = () => {} }) {
             (item) => item && item.id !== undefined && item.quantity !== undefined && item.price !== undefined,
         );
         const ingredientId = filteredData.map((item) => item && item.id).join(',');
-        const quantity = filteredData.map((item) => {
-            const unitName =
-                ingredients.find((ingredient) => item && ingredient.id === item.id) &&
-                ingredients.find((ingredient) => item && ingredient.id === item.id).unitName;
-            if (ingredients && unitName === 'pcs') {
-                return item && item.quantity;
-            } else return item && item.quantity * 1000;
-        });
+        const quantity = filteredData
+            .map((item) => {
+                const unitName =
+                    ingredients.find((ingredient) => item && ingredient.id === item.id) &&
+                    ingredients.find((ingredient) => item && ingredient.id === item.id).unitName;
+                if (ingredients && unitName === 'pcs') {
+                    return item && item.quantity;
+                } else return item && item.quantity * 1000;
+            })
+            .join(',');
         const price = filteredData.map((item) => item && item.price / 1000).join(',');
         const results = await ingredientService.createExportIngredient({
             exportId: exportData.id,
@@ -75,6 +77,7 @@ function ExportForm({ onCloseModal = () => {} }) {
         }
     };
     const delIngredientExport = async (ingredientId) => {
+        console.log(ingredientId);
         const results = await ingredientService.deleteExportIngredient({ exportId: exportData.id, ingredientId });
         if (results) {
             state.showToast(results.message);
@@ -177,7 +180,7 @@ function ExportForm({ onCloseModal = () => {} }) {
                                     className={cx('align-items-end', 'd-flex')}
                                 >
                                     <Input
-                                        style={{ flex: 1, width: 200 }}
+                                        style={{ flex: 1, width: 220 }}
                                         defaultValue={item.ingredient && item.ingredient.name}
                                         size="large"
                                         disabled
@@ -307,10 +310,12 @@ export default ExportForm;
 function ExportItem({ field, ingredients }) {
     const { key, ...restField } = field;
     const [unit, setUnit] = useState();
+    const [maxQuantity, setMaxQuantity] = useState();
     const filterOption = (input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
     const onChangeIngredient = (value) => {
         const ingredient = ingredients && ingredients.find((item) => item.id === value);
         setUnit(ingredient.unitName);
+        setMaxQuantity(ingredient.quantity);
     };
     return (
         <>
@@ -337,7 +342,7 @@ function ExportItem({ field, ingredients }) {
                             };
                         })
                     }
-                    style={{ flex: 1, width: 200 }}
+                    style={{ flex: 1, width: 220 }}
                     placeholder="Chọn nguyên liệu"
                     onChange={onChangeIngredient}
                 />
@@ -355,7 +360,7 @@ function ExportItem({ field, ingredients }) {
             >
                 <InputNumber
                     // className={cx('w-100')}
-
+                    max={maxQuantity / 1000}
                     style={{ width: 120 }}
                     min={0}
                     placeholder="Số lượng"
