@@ -10,7 +10,7 @@ export const getListManager = async () => {
     }
 };
 
-export const changeActive = async (id) => {
+export const changeIngredientActive = async (id) => {
     try {
         const res = await httpRequest.del(`ingredient/${id}`);
         return res;
@@ -144,6 +144,15 @@ export const editRecipe = async (idRecipe, body) => {
         return error.response && error.response.data;
     }
 };
+export const changeRecipeActive = async (idRecipe) => {
+    try {
+        const res = await httpRequest.del(`recipe/${idRecipe}`);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return error.response && error.response.data;
+    }
+};
 export const addIngredientFromRecipe = async (body) => {
     try {
         const res = await httpRequest.post(`recipe-ingredient`, body);
@@ -180,26 +189,26 @@ export const getListToppingByType = async (idType) => {
         return error.response && error.response.data;
     }
 };
-export const addToppingToType = async (idRecipe, idType) => {
+export const addToppingToType = async (recipeId, typeId) => {
     const body = {
-        idRecipe,
-        idType,
+        recipeId,
+        typeId,
     };
     try {
-        const res = await httpRequest.post(`admin/addRecipeType`, body);
+        const res = await httpRequest.post(`recipe-type`, body);
         return res;
     } catch (error) {
         console.log(error);
         return error.response && error.response.data;
     }
 };
-export const delToppingFromType = async (idRecipe, idType) => {
+export const delToppingFromType = async (recipeId, typeId) => {
     const body = {
-        idRecipe,
-        idType,
+        recipeId,
+        typeId,
     };
     try {
-        const res = await httpRequest.del(`admin/deleteRecipeType`, body);
+        const res = await httpRequest.del(`recipe-type`, { data: body });
         return res;
     } catch (error) {
         console.log(error);

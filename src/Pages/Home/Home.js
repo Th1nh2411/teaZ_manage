@@ -265,21 +265,56 @@ function Home() {
                                                     </div>
                                                 </Popconfirm>
                                             </div>
-                                            {order.products.map((item, index) => (
-                                                <div key={index} className={cx('order-item-wrapper')}>
-                                                    <Image src={item.image} className={cx('order-item-img')} />
-                                                    <div className={cx('order-item-info')}>
-                                                        <div className={cx('order-item-name')}>
-                                                            {item.name}({item.size ? 'L' : 'M'}) x{item.quantity}
-                                                        </div>
-                                                        <div className={cx('order-item-topping')}>
-                                                            Topping :{' '}
-                                                            {item.toppings.map((topping) => topping.name).join(', ') ||
-                                                                'Không'}
+                                            {order.description && (
+                                                <h4 style={{ marginBottom: 0, color: '#333' }}>
+                                                    <span style={{ fontWeight: 600, textDecoration: 'underline' }}>
+                                                        Ghi chú :
+                                                    </span>{' '}
+                                                    {order.description}
+                                                </h4>
+                                            )}
+                                            <Badge
+                                                status={
+                                                    order.status === 0
+                                                        ? 'error'
+                                                        : order.status === 1
+                                                        ? 'warning'
+                                                        : order.status === 2
+                                                        ? 'processing'
+                                                        : order.status === 3
+                                                        ? 'success'
+                                                        : 'default'
+                                                }
+                                                text={
+                                                    order.status === 0
+                                                        ? 'Chưa xác nhận'
+                                                        : order.status === 1
+                                                        ? 'Đã xác nhận'
+                                                        : order.status === 2
+                                                        ? 'Đang giao'
+                                                        : order.status === 3
+                                                        ? 'Đã giao'
+                                                        : 'Đã huỷ đơn'
+                                                }
+                                            />
+                                            <div style={{ marginTop: 5 }}>
+                                                {order.products.map((item, index) => (
+                                                    <div key={index} className={cx('order-item-wrapper')}>
+                                                        <Image src={item.image} className={cx('order-item-img')} />
+                                                        <div className={cx('order-item-info')}>
+                                                            <div className={cx('order-item-name')}>
+                                                                {item.name}({item.size ? 'L' : 'M'}) x{item.quantity}
+                                                            </div>
+                                                            <div className={cx('order-item-topping')}>
+                                                                Topping :{' '}
+                                                                {item.toppings
+                                                                    .map((topping) => topping.name)
+                                                                    .join(', ') || 'Không'}
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            ))}
+                                                ))}
+                                            </div>
                                         </div>
                                     ))
                                 ) : (
@@ -292,7 +327,7 @@ function Home() {
                         </div>
                     </Col>
                     <Col>
-                        <InvoiceList />
+                        <InvoiceList invoiceChange={[incompleteOrders, completeOrders]} />
                     </Col>
                 </Row>
             </div>

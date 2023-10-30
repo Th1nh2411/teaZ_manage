@@ -36,6 +36,7 @@ function App() {
             theme={{
                 token: {
                     fontFamily: 'Nunito, sans-serif',
+                    colorPrimary: '#2b9d7b',
                 },
                 components: {
                     Form: {

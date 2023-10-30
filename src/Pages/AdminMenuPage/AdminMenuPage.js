@@ -31,7 +31,7 @@ function AdminMenuPage() {
     const [topping3, setTopping3] = useState();
     const [topping4, setTopping4] = useState();
     const [allTopping, setAllTopping] = useState();
-    const [showEditForm, setShowEditForm] = useState();
+    const [editType, setShowEditForm] = useState();
     const [selectedRecipe, setSelectedRecipe] = useState();
     const getMenuDataByType = async (idType) => {
         setLoading(true);
@@ -75,9 +75,10 @@ function AdminMenuPage() {
 
     return (
         <div className={cx('wrapper')}>
-            {showEditForm && (
+            {editType && (
                 <RecipeForm
                     id={selectedRecipe.id}
+                    type={editType}
                     onCloseModal={(idUpdated) => {
                         if (idUpdated) {
                             getMenuDataByType(idUpdated);
@@ -98,61 +99,65 @@ function AdminMenuPage() {
                     <Col xxl={6}>
                         <ContentWrapper
                             allTopping={allTopping || []}
-                            onUpdateTopping={async () => await getListToppingByType()}
+                            onUpdateTopping={async () => await getListToppingByType(1)}
                             idType={1}
                             titleIcon={<SiBuymeacoffee className={cx('icon')} />}
                             topping={topping1}
                             menuData={menuType1}
                             title="Trà sữa"
                             onShowEditForm={(data) => {
-                                setShowEditForm(true);
+                                setShowEditForm(1);
                                 setSelectedRecipe(data);
                             }}
+                            onChangeActive={() => getMenuDataByType(1)}
                         />
                     </Col>
                     <Col xxl={6}>
                         <ContentWrapper
                             allTopping={allTopping || []}
-                            onUpdateTopping={async () => await getListToppingByType()}
+                            onUpdateTopping={async () => await getListToppingByType(2)}
                             idType={2}
                             titleIcon={<GiCoffeeBeans className={cx('icon')} />}
                             topping={topping2}
                             menuData={menuType2}
                             title="Cà phê"
                             onShowEditForm={(data) => {
-                                setShowEditForm(true);
+                                setShowEditForm(2);
                                 setSelectedRecipe(data);
                             }}
+                            onChangeActive={() => getMenuDataByType(2)}
                         />
                     </Col>
                     <Col xxl={6}>
                         <ContentWrapper
                             allTopping={allTopping || []}
-                            onUpdateTopping={async () => await getListToppingByType()}
+                            onUpdateTopping={async () => await getListToppingByType(3)}
                             idType={3}
                             titleIcon={<TbPaperBag className={cx('icon')} />}
                             topping={topping3}
                             menuData={menuType3}
                             title="Trà trái cây"
                             onShowEditForm={(data) => {
-                                setShowEditForm(true);
+                                setShowEditForm(3);
                                 setSelectedRecipe(data);
                             }}
+                            onChangeActive={() => getMenuDataByType(3)}
                         />
                     </Col>
                     <Col xxl={6}>
                         <ContentWrapper
                             allTopping={allTopping || []}
-                            onUpdateTopping={async () => await getListToppingByType()}
+                            onUpdateTopping={async () => await getListToppingByType(4)}
                             idType={4}
                             titleIcon={<SiCakephp className={cx('icon')} />}
                             topping={topping4}
                             menuData={menuType4}
                             title="Bakery"
                             onShowEditForm={(data) => {
-                                setShowEditForm(true);
+                                setShowEditForm(4);
                                 setSelectedRecipe(data);
                             }}
+                            onChangeActive={() => getMenuDataByType(4)}
                         />
                     </Col>
                     <Col xxl={6}>
@@ -162,9 +167,10 @@ function AdminMenuPage() {
                             menuData={allTopping}
                             title="Topping"
                             onShowEditForm={(data) => {
-                                setShowEditForm(true);
+                                setShowEditForm(5);
                                 setSelectedRecipe(data);
                             }}
+                            onChangeActive={() => getMenuDataByType(5)}
                         />
                     </Col>
                 </Row>
@@ -181,11 +187,13 @@ function ContentWrapper({
     onShowEditForm,
     idType,
     onUpdateTopping = () => {},
+    onChangeActive = () => {},
 }) {
     const [tab, setTab] = useState(0);
     const [menu, setMenu] = useState(menuData || []);
     const [searchValue, setSearchValue] = useState('');
     const [showAllTopping, setShowAllTopping] = useState(false);
+    const [state, dispatch] = useContext(StoreContext);
     useEffect(() => {
         setMenu(menuData);
     }, [menuData]);
@@ -194,11 +202,13 @@ function ContentWrapper({
     const addToppingToType = async (id) => {
         const results = await adminService.addToppingToType(id, idType);
         if (results) {
+            state.showToast(results.message);
         }
     };
     const deleteToppingFromType = async (id) => {
         const results = await adminService.delToppingFromType(id, idType);
         if (results) {
+            state.showToast(results.message);
         }
     };
     return (
@@ -301,6 +311,7 @@ function ContentWrapper({
                                 onClickEditRecipe={() => {
                                     onShowEditForm(item);
                                 }}
+                                onChangeActive={onChangeActive}
                             />
                         ))
                     ) : (

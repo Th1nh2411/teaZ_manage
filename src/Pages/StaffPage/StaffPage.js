@@ -16,6 +16,7 @@ import Button from '../../components/Button';
 import StaffForm from '../../components/StaffForm';
 import ShopForm from './ShopForm';
 import ExportFile from '../../components/ExportFile/ExportFile';
+import { Popconfirm, Switch } from 'antd';
 const cx = classNames.bind(styles);
 
 function StaffPage() {
@@ -25,7 +26,6 @@ function StaffPage() {
     const [active, setActive] = useState();
     const [showStaffForm, setShowStaffForm] = useState();
     const [staffData, setStaffData] = useState();
-    const [showConfirmDelStaff, setShowConfirmDelStaff] = useState();
     const [showShopForm, setShowShopForm] = useState();
     const [state, dispatch] = useContext(StoreContext);
     const userRole = state.userInfo && state.userInfo.role;
@@ -57,12 +57,12 @@ function StaffPage() {
         setLoading(true);
         const results = await shopService.getListStaff();
         if (results) {
-            setListStaff(results.data);
+            setListStaff(results.data.filter((item) => item.isActive));
         }
         setLoading(false);
     };
-    const delStaff = async () => {
-        const results = await shopService.deleteStaff(staffData.id);
+    const delStaff = async (id) => {
+        const results = await shopService.deleteStaff(id);
         if (results) {
             state.showToast(results.message);
         }
@@ -94,40 +94,7 @@ function StaffPage() {
                     }}
                 />
             )}
-            {showConfirmDelStaff && (
-                <Modal
-                    className={cx('edit-form-wrapper')}
-                    onCloseModal={() => {
-                        setShowConfirmDelStaff(false);
-                        setStaffData(null);
-                    }}
-                >
-                    <div className={cx('form-title')}>
-                        Bạn chắc chắn xóa nhân viên {staffData.name}?
-                        <div className={cx('form-actions', 'justify-content-center')}>
-                            <Button
-                                onClick={() => {
-                                    setShowConfirmDelStaff(false);
-                                    setStaffData(null);
-                                }}
-                            >
-                                Hủy
-                            </Button>
-                            <Button
-                                onClick={() => {
-                                    delStaff();
-                                    setShowConfirmDelStaff(false);
-                                    setStaffData(null);
-                                }}
-                                className={cx('confirm-btn')}
-                                primary
-                            >
-                                Xóa nhân viên
-                            </Button>
-                        </div>
-                    </div>
-                </Modal>
-            )}
+
             {showShopForm && (
                 <ShopForm
                     data={shopInfo}
@@ -170,20 +137,23 @@ function StaffPage() {
                                         </div>
                                         <div className={cx('shop-status')}>
                                             <span>Trạng thái :</span>
-                                            <Tippy
-                                                content={active ? 'Ngưng bán' : 'Mở bán'}
-                                                placement="bottom"
-                                                duration={0}
+
+                                            <Popconfirm
+                                                title={active ? 'Ngưng bán' : 'Mở bán'}
+                                                description={
+                                                    active ? 'Ngưng kinh doanh cửa hàng?' : 'Mở kinh doanh cửa hàng?'
+                                                }
+                                                onConfirm={handleCheckBoxActive}
+                                                okText={'Xác nhận'}
+                                                cancelText="Huỷ"
                                             >
-                                                <Form.Check
+                                                <Switch
                                                     className={cx('shop-active-check')}
                                                     checked={active}
-                                                    type="checkbox"
-                                                    isValid
-                                                    onChange={(e) => handleCheckBoxActive(e)}
                                                     disabled={userRole < 2}
+                                                    style={{}}
                                                 />
-                                            </Tippy>
+                                            </Popconfirm>
                                             {active ? 'Đang hoạt động' : 'Ngưng hoạt động'}
                                         </div>
                                     </div>
@@ -257,17 +227,17 @@ function StaffPage() {
                                                                 </div>
                                                             </Tippy>
                                                             {staff.role === 1 && (
-                                                                <Tippy content="Xóa" placement="bottom" duration={0}>
-                                                                    <div
-                                                                        onClick={() => {
-                                                                            setShowConfirmDelStaff(true);
-                                                                            setStaffData(staff);
-                                                                        }}
-                                                                        className={cx('icon', 'red')}
-                                                                    >
+                                                                <Popconfirm
+                                                                    title={'Xoá tài khoản'}
+                                                                    description={'Xoá tài khoản nhân viên này?'}
+                                                                    onConfirm={() => delStaff(staff.id)}
+                                                                    okText={'Xác nhận'}
+                                                                    cancelText="Huỷ"
+                                                                >
+                                                                    <div className={cx('icon', 'red')}>
                                                                         <RiDeleteBin2Fill />
                                                                     </div>
-                                                                </Tippy>
+                                                                </Popconfirm>
                                                             )}
                                                         </div>
                                                     </td>

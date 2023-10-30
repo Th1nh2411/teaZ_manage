@@ -19,7 +19,7 @@ import { BiUpload } from 'react-icons/bi';
 
 const cx = classNames.bind(styles);
 
-function RecipeForm({ id, onCloseModal = () => {} }) {
+function RecipeForm({ id, type = 1, onCloseModal = () => {} }) {
     const [messageApi, contextHolder] = message.useMessage();
     const [detailRecipe, setDetailRecipe] = useState({});
     const [name, setNameValue] = useState('');
@@ -27,7 +27,7 @@ function RecipeForm({ id, onCloseModal = () => {} }) {
     const [info, setInfoValue] = useState('');
     const [price, setPriceValue] = useState('');
     const [discount, setDiscountValue] = useState('');
-    const [typeId, setType] = useState(1);
+    const [typeId, setType] = useState(type);
     const [loading, setLoading] = useState(false);
     const [valueChange, setValueChange] = useState(false);
     const [state, dispatch] = useContext(StoreContext);
@@ -89,7 +89,7 @@ function RecipeForm({ id, onCloseModal = () => {} }) {
             setInfoValue(results.data.info);
             setPriceValue(results.data.price);
             setDiscountValue(100 - results.data.discount);
-            setType(results.data.typeId);
+            setType(results.data.type);
         }
     };
 
@@ -100,7 +100,7 @@ function RecipeForm({ id, onCloseModal = () => {} }) {
             setInfoValue(detailRecipe.info);
             setPriceValue(detailRecipe.price);
             setDiscountValue(100 - detailRecipe.discount);
-            setType(detailRecipe.typeId);
+            setType(detailRecipe.type);
         } else {
             setNameValue('');
             setInfoValue('');
@@ -130,8 +130,9 @@ function RecipeForm({ id, onCloseModal = () => {} }) {
                 detailRecipe.info !== info ||
                 detailRecipe.price !== Number(price) ||
                 100 - detailRecipe.discount !== Number(discount) ||
-                detailRecipe.typeId !== Number(typeId)
+                detailRecipe.type !== Number(typeId)
             ) {
+                console.log(typeId);
                 setValueChange(true);
             } else {
                 setValueChange(false);

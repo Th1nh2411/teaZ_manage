@@ -47,7 +47,7 @@ function AdminIngredientPage() {
     };
 
     const handleChangeActive = async (id) => {
-        const results = await adminService.changeActive(id);
+        const results = await adminService.changeIngredientActive(id);
         if (results) {
             state.showToast(results.message);
 
@@ -190,7 +190,7 @@ function AdminIngredientPage() {
                                             <div
                                                 key={index}
                                                 className={cx('ingredient-item', {
-                                                    inactive: ingredient.quantity === 0,
+                                                    inactive: ingredient.quantity === 0 || ingredient.isActive === 0,
                                                 })}
                                             >
                                                 <div className={cx('ingredient-content')}>

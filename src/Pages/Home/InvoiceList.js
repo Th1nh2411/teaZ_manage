@@ -17,7 +17,7 @@ const cx = classNames.bind(styles);
 
 const { Option } = Select;
 
-function InvoiceList() {
+function InvoiceList({ invoiceChange }) {
     const [invoices, setInvoices] = useState();
     const [fromdate, setFromdate] = useState();
     const [todate, setTodate] = useState();
@@ -34,7 +34,7 @@ function InvoiceList() {
 
     useEffect(() => {
         getAllInvoiceByDate();
-    }, [fromdate, todate]);
+    }, [fromdate, todate, invoiceChange]);
     return (
         <div className={cx('content-wrapper')}>
             <div className={cx('content-header')}>
@@ -68,6 +68,12 @@ function InvoiceList() {
 
                                 <div className={cx('order-subtitle')}>Total: {priceFormat(invoice.total)}đ</div>
                             </div>
+                            {invoice.description && (
+                                <h4 style={{ marginBottom: 0, color: '#333' }}>
+                                    <span style={{ fontWeight: 600, textDecoration: 'underline' }}>Ghi chú :</span>{' '}
+                                    {invoice.description}
+                                </h4>
+                            )}
                             <Badge
                                 status={
                                     invoice.status === 0
