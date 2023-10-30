@@ -47,16 +47,23 @@ function ImportForm({ onCloseModal = () => {} }) {
         setLoading(false);
     };
     const addIngredientImport = async () => {
-        const importIngredient = form.getFieldsValue().ingredients || [];
-        const ingredientId = importIngredient.map((item) => item.id).join(',');
-        const quantity = importIngredient
+        const importIngredient = form.getFieldValue('ingredients') || [];
+        const filteredData = importIngredient.filter(
+            (item) => item && item.id !== undefined && item.quantity !== undefined && item.price !== undefined,
+        );
+        console.log(filteredData);
+        const ingredientId = filteredData.map((item) => item && item.id).join(',');
+        const quantity = filteredData
             .map((item) => {
-                if (ingredients && ingredients.find((ingredient) => ingredient.id === item.id).unitName === 'pcs') {
-                    return item.quantity;
-                } else return item.quantity * 1000;
+                const unitName =
+                    ingredients.find((ingredient) => item && ingredient.id === item.id) &&
+                    ingredients.find((ingredient) => item && ingredient.id === item.id).unitName;
+                if (ingredients && unitName === 'pcs') {
+                    return item && item.quantity;
+                } else return item && item.quantity * 1000;
             })
             .join(',');
-        const price = importIngredient.map((item) => item.price / 1000).join(',');
+        const price = filteredData.map((item) => item && item.price / 1000).join(',');
         const results = await ingredientService.createImportIngredient({
             importId: importData.id,
             ingredientId,
@@ -67,7 +74,7 @@ function ImportForm({ onCloseModal = () => {} }) {
             state.showToast(results.message);
             createNewImport();
             getImportIngredient();
-            form.setFieldValue('ingredients', [{}]);
+            form.setFieldValue('ingredients', []);
         }
     };
     const delIngredientImport = async (ingredientId) => {
@@ -169,10 +176,10 @@ function ImportForm({ onCloseModal = () => {} }) {
                                 <div
                                     key={index}
                                     style={{ gap: 10, marginBottom: 12 }}
-                                    className={cx('align-items-baseline', 'd-flex')}
+                                    className={cx('align-items-end', 'd-flex')}
                                 >
                                     <Input
-                                        style={{ flex: 1, minWidth: 150 }}
+                                        style={{ flex: 1, width: 200 }}
                                         defaultValue={item.ingredient && item.ingredient.name}
                                         size="large"
                                         disabled
@@ -206,22 +213,40 @@ function ImportForm({ onCloseModal = () => {} }) {
                             );
                         })}
 
-                    <Form.List name="ingredients" initialValues={[{}]}>
-                        {(fields, { add, remove }) => (
+                    <Form.List
+                        name="ingredients"
+                        rules={[
+                            {
+                                validator: async (_, names) => {
+                                    if (
+                                        (!names || names.length < 1) &&
+                                        importData &&
+                                        importData.import_ingredients.length === 0
+                                    ) {
+                                        return Promise.reject(new Error('Phải có ít nhất 1 trường'));
+                                    }
+                                },
+                            },
+                        ]}
+                    >
+                        {(fields, { add, remove }, { errors }) => (
                             <>
                                 {fields.map((field, index) => {
                                     return (
                                         <div
                                             key={field.key}
                                             style={{ gap: 10, marginBottom: 12 }}
-                                            className={cx('align-items-baseline', 'd-flex')}
+                                            className={cx('align-items-center', 'd-flex')}
                                         >
                                             <ImportItem field={field} ingredients={ingredients} />
 
-                                            <BsDashCircle
-                                                className={cx('dynamic-delete-button')}
-                                                onClick={() => remove(field.name)}
-                                            />
+                                            {(fields.length > 1 ||
+                                                (importData && importData.import_ingredients.length !== 0)) && (
+                                                <BsDashCircle
+                                                    className={cx('dynamic-delete-button')}
+                                                    onClick={() => remove(field.name)}
+                                                />
+                                            )}
                                         </div>
                                     );
                                 })}
@@ -244,13 +269,13 @@ function ImportForm({ onCloseModal = () => {} }) {
                                             type="primary"
                                             onClick={() => {
                                                 addIngredientImport();
-                                                console.log(form.getFieldValue('ingredients'));
                                             }}
                                             icon={<BsCheckCircle />}
                                         >
                                             Xác nhận thêm
                                         </Button>
                                     </div>
+                                    <Form.ErrorList errors={errors} />
                                 </Form.Item>
                             </>
                         )}
@@ -297,10 +322,10 @@ function ImportItem({ field, ingredients }) {
                 rules={[
                     {
                         required: true,
+
                         message: 'Vui lòng nhập',
                     },
                 ]}
-                noStyle
                 name={[field.name, 'id']}
             >
                 <Select
@@ -315,7 +340,7 @@ function ImportItem({ field, ingredients }) {
                             };
                         })
                     }
-                    style={{ flex: 1, minWidth: 150 }}
+                    style={{ flex: 1, width: 200 }}
                     placeholder="Chọn nguyên liệu"
                     onChange={onChangeIngredient}
                 />
@@ -326,10 +351,10 @@ function ImportItem({ field, ingredients }) {
                 rules={[
                     {
                         required: true,
-                        message: 'Vui lòng nhập trường này',
+
+                        message: 'Vui lòng nhập',
                     },
                 ]}
-                noStyle
                 name={[field.name, 'quantity']}
             >
                 <InputNumber
@@ -348,10 +373,10 @@ function ImportItem({ field, ingredients }) {
                 rules={[
                     {
                         required: true,
+
                         message: 'Vui lòng nhập',
                     },
                 ]}
-                noStyle
                 name={[field.name, 'price']}
             >
                 <InputNumber

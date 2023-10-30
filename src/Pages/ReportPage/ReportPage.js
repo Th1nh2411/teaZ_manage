@@ -38,7 +38,10 @@ function ReportPage() {
     const [loading, setLoading] = useState(false);
     const getReport = async () => {
         setLoading(true);
-        const results = await reportService.getReportByDate(fromdate, todate);
+        const results = await reportService.getReportByDate(
+            fromdate && fromdate.format('YYYY-MM-DD'),
+            todate && todate.format('YYYY-MM-DD'),
+        );
         setLoading(false);
         if (results) {
             setReports(results);

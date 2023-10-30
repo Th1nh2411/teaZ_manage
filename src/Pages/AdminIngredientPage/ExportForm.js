@@ -47,16 +47,20 @@ function ExportForm({ onCloseModal = () => {} }) {
         setLoading(false);
     };
     const addIngredientExport = async () => {
-        const exportIngredient = form.getFieldsValue().ingredients || [];
-        const ingredientId = exportIngredient.map((item) => item && item.id).join(',');
-        const quantity = exportIngredient
-            .map((item) => {
-                if (ingredients && ingredients.find((ingredient) => ingredient.id === item.id).unitName === 'pcs') {
-                    return item.quantity;
-                } else return item.quantity * 1000;
-            })
-            .join(',');
-        const price = exportIngredient.map((item) => item && item.price / 1000).join(',');
+        const exportIngredient = form.getFieldValue('ingredients') || [];
+        const filteredData = exportIngredient.filter(
+            (item) => item && item.id !== undefined && item.quantity !== undefined && item.price !== undefined,
+        );
+        const ingredientId = filteredData.map((item) => item && item.id).join(',');
+        const quantity = filteredData.map((item) => {
+            const unitName =
+                ingredients.find((ingredient) => item && ingredient.id === item.id) &&
+                ingredients.find((ingredient) => item && ingredient.id === item.id).unitName;
+            if (ingredients && unitName === 'pcs') {
+                return item && item.quantity;
+            } else return item && item.quantity * 1000;
+        });
+        const price = filteredData.map((item) => item && item.price / 1000).join(',');
         const results = await ingredientService.createExportIngredient({
             exportId: exportData.id,
             ingredientId,
@@ -67,7 +71,7 @@ function ExportForm({ onCloseModal = () => {} }) {
             state.showToast(results.message);
             createNewExport();
             getExportIngredient();
-            form.setFieldValue('ingredients', [{}]);
+            form.setFieldValue('ingredients', []);
         }
     };
     const delIngredientExport = async (ingredientId) => {
@@ -170,10 +174,10 @@ function ExportForm({ onCloseModal = () => {} }) {
                                 <div
                                     key={index}
                                     style={{ gap: 10, marginBottom: 12 }}
-                                    className={cx('align-items-baseline', 'd-flex')}
+                                    className={cx('align-items-end', 'd-flex')}
                                 >
                                     <Input
-                                        style={{ flex: 1, minWidth: 150 }}
+                                        style={{ flex: 1, width: 200 }}
                                         defaultValue={item.ingredient && item.ingredient.name}
                                         size="large"
                                         disabled
@@ -207,22 +211,40 @@ function ExportForm({ onCloseModal = () => {} }) {
                             );
                         })}
 
-                    <Form.List name="ingredients" initialValues={[{}]}>
-                        {(fields, { add, remove }) => (
+                    <Form.List
+                        name="ingredients"
+                        rules={[
+                            {
+                                validator: async (_, names) => {
+                                    if (
+                                        (!names || names.length < 1) &&
+                                        exportData &&
+                                        exportData.export_ingredients.length === 0
+                                    ) {
+                                        return Promise.reject(new Error('Phải có ít nhất 1 trường'));
+                                    }
+                                },
+                            },
+                        ]}
+                    >
+                        {(fields, { add, remove }, { errors }) => (
                             <>
                                 {fields.map((field, index) => {
                                     return (
                                         <div
                                             key={field.key}
                                             style={{ gap: 10, marginBottom: 12 }}
-                                            className={cx('align-items-baseline', 'd-flex')}
+                                            className={cx('align-items-center', 'd-flex')}
                                         >
                                             <ExportItem field={field} ingredients={ingredients} />
 
-                                            <BsDashCircle
-                                                className={cx('dynamic-delete-button')}
-                                                onClick={() => remove(field.name)}
-                                            />
+                                            {(fields.length > 1 ||
+                                                (exportData && exportData.export_ingredients.length !== 0)) && (
+                                                <BsDashCircle
+                                                    className={cx('dynamic-delete-button')}
+                                                    onClick={() => remove(field.name)}
+                                                />
+                                            )}
                                         </div>
                                     );
                                 })}
@@ -245,13 +267,13 @@ function ExportForm({ onCloseModal = () => {} }) {
                                             type="primary"
                                             onClick={() => {
                                                 addIngredientExport();
-                                                console.log(form.getFieldValue('ingredients'));
                                             }}
                                             icon={<BsCheckCircle />}
                                         >
                                             Xác nhận thêm
                                         </Button>
                                     </div>
+                                    <Form.ErrorList errors={errors} />
                                 </Form.Item>
                             </>
                         )}
@@ -301,7 +323,6 @@ function ExportItem({ field, ingredients }) {
                         message: 'Vui lòng nhập',
                     },
                 ]}
-                noStyle
                 name={[field.name, 'id']}
             >
                 <Select
@@ -316,7 +337,7 @@ function ExportItem({ field, ingredients }) {
                             };
                         })
                     }
-                    style={{ flex: 1, minWidth: 200 }}
+                    style={{ flex: 1, width: 200 }}
                     placeholder="Chọn nguyên liệu"
                     onChange={onChangeIngredient}
                 />
@@ -327,10 +348,9 @@ function ExportItem({ field, ingredients }) {
                 rules={[
                     {
                         required: true,
-                        message: 'Vui lòng nhập trường này',
+                        message: 'Vui lòng nhập',
                     },
                 ]}
-                noStyle
                 name={[field.name, 'quantity']}
             >
                 <InputNumber
@@ -352,7 +372,6 @@ function ExportItem({ field, ingredients }) {
                         message: 'Vui lòng nhập',
                     },
                 ]}
-                noStyle
                 name={[field.name, 'price']}
             >
                 <InputNumber

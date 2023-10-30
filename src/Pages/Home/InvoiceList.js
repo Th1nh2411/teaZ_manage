@@ -21,11 +21,13 @@ function InvoiceList({ invoiceChange }) {
     const [invoices, setInvoices] = useState();
     const [fromdate, setFromdate] = useState();
     const [todate, setTodate] = useState();
+    const [status, setStatus] = useState();
 
     const getAllInvoiceByDate = async () => {
         const results = await orderService.getAllInvoiceByDateAndStatus(
             fromdate && fromdate.format('YYYY-MM-DD'),
             todate && todate.format('YYYY-MM-DD'),
+            status,
         );
         if (results) {
             setInvoices(results.data);
@@ -34,7 +36,7 @@ function InvoiceList({ invoiceChange }) {
 
     useEffect(() => {
         getAllInvoiceByDate();
-    }, [fromdate, todate, invoiceChange]);
+    }, [fromdate, todate, invoiceChange, status]);
     return (
         <div className={cx('content-wrapper')}>
             <div className={cx('content-header')}>
@@ -54,7 +56,22 @@ function InvoiceList({ invoiceChange }) {
                     }}
                     format="DD/MM/YYYY"
                 />
-
+                <Select
+                    size="large"
+                    value={status}
+                    onChange={(value) => {
+                        setStatus(value);
+                    }}
+                    placeholder="Chọn trạng thái"
+                    allowClear
+                    style={{ minWidth: 140 }}
+                >
+                    <Option value="0">Chưa xác nhận</Option>
+                    <Option value="1">Đã xác nhận</Option>
+                    <Option value="2">Đang giao</Option>
+                    <Option value="3">Hoàn thành</Option>
+                    <Option value="4">Đã huỷ</Option>
+                </Select>
                 <div className={cx('content-subtitle')}>{invoices ? invoices.length : 0} đơn</div>
             </div>
             <div className={cx('content-body')}>
