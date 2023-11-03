@@ -5,7 +5,7 @@ import { useContext, useEffect, useState } from 'react';
 import * as ingredientService from '../../services/ingredientService';
 import { StoreContext, actions } from '../../store';
 import { BiImport, BiExport } from 'react-icons/bi';
-import { ingredientFormat, onlyNumber, priceFormat, unitFormatL } from '../../utils/format';
+import { ingredientFormat, onlyNumber, priceFormat, priceFormatNoFixed, unitFormatL } from '../../utils/format';
 import { Badge, Button, Form, Input, InputNumber, Popconfirm, Select, Skeleton, Space, Spin } from 'antd';
 import { BsCheckCircle, BsDashCircle, BsPlusCircle } from 'react-icons/bs';
 import dayjs from 'dayjs';
@@ -20,14 +20,13 @@ function ImportForm({ onCloseModal = () => {} }) {
     const [form] = Form.useForm();
 
     const confirmImportIngredients = async (values) => {
-        if (values.ingredients && values.ingredients.length) {
-            await addIngredientImport();
-        }
-
+        setLoading(true);
         if (importData.description !== values.description) {
             await updateDescription(values.description);
         }
-        setLoading(true);
+        if (values.ingredients && values.ingredients.length) {
+            await addIngredientImport();
+        }
         const results = await ingredientService.completeImport(importData.id);
         if (results) {
             state.showToast('Nhập nguyên liệu', results.message);
@@ -63,7 +62,7 @@ function ImportForm({ onCloseModal = () => {} }) {
                 } else return item && item.quantity * 1000;
             })
             .join(',');
-        const price = filteredData.map((item) => item && item.price / 1000).join(',');
+        const price = filteredData.map((item) => item && item.price).join(',');
         const results = await ingredientService.createImportIngredient({
             importId: importData.id,
             ingredientId,
@@ -175,7 +174,7 @@ function ImportForm({ onCloseModal = () => {} }) {
                             return (
                                 <div
                                     key={index}
-                                    style={{ gap: 10, marginBottom: 12 }}
+                                    style={{ gap: 10, marginBottom: 15 }}
                                     className={cx('align-items-end', 'd-flex')}
                                 >
                                     <Input
@@ -192,9 +191,10 @@ function ImportForm({ onCloseModal = () => {} }) {
                                         disabled
                                     />
                                     <Input
+                                        suffix=".000"
                                         style={{ width: 180 }}
                                         addonAfter={'VND'}
-                                        defaultValue={priceFormat(item.price)}
+                                        defaultValue={priceFormatNoFixed(item.price)}
                                         size="large"
                                         disabled
                                     />
@@ -235,7 +235,7 @@ function ImportForm({ onCloseModal = () => {} }) {
                                     return (
                                         <div
                                             key={field.key}
-                                            style={{ gap: 10, marginBottom: 12 }}
+                                            style={{ gap: 10 }}
                                             className={cx('align-items-center', 'd-flex')}
                                         >
                                             <ImportItem field={field} ingredients={ingredients} />
@@ -386,6 +386,7 @@ function ImportItem({ field, ingredients }) {
                     min={0}
                     placeholder="Đơn giá"
                     controls={false}
+                    suffix=".000"
                     addonAfter={'VND'}
                     formatter={(value) => value.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                     parser={(value) => value.replace(/\$\s?|(,*)/g, '')}

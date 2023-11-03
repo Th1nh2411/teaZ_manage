@@ -31,9 +31,7 @@ const Login = ({ setAuth }) => {
                 state.showToast('Đăng nhập', results.message);
 
                 navigate(config.routes.order);
-            } else  {
-                setPassword('');
-            }
+            } 
         };
         getTokenApi();
     };

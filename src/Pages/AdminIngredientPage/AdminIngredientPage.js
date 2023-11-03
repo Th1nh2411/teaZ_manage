@@ -58,7 +58,12 @@ function AdminIngredientPage() {
     useEffect(() => {
         getIngredients();
     }, []);
-
+    const handleSearch = (e) => {
+        setSearchValue(e.target.value);
+        setIngredients(
+            defaultIngredients.filter((item) => item.name.toUpperCase().includes(e.target.value.toUpperCase())),
+        );
+    };
     return (
         <div className={cx('wrapper')}>
             {showImportForm && (
@@ -122,18 +127,7 @@ function AdminIngredientPage() {
                                         />
                                     </div>
                                     <div>
-                                        <Input
-                                            title={'Tìm nguyên liệu'}
-                                            value={searchValue}
-                                            onChange={(e) => {
-                                                setSearchValue(e.target.value);
-                                                setIngredients(
-                                                    defaultIngredients.filter((item) =>
-                                                        item.name.toUpperCase().includes(e.target.value.toUpperCase()),
-                                                    ),
-                                                );
-                                            }}
-                                        />
+                                        <Input title={'Tìm nguyên liệu'} value={searchValue} onChange={handleSearch} />
                                     </div>
                                     <div className={cx('content-subtitle')}>
                                         <ExportFile

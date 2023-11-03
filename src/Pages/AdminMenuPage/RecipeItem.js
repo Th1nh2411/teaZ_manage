@@ -31,7 +31,7 @@ function RecipeItem({ data = {}, onClickEditRecipe = () => {}, onChangeActive = 
     return (
         <>
             <div className={cx('recipe-item', { inactive: active === 0 || active === 2 })}>
-                {data.discount !== 0 && <div className={cx('sale-off')}>-{100 - data.discount}%</div>}
+                {data.discount !== 100 && <div className={cx('sale-off')}>-{100 - data.discount}%</div>}
                 <div className={cx('recipe-content')}>
                     <div className={cx('recipe-img-wrapper')}>
                         <Image src={data.image} className={cx('recipe-img')} />

@@ -40,15 +40,17 @@ function ReceiptDetail({ data, onCloseModal = () => {} }) {
                         </div>
 
                         <div className={cx('info')}>
-                            Ngày đặt :{' '}
-                            <span>
-                                {dayjs(data.date).format('HH:mm')} {dayjs(data.date).format('DD/MM/YYYY')}
-                            </span>
+                            Ngày đặt : <span>{dayjs(data.date).format('HH:mm DD/MM/YYYY')}</span>
                         </div>
                     </div>
                     <h2 className={cx('title')}>HOÁ ĐƠN BÁN HÀNG</h2>
                     <h4>HD{data.id}</h4>
                     <div className={cx('body')}>
+                        {data.description && (
+                            <div className={cx('info')}>
+                                Ghi chú: <span>{data.description}</span>
+                            </div>
+                        )}
                         <div className={cx('body-title')}>Các món đã đặt</div>
                         <table>
                             <thead>
@@ -100,11 +102,10 @@ function ReceiptDetail({ data, onCloseModal = () => {} }) {
                         </div>
                         <div className={cx('price-info')}>
                             Thanh toán :{' '}
-                            <span>{data.payment_status ? priceFormat(data.total + data.shippingFee) + 'đ' : '0đ'}</span>
+                            <span>{data.isPaid ? priceFormat(data.total + data.shippingFee) + 'đ' : '0đ'}</span>
                         </div>
                         <div className={cx('price-info')}>
-                            Thu :{' '}
-                            <span>{data.payment_status ? '0đ' : priceFormat(data.total + data.shippingFee) + 'đ'}</span>
+                            Thu : <span>{data.isPaid ? '0đ' : priceFormat(data.total + data.shippingFee) + 'đ'}</span>
                         </div>
                     </div>
                 </Modal>

@@ -40,9 +40,9 @@ export const updateImport = async (id, body) => {
     }
 };
 
-export const updateExport = async (body) => {
+export const updateExport = async (id, body) => {
     try {
-        const res = await httpRequest.patch(`export`, body);
+        const res = await httpRequest.patch(`export/${id}`, body);
         return res;
     } catch (error) {
         console.log(error);

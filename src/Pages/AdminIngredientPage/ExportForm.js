@@ -5,7 +5,7 @@ import { useContext, useEffect, useState } from 'react';
 import * as ingredientService from '../../services/ingredientService';
 import { StoreContext, actions } from '../../store';
 import { BiImport, BiExport } from 'react-icons/bi';
-import { ingredientFormat, onlyNumber, priceFormat, unitFormatL } from '../../utils/format';
+import { ingredientFormat, onlyNumber, priceFormat, priceFormatNoFixed, unitFormatL } from '../../utils/format';
 import { Badge, Button, Form, Input, InputNumber, Popconfirm, Select, Skeleton, Space, Spin } from 'antd';
 import { BsCheckCircle, BsDashCircle, BsPlusCircle } from 'react-icons/bs';
 import dayjs from 'dayjs';
@@ -20,14 +20,13 @@ function ExportForm({ onCloseModal = () => {} }) {
     const [form] = Form.useForm();
 
     const confirmExportIngredients = async (values) => {
-        if (values.ingredients && values.ingredients.length) {
-            await addIngredientExport();
-        }
-
+        setLoading(true);
         if (exportData.description !== values.description) {
             await updateDescription(values.description);
         }
-        setLoading(true);
+        if (values.ingredients && values.ingredients.length) {
+            await addIngredientExport();
+        }
         const results = await ingredientService.completeExport(exportData.id);
         if (results) {
             state.showToast('Xuất nguyên liệu', results.message);
@@ -62,7 +61,7 @@ function ExportForm({ onCloseModal = () => {} }) {
                 } else return item && item.quantity * 1000;
             })
             .join(',');
-        const price = filteredData.map((item) => item && item.price / 1000).join(',');
+        const price = filteredData.map((item) => item && item.price).join(',');
         const results = await ingredientService.createExportIngredient({
             exportId: exportData.id,
             ingredientId,
@@ -176,7 +175,7 @@ function ExportForm({ onCloseModal = () => {} }) {
                             return (
                                 <div
                                     key={index}
-                                    style={{ gap: 10, marginBottom: 12 }}
+                                    style={{ gap: 10, marginBottom: 15 }}
                                     className={cx('align-items-end', 'd-flex')}
                                 >
                                     <Input
@@ -194,8 +193,9 @@ function ExportForm({ onCloseModal = () => {} }) {
                                     />
                                     <Input
                                         style={{ width: 180 }}
+                                        suffix=".000"
                                         addonAfter={'VND'}
-                                        defaultValue={priceFormat(item.price)}
+                                        defaultValue={priceFormatNoFixed(item.price)}
                                         size="large"
                                         disabled
                                     />
@@ -236,7 +236,7 @@ function ExportForm({ onCloseModal = () => {} }) {
                                     return (
                                         <div
                                             key={field.key}
-                                            style={{ gap: 10, marginBottom: 12 }}
+                                            style={{ gap: 10 }}
                                             className={cx('align-items-center', 'd-flex')}
                                         >
                                             <ExportItem field={field} ingredients={ingredients} />
@@ -386,6 +386,7 @@ function ExportItem({ field, ingredients }) {
                     min={0}
                     placeholder="Đơn giá"
                     controls={false}
+                    suffix=".000"
                     addonAfter={'VND'}
                     formatter={(value) => value.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                     parser={(value) => value.replace(/\$\s?|(,*)/g, '')}

@@ -9,6 +9,9 @@ export function priceFormat(number) {
             .replace(/\B(?=(\d{3})+(?!\d))/g, '.')
     );
 }
+export function priceFormatNoFixed(number) {
+    return typeof number === 'number' && number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
 export function unitFormatL(unit) {
     return unit === 'g' ? 'kg' : unit === 'ml' ? 'l' : 'pcs';
 }

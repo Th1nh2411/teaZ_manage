@@ -111,7 +111,6 @@ function AdminMenuPage() {
                                 setShowEditForm(1);
                                 setSelectedRecipe(data);
                             }}
-                            onChangeActive={() => getMenuDataByType(1)}
                         />
                     </Col>
                     <Col xxl={6}>
@@ -127,7 +126,6 @@ function AdminMenuPage() {
                                 setShowEditForm(2);
                                 setSelectedRecipe(data);
                             }}
-                            onChangeActive={() => getMenuDataByType(2)}
                         />
                     </Col>
                     <Col xxl={6}>
@@ -143,7 +141,6 @@ function AdminMenuPage() {
                                 setShowEditForm(3);
                                 setSelectedRecipe(data);
                             }}
-                            onChangeActive={() => getMenuDataByType(3)}
                         />
                     </Col>
                     <Col xxl={6}>
@@ -159,7 +156,6 @@ function AdminMenuPage() {
                                 setShowEditForm(4);
                                 setSelectedRecipe(data);
                             }}
-                            onChangeActive={() => getMenuDataByType(4)}
                         />
                     </Col>
                     <Col xxl={6}>
@@ -172,7 +168,6 @@ function AdminMenuPage() {
                                 setShowEditForm(5);
                                 setSelectedRecipe(data);
                             }}
-                            onChangeActive={() => getMenuDataByType(5)}
                         />
                     </Col>
                 </Row>
@@ -189,7 +184,6 @@ function ContentWrapper({
     onShowEditForm,
     idType,
     onUpdateTopping = () => {},
-    onChangeActive = () => {},
 }) {
     const [tab, setTab] = useState(0);
     const [menu, setMenu] = useState(menuData || []);
@@ -316,7 +310,6 @@ function ContentWrapper({
                                 onClickEditRecipe={() => {
                                     onShowEditForm(item);
                                 }}
-                                onChangeActive={onChangeActive}
                             />
                         ))
                     ) : (
