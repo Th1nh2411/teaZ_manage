@@ -6,7 +6,6 @@ import { useContext, useEffect, useState } from 'react';
 import * as ingredientService from '../../services/ingredientService';
 import Tippy from '@tippyjs/react';
 import { GiMilkCarton } from 'react-icons/gi';
-import LocalStorageManager from '../../utils/LocalStorageManager';
 import { FaSort } from 'react-icons/fa';
 import Input from '../../components/Input/Input';
 
@@ -18,19 +17,14 @@ function IngredientPage() {
     const [searchValue, setSearchValue] = useState('');
     const [sort, setSort] = useState(1);
     const [loading, setLoading] = useState();
-    const localStorageManage = LocalStorageManager.getInstance();
-    const userRole = localStorageManage.getItem('userInfo').role;
     const getIngredients = async () => {
-        const token = localStorageManage.getItem('token');
-        if (token) {
-            setLoading(true);
-            const results = await ingredientService.getListIngredient(token);
-            if (results && results.ingredients) {
-                setDefaultIngredients(results.ingredients.sort((a, b) => a.quantity - b.quantity));
-                setIngredients(results.ingredients.sort((a, b) => a.quantity - b.quantity));
-            }
-            setLoading(false);
+        setLoading(true);
+        const results = await ingredientService.getListIngredient();
+        if (results) {
+            setDefaultIngredients(results.data.sort((a, b) => a.quantity - b.quantity));
+            setIngredients(results.data.sort((a, b) => a.quantity - b.quantity));
         }
+        setLoading(false);
     };
 
     useEffect(() => {
@@ -80,7 +74,7 @@ function IngredientPage() {
                                     />
                                 </div>
                                 <div className={cx('content-subtitle')}>
-                                    {ingredients && ingredients.length} nguyên liệu
+                                    {ingredients ? ingredients.length : 0} nguyên liệu
                                 </div>
                             </div>
                             <div className={cx('content-body')}>

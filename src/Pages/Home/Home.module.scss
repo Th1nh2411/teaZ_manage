@@ -60,7 +60,6 @@
 .order-title {
     font-weight: 600;
     color: var(--primary-color);
-    padding-bottom: 8px;
     font-size: 1.8rem;
     display: flex;
     align-items: center;
@@ -99,7 +98,7 @@
 }
 .order-item-actions {
     font-size: 2rem;
-    padding: 2px 15px;
+    padding: 2px 12px;
     color: var(--primary-color);
     &:hover {
         cursor: pointer;
@@ -136,4 +135,10 @@
 .order-list::-webkit-scrollbar-track {
     border-radius: 0;
     background-color: rgba(0, 0, 0, 0);
+}
+@media (max-width: 792px) {
+    .content-header {
+        flex-direction: column;
+        gap: 10px;
+    }
 }

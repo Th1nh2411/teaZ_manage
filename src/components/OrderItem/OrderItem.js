@@ -7,7 +7,6 @@ import Button from '../Button';
 import { Col, Form } from 'react-bootstrap';
 import { MdOutlineAddShoppingCart } from 'react-icons/md';
 import { useContext, useEffect, useState } from 'react';
-import LocalStorageManager from '../../utils/LocalStorageManager';
 import * as adminService from '../../services/adminService';
 import Tippy from '@tippyjs/react';
 import { MdOutlineInfo } from 'react-icons/md';
@@ -18,15 +17,12 @@ import DetailForm from './DetailForm';
 const cx = classNames.bind(styles);
 
 function OrderItem({ data = {}, onUpdateRecipe = () => {} }) {
+    const [state, dispatch] = useContext(StoreContext);
     const [active, setActive] = useState(data.isActive);
     const [showEditForm, setShowEditForm] = useState();
-    const localStorageManage = LocalStorageManager.getInstance();
-    const userRole = localStorageManage.getItem('userInfo').role;
+    const userRole = state.userInfo && state.userInfo.role;
     const editMenuItem = async (activeValue = active) => {
-        const token = localStorageManage.getItem('token');
-        if (token) {
-            const results = await adminService.editRecipe(data.idRecipe, token, { isActive: activeValue });
-        }
+        const results = await adminService.editRecipe(data.idRecipe, { isActive: activeValue });
     };
 
     const handleCheckBoxActive = (e) => {
@@ -44,7 +40,7 @@ function OrderItem({ data = {}, onUpdateRecipe = () => {} }) {
             <div className={cx('order-item', { inactive: !active })}>
                 {showEditForm && (
                     <DetailForm
-                        idRecipe={data.idRecipe}
+                        idRecipe={data.id}
                         onCloseModal={(updated) => {
                             if (updated) {
                                 onUpdateRecipe();
@@ -53,7 +49,7 @@ function OrderItem({ data = {}, onUpdateRecipe = () => {} }) {
                         }}
                     />
                 )}
-                {data.discount !== 0 && <div className={cx('sale-off')}>-{100 - data.discount}%</div>}
+                {data.discount !== 100 && <div className={cx('sale-off')}>-{100 - data.discount}%</div>}
                 <div className={cx('order-content')}>
                     <div className={cx('order-img-wrapper')}>
                         <Image src={data.image} className={cx('order-img')} />

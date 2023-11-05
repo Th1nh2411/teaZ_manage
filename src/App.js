@@ -1,12 +1,14 @@
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { privateRoutes, publicRoutes } from './Routes';
 import DefaultLayout from './layout/DefaultLayout';
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useContext, useEffect, useState } from 'react';
 import config from './config';
 import dayjs from 'dayjs';
-import LocalStorageManager from './utils/LocalStorageManager';
+import { StoreContext } from './store';
+import { ConfigProvider } from 'antd';
 
 function App() {
+    const [state, dispatch] = useContext(StoreContext);
     const titles = {
         [config.routes.login]: 'TeaZ - Đăng nhập',
         [config.routes.order]: 'TeaZ - Đơn hàng',
@@ -20,7 +22,6 @@ function App() {
     };
     const location = useLocation();
     const navigate = useNavigate();
-    const localStorageManage = LocalStorageManager.getInstance();
     useEffect(() => {
         const expireDate = dayjs(localStorage.getItem('expireDate'));
         if (dayjs().isAfter(expireDate)) {
@@ -28,60 +29,73 @@ function App() {
             alert('The login session has expired. Please log in again.');
             navigate(config.routes.login);
         }
-        localStorage.getItem('token');
         document.title = titles[location.pathname] ?? 'TeaZ - Manage';
     }, [location]);
     return (
-        <div className="App">
-            <Routes>
-                {privateRoutes.map((route, index) => {
-                    let Layout = DefaultLayout;
-                    if (route.layout) {
-                        Layout = route.layout;
-                    } else if (route.layout === null) {
-                        Layout = Fragment;
-                    }
-                    const Element = route.component;
-                    return (
-                        <Route
-                            exact
-                            key={index}
-                            path={route.path}
-                            element={
-                                localStorageManage.getItem('token') ? (
+        <ConfigProvider
+            theme={{
+                token: {
+                    fontFamily: 'Nunito, sans-serif',
+                    colorPrimary: '#2b9d7b',
+                },
+                components: {
+                    Form: {
+                        marginLG: 16,
+                    },
+                },
+            }}
+        >
+            <div className="App">
+                <Routes>
+                    {privateRoutes.map((route, index) => {
+                        let Layout = DefaultLayout;
+                        if (route.layout) {
+                            Layout = route.layout;
+                        } else if (route.layout === null) {
+                            Layout = Fragment;
+                        }
+                        const Element = route.component;
+                        return (
+                            <Route
+                                exact
+                                key={index}
+                                path={route.path}
+                                element={
+                                    state.userInfo ? (
+                                        <Layout>
+                                            <Element />
+                                        </Layout>
+                                    ) : (
+                                        <Navigate to={config.routes.login} replace />
+                                    )
+                                }
+                            />
+                        );
+                    })}
+                    {publicRoutes.map((route, index) => {
+                        let Layout = DefaultLayout;
+                        if (route.layout) {
+                            Layout = route.layout;
+                        } else if (route.layout === null) {
+                            Layout = Fragment;
+                        }
+                        const Element = route.component;
+                        return (
+                            <Route
+                                exact
+                                key={index}
+                                path={route.path}
+                                element={
                                     <Layout>
                                         <Element />
                                     </Layout>
-                                ) : (
-                                    <Navigate to={config.routes.login} replace />
-                                )
-                            }
-                        />
-                    );
-                })}
-                {publicRoutes.map((route, index) => {
-                    let Layout = DefaultLayout;
-                    if (route.layout) {
-                        Layout = route.layout;
-                    } else if (route.layout === null) {
-                        Layout = Fragment;
-                    }
-                    const Element = route.component;
-                    return (
-                        <Route
-                            exact
-                            key={index}
-                            path={route.path}
-                            element={
-                                <Layout>
-                                    <Element />
-                                </Layout>
-                            }
-                        />
-                    );
-                })}
-            </Routes>
-        </div>
+                                }
+                            />
+                        );
+                    })}
+                </Routes>
+            </div>
+        </ConfigProvider>
     );
 }
 

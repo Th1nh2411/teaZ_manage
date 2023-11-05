@@ -7,7 +7,6 @@ import Button from '../Button';
 import { Col, Form, Row } from 'react-bootstrap';
 import { MdOutlineAddShoppingCart } from 'react-icons/md';
 import { useContext, useEffect, useState } from 'react';
-import LocalStorageManager from '../../utils/LocalStorageManager';
 import * as menuService from '../../services/menuService';
 import * as adminService from '../../services/adminService';
 import Tippy from '@tippyjs/react';
@@ -24,22 +23,15 @@ function DetailForm({ idRecipe = 1, onCloseModal = () => {} }) {
     const [discountValue, setDiscountValue] = useState('');
     const [valueChange, setValueChange] = useState(false);
     const [state, dispatch] = useContext(StoreContext);
-    const localStorageManage = LocalStorageManager.getInstance();
-    const userRole = state.userInfo.role;
-    const editMenuItem = async () => {
-        const token = localStorageManage.getItem('token');
-        if (token) {
-            const results = await adminService.editRecipe(idRecipe, detailRecipe.isActive, 100 - discountValue, token);
-        }
-    };
+    const userRole = state.userInfo && state.userInfo.role;
+
     const getDetailRecipe = async () => {
-        const token = localStorageManage.getItem('token');
-        if (token) {
-            const results = await menuService.getDetailRecipe(idRecipe, token);
-            setDetailRecipe(results.recipe);
-            setNameValue(results.recipe.name);
-            setPriceValue(results.recipe.price);
-            setDiscountValue(100 - results.recipe.discount);
+        const results = await menuService.getDetailRecipe(idRecipe);
+        if (results) {
+            setDetailRecipe(results.data);
+            setNameValue(results.data.name);
+            setPriceValue(results.data.price);
+            setDiscountValue(100 - results.data.discount);
         }
     };
     const handleCancelEdit = () => {
@@ -48,8 +40,8 @@ function DetailForm({ idRecipe = 1, onCloseModal = () => {} }) {
         setDiscountValue(100 - detailRecipe.discount);
     };
     const handleClickConfirm = async () => {
-        await editMenuItem();
-        dispatch(actions.setToast({ show: true, title: 'Sửa món', content: 'Sửa món thành cống' }));
+        const results = await adminService.editRecipe(idRecipe, detailRecipe.isActive, 100 - discountValue);
+        if (results) state.showToast('Sửa món', results.message);
         onCloseModal(true);
     };
     useEffect(() => {

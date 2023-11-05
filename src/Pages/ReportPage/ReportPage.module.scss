@@ -4,6 +4,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 10px;
 }
 .header-actions {
     display: flex;
@@ -169,5 +170,15 @@
         color: #da4453;
         font-weight: 600;
         font-size: 1.8rem;
+    }
+}
+@media (max-width: 792px) {
+    .content-header {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .header {
+        flex-direction: column;
+        gap: 10px;
     }
 }

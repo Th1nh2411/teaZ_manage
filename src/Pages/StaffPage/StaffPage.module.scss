@@ -98,8 +98,9 @@
 }
 .shop-status {
     display: flex;
+    margin-top: 10px;
     .shop-active-check {
-        margin-right: 4px;
+        margin-right: 5px;
     }
     span {
         font-weight: 600;
@@ -296,5 +297,14 @@
     justify-content: end;
     .confirm-btn {
         margin-left: 10px;
+    }
+}
+@media (max-width: 792px) {
+    .content-header {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .hidden-mb {
+        display: none;
     }
 }

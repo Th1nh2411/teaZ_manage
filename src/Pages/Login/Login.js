@@ -9,39 +9,29 @@ import * as authService from '../../services/authService';
 import Input from '../../components/Input/Input';
 import Card from '../../components/Card/Card';
 import dayjs from 'dayjs';
-import LocalStorageManager from '../../utils/LocalStorageManager';
 import { StoreContext, actions } from '../../store';
+import Cookies from 'js-cookie';
 const cx = classNames.bind(styles);
 const Login = ({ setAuth }) => {
     const navigate = useNavigate();
-    const [username, setUsername] = useState('');
+    const [phone, setPhone] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [state, dispatch] = useContext(StoreContext);
-    const localStorageManage = LocalStorageManager.getInstance();
     const handleSubmit = (event) => {
         event.preventDefault();
-
         const getTokenApi = async () => {
-            const results = await authService.login({ username, password });
-            if (results && results.userInfo && results.userInfo.role && results.userInfo.role !== 0) {
-                const expirationDate = dayjs().add(results.expireTime, 'second');
-                localStorageManage.setItem('token', results.token);
-                localStorageManage.setItem('expireDate', expirationDate.format());
-                localStorageManage.setItem('userInfo', results.userInfo);
-                dispatch(actions.setUserInfo(results.userInfo));
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: 'Đăng nhập thành công',
-                        title: 'Đăng nhập',
-                    }),
-                );
-                navigate(config.routes.order);
-            } else {
-                setPassword('');
-                setErrorMessage('Password or mail is incorrect');
+            const results = await authService.login({ phone, password });
+            if(results && results.userInfo && results.userInfo.role === 0){
+                state.showToast('Đăng nhập', 'Sai tài khoản hoặc mật khẩu','error');
             }
+            else if (results && results.userInfo && results.userInfo.role !== 0) {
+                Cookies.set('userInfo', JSON.stringify(results.userInfo));
+                dispatch(actions.setUserInfo(results.userInfo));
+                state.showToast('Đăng nhập', results.message);
+
+                navigate(config.routes.order);
+            } 
         };
         getTokenApi();
     };
@@ -59,11 +49,11 @@ const Login = ({ setAuth }) => {
                     <form onSubmit={handleSubmit} className={cx('form-body')}>
                         <Input
                             onChange={(event) => {
-                                setUsername(event.target.value);
+                                setPhone(event.target.value);
                                 setErrorMessage('');
                             }}
-                            value={username}
-                            title="Nhập số điện thoại hoặc gmail"
+                            value={phone}
+                            title="Nhập số điện thoại"
                         />
 
                         <Input

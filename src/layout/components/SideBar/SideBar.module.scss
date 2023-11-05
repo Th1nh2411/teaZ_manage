@@ -4,8 +4,10 @@
     position: fixed;
     left: 0;
     height: 100vh;
+    z-index: 1000;
     background-color: var(--dark-primary-color);
     transition: all 0.1s ease-in-out;
+    overflow: hidden;
 }
 .logo-img-wrapper {
     width: 100%;
@@ -19,7 +21,7 @@
     }
 }
 
-@media (max-width: 991.98px) {
+@media (max-width: 892px) {
     // .wrapper {
     //     display: none;
     // }

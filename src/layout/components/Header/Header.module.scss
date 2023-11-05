@@ -47,3 +47,20 @@
     color: var(--dark-primary-color);
     line-height: 2;
 }
+@media (max-width: 892px) {
+    // .nav-actions {
+    //     display: none;
+    // }
+    .header,
+    .page-route {
+        padding: 10px 20px;
+    }
+    .actions {
+        span {
+            display: none;
+        }
+        .icon {
+            display: block;
+        }
+    }
+}

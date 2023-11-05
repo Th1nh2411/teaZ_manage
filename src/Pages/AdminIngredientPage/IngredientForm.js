@@ -6,7 +6,6 @@ import { useContext, useEffect, useState } from 'react';
 import * as adminService from '../../services/adminService';
 import { StoreContext, actions } from '../../store';
 import { BiImport, BiExport, BiUpload } from 'react-icons/bi';
-import LocalStorageManager from '../../utils/LocalStorageManager';
 import Input from '../../components/Input/Input';
 import { onlyNumber } from '../../utils/format';
 import { Upload, Button, message, Select } from 'antd';
@@ -22,32 +21,19 @@ function IngredientForm({ data, onCloseModal = () => {} }) {
     const [valueChange, setValueChange] = useState(false);
     const [loading, setLoading] = useState(false);
     const [state, dispatch] = useContext(StoreContext);
-    const localStorageManage = LocalStorageManager.getInstance();
-    const userRole = localStorageManage.getItem('userInfo').role;
     const editIngredient = async () => {
-        const token = localStorageManage.getItem('token');
-        if (token) {
-            setLoading(true);
-            const res = await adminService.uploadFile(imageValue);
-            const results = await adminService.editIngredient(
-                data.idIngredient,
-                token,
-                nameValue,
-                res.url,
-                unitValue,
-                isActive,
-            );
-            setLoading(false);
-            if (results && results.isSuccess) {
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: 'Cập nhật thông tin nguyên liệu thành công',
-                        title: 'Thành công',
-                    }),
-                );
-                onCloseModal(true);
-            }
+        setLoading(true);
+        const res = await adminService.uploadFile(imageValue);
+        const results = await adminService.editIngredient(data.id, {
+            name: nameValue,
+            image: res.url,
+            unitName: unitValue,
+        });
+        setLoading(false);
+        if (results) {
+            state.showToast(results.message);
+
+            onCloseModal(true);
         }
     };
 
@@ -58,32 +44,17 @@ function IngredientForm({ data, onCloseModal = () => {} }) {
                 content: 'This is an error message',
             });
         }
-        const token = localStorageManage.getItem('token');
-        if (token) {
-            setLoading(true);
-            const res = await adminService.uploadFile(imageValue);
-            const results = await adminService.addIngredient(nameValue, res.url, unitValue, token);
-            setLoading(false);
-            if (results && results.isSuccess) {
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: 'Thêm mới nguyên liệu thành công',
-                        title: 'Thành công',
-                    }),
-                );
+        setLoading(true);
+        const res = await adminService.uploadFile(imageValue);
+        if (res) {
+            const results = await adminService.addIngredient({ name: nameValue, unitName: unitValue, image: res.url });
+            if (results) {
+                state.showToast(results.message);
+
                 onCloseModal(true);
-            } else {
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: 'Thêm mới nguyên liệu thất bại',
-                        title: 'Thất bại',
-                        type: 'error',
-                    }),
-                );
             }
         }
+        setLoading(false);
     };
     const handleCancelEdit = () => {
         setImageValue(null);
@@ -93,7 +64,7 @@ function IngredientForm({ data, onCloseModal = () => {} }) {
             setIsActive(data.isActive);
         } else {
             setNameValue('');
-            setUnitValue('');
+            setUnitValue('g');
             setIsActive(0);
         }
     };
@@ -152,33 +123,11 @@ function IngredientForm({ data, onCloseModal = () => {} }) {
                             title="Tên nguyên liệu"
                             type="text"
                         />
-                        <div className={cx('d-flex', 'align-items-center', 'mt-16')}>
-                            <h4>Trạng thái : </h4>
-                            <Select
-                                disabled={!data}
-                                className={cx('ml-16')}
-                                dropdownStyle={{ zIndex: 1000000 }}
-                                value={Number(isActive)}
-                                onChange={(value) => {
-                                    setIsActive(value);
-                                }}
-                                options={[
-                                    {
-                                        value: 1,
-                                        label: 'Active',
-                                    },
-                                    {
-                                        value: 0,
-                                        label: 'Inactive',
-                                    },
-                                ]}
-                            />
-                        </div>
 
                         {/* </div> */}
 
                         {/* <div className={cx('d-flex', 'align-items-start', 'justify-content-between', 'mt-8')}> */}
-                        <div className={cx('d-flex', 'align-items-center', 'mt-8')}>
+                        <div style={{ marginLeft: 2 }} className={cx('d-flex', 'align-items-center', 'mt-16')}>
                             <h4>Đơn vị tính : </h4>
                             <Select
                                 className={cx('ml-16')}
@@ -194,16 +143,17 @@ function IngredientForm({ data, onCloseModal = () => {} }) {
                                     },
                                     {
                                         value: 'ml',
-                                        label: 'Mililit',
+                                        label: 'Lít',
                                     },
                                     {
                                         value: 'pcs',
                                         label: 'pcs',
                                     },
                                 ]}
+                                style={{ minWidth: 100 }}
                             />
                         </div>
-                        <div className={cx('d-flex', 'mt-16')}>
+                        <div style={{ marginLeft: 2 }} className={cx('d-flex', 'align-items-center', 'mt-16')}>
                             <h4>Ảnh hiển thị : </h4>
                             <Upload
                                 className={cx('ml-16')}

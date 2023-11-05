@@ -5,62 +5,32 @@ import { Bar, Line } from 'react-chartjs-2';
 import dayjs from 'dayjs';
 import { Chart, registerables } from 'chart.js';
 import { formatNumber } from '../../utils/format';
-import LocalStorageManager from '../../utils/LocalStorageManager';
 import * as reportService from '../../services/reportService';
 Chart.register(...registerables);
 
 const cx = classNames.bind(styles);
-const IngredientTracker = ({ className, date, type }) => {
-    const [imports, setImports] = useState();
-    const [exportsFromBH, setExportsFromBH] = useState();
-    const [exports, setExports] = useState();
-    const localStorageManager = LocalStorageManager.getInstance();
-    const getIngredientReport = async () => {
-        const token = localStorageManager.getItem('token');
-        if (token) {
-            const results = await reportService.getIngredientReportByDate(
-                date,
-                token,
-                type === 1 ? 'day' : type === 2 ? 'month' : 'year',
-            );
-            if (results) {
-                setImports(results.imports);
-                setExportsFromBH(results.exportsBH);
-                setExports(results.exportsWithoutBH);
-            }
-        }
-    };
-    useEffect(() => {
-        getIngredientReport();
-    }, [date, type]);
+const IngredientTracker = ({ className, reportData }) => {
     const labels = useMemo(() => {
-        const listMonths = imports && imports.map((item, index) => item.name);
-        return listMonths;
-    }, [imports]); //['January', 'February', 'March', 'April', 'May', 'June', 'July']
+        const listLabels = reportData && reportData.map((item, index) => item.name);
+        return listLabels;
+    }, [reportData]); //['January', 'February', 'March', 'April', 'May', 'June', 'July']
     const data = {
         labels,
         datasets: [
             {
                 fill: true,
                 label: 'Nhập hàng',
-                data: imports && imports.map((item) => item.quantity),
+                data: reportData && reportData.map((item) => item.total_import),
                 backgroundColor: '#3e72c780',
                 color: 'black',
                 fontSize: '16px',
                 stack: 'Stack 1',
             },
-            {
-                fill: true,
-                label: 'Bán hàng',
-                data: exportsFromBH && exportsFromBH.map((item) => item.quantity),
-                backgroundColor: '#c1e4d2',
-                color: 'black',
-                stack: 'Stack 0',
-            },
+
             {
                 fill: true,
                 label: 'Xuất kho',
-                data: exports && exports.map((item) => item.quantity),
+                data: reportData && reportData.map((item) => item.total_export),
                 backgroundColor: '#d95d60',
                 color: 'black',
                 stack: 'Stack 0',
@@ -109,7 +79,7 @@ const IngredientTracker = ({ className, date, type }) => {
     };
     return (
         <div className={cx('chart-wrapper', className)}>
-            {imports && <Bar height={450} data={data} options={options} />}
+            {reportData && <Bar height={450} data={data} options={options} />}
         </div>
     );
 };

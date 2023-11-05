@@ -7,7 +7,6 @@ import Input from '../../components/Input';
 import { Col, Form, Row } from 'react-bootstrap';
 import { MdOutlineAddShoppingCart } from 'react-icons/md';
 import { useContext, useEffect, useState } from 'react';
-import LocalStorageManager from '../../utils/LocalStorageManager';
 import * as adminService from '../../services/adminService';
 import Tippy from '@tippyjs/react';
 import { MdOutlineInfo } from 'react-icons/md';
@@ -20,7 +19,7 @@ import { BiUpload } from 'react-icons/bi';
 
 const cx = classNames.bind(styles);
 
-function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
+function RecipeForm({ id, type = 1, onCloseModal = () => {} }) {
     const [messageApi, contextHolder] = message.useMessage();
     const [detailRecipe, setDetailRecipe] = useState({});
     const [name, setNameValue] = useState('');
@@ -28,13 +27,11 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
     const [info, setInfoValue] = useState('');
     const [price, setPriceValue] = useState('');
     const [discount, setDiscountValue] = useState('');
-    const [idType, setType] = useState(1);
+    const [typeId, setType] = useState(type);
     const [loading, setLoading] = useState(false);
     const [valueChange, setValueChange] = useState(false);
     const [state, dispatch] = useContext(StoreContext);
-    const localStorageManage = LocalStorageManager.getInstance();
     const editMenuItem = async () => {
-        const token = localStorageManage.getItem('token');
         if (!name) {
             messageApi.open({
                 type: 'error',
@@ -45,28 +42,21 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
             });
             return;
         }
-        if (token) {
-            setLoading(true);
-            const res = image && (await adminService.uploadFile(image));
-            const results = await adminService.editRecipe(idRecipe, token, {
-                name,
-                image: res && res.url,
-                info,
-                price,
-                discount: 100 - discount,
-                idType,
-            });
-            setLoading(false);
-            if (results && results.isSuccess) {
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: 'Cập nhật thông tin sản phẩm thành công',
-                        title: 'Thành công',
-                    }),
-                );
-                onCloseModal(true);
-            }
+        setLoading(true);
+        const res = image && (await adminService.uploadFile(image));
+        const results = await adminService.editRecipe(id, {
+            name,
+            image: res ? res.url : undefined,
+            info,
+            price,
+            discount: 100 - discount,
+            typeId,
+        });
+        setLoading(false);
+        if (results) {
+            state.showToast(results.message);
+            console.log(typeId);
+            onCloseModal(typeId);
         }
     };
     const addNewMenuItem = async () => {
@@ -80,48 +70,44 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
             });
             return;
         }
-        const token = localStorageManage.getItem('token');
-        if (token) {
-            setLoading(true);
-            const res = await adminService.uploadFile(image);
-            const results = await adminService.addRecipe(name, res.url, info, price, 100 - discount, idType, token);
-            setLoading(false);
-            if (results && results.isSuccess) {
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: 'Thêm mới sản phẩm thành công',
-                        title: 'Thành công',
-                    }),
-                );
-                onCloseModal(true);
-            } else {
-            }
+
+        setLoading(true);
+        const res = await adminService.uploadFile(image);
+        const results = await adminService.addRecipe({
+            name,
+            image: res.url,
+            info,
+            price,
+            discount: 100 - discount,
+            typeId,
+        });
+        setLoading(false);
+        if (results) {
+            state.showToast('Thêm mới', results.message);
+
+            onCloseModal(typeId);
         }
     };
     const getDetailRecipe = async () => {
-        const token = localStorageManage.getItem('token');
-        if (token) {
-            const results = await adminService.getDetailRecipe(idRecipe, token);
-            if (results && results.detailRecipe) {
-                setDetailRecipe(results.detailRecipe);
-                setNameValue(results.detailRecipe.name);
-                setInfoValue(results.detailRecipe.info);
-                setPriceValue(results.detailRecipe.price);
-                setDiscountValue(100 - results.detailRecipe.discount);
-                setType(results.detailRecipe.idType);
-            }
+        const results = await adminService.getDetailRecipe(id);
+        if (results) {
+            setDetailRecipe(results.data);
+            setNameValue(results.data.name);
+            setInfoValue(results.data.info);
+            setPriceValue(results.data.price);
+            setDiscountValue(100 - results.data.discount);
+            setType(results.data.type);
         }
     };
 
     const handleCancelEdit = () => {
         setImageValue(null);
-        if (idRecipe) {
+        if (id) {
             setNameValue(detailRecipe.name);
             setInfoValue(detailRecipe.info);
             setPriceValue(detailRecipe.price);
             setDiscountValue(100 - detailRecipe.discount);
-            setType(detailRecipe.idType);
+            setType(detailRecipe.type);
         } else {
             setNameValue('');
             setInfoValue('');
@@ -132,39 +118,40 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
     };
     const handleClickConfirm = (e) => {
         e.preventDefault();
-        if (idRecipe) {
+        if (id) {
             editMenuItem();
         } else {
             addNewMenuItem();
         }
     };
     useEffect(() => {
-        if (idRecipe) {
+        if (id) {
             getDetailRecipe();
         }
     }, []);
     useEffect(() => {
-        if (idRecipe) {
+        if (id) {
             if (
                 detailRecipe.name !== name ||
                 image !== null ||
                 detailRecipe.info !== info ||
                 detailRecipe.price !== Number(price) ||
                 100 - detailRecipe.discount !== Number(discount) ||
-                detailRecipe.idType !== Number(idType)
+                detailRecipe.type !== Number(typeId)
             ) {
+                console.log(typeId);
                 setValueChange(true);
             } else {
                 setValueChange(false);
             }
         } else {
-            if (name !== '' || image !== null || info !== '' || price !== '' || discount !== '' || idType !== 1) {
+            if (name !== '' || image !== null || info !== '' || price !== '' || discount !== '' || typeId !== 1) {
                 setValueChange(true);
             } else {
                 setValueChange(false);
             }
         }
-    }, [name, price, info, image, discount, idType]);
+    }, [name, price, info, image, discount, typeId]);
     return (
         <>
             <Modal
@@ -174,9 +161,9 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
                 className={cx('edit-form-wrapper')}
             >
                 {contextHolder}
-                <div className={cx('form-title')}>{idRecipe ? 'Cập nhật thông tin sản phẩm' : 'Thêm mới sản phẩm'}</div>
+                <div className={cx('form-title')}>{id ? 'Cập nhật thông tin sản phẩm' : 'Thêm mới sản phẩm'}</div>
                 <div className={cx('form-body')}>
-                    {idRecipe && (
+                    {id && (
                         <div className={cx('left-section')}>
                             <div className={cx('form-img-wrapper')}>
                                 <Image src={detailRecipe.image} className={cx('form-img')} />
@@ -257,7 +244,7 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
                             <Col md={4}>
                                 <select
                                     className={cx('custom-select')}
-                                    value={idType}
+                                    value={typeId}
                                     onChange={(event) => {
                                         setType(event.target.value);
                                     }}
@@ -270,7 +257,7 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
                                 </select>
                             </Col>
                         </Row>
-                        {!idRecipe && (
+                        {!id && (
                             <Upload
                                 fileList={image && [image]}
                                 accept="image/*"
@@ -294,7 +281,7 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
                                 </Button>
                             </Upload>
                         )}
-                        {idRecipe && (
+                        {id && (
                             <ListIngredient
                                 onUpdateIngredient={async () => await getDetailRecipe()}
                                 detailRecipe={detailRecipe}
@@ -314,7 +301,7 @@ function RecipeForm({ idRecipe, onCloseModal = () => {} }) {
                                 className={cx('confirm-btn')}
                                 type="primary"
                             >
-                                Cập nhật
+                                {id ? 'Cập nhật' : 'Thêm mới'}
                             </Button>
                         </div>
                     </div>

@@ -1,13 +1,36 @@
-import * as httpRequest2 from '../utils/httpRequest';
+import * as httpRequest from '../utils/httpRequest';
 import axios from 'axios';
 
-const httpRequest = axios.create({
-    baseURL: 'https://mocki.io/v1/',
-});
-export const editShop = async (idShop, token, address, latitude, longitude, image, isActive) => {
-    const config = {
-        headers: { access_token: token },
-    };
+export const getListManager = async () => {
+    try {
+        const res = await httpRequest.get('admin/getListManager');
+        return res;
+    } catch (error) {
+        console.log(error);
+        return error.response && error.response.data;
+    }
+};
+
+export const changeIngredientActive = async (id) => {
+    try {
+        const res = await httpRequest.del(`ingredient/${id}`);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return error.response && error.response.data;
+    }
+};
+
+export const getListShop = async () => {
+    try {
+        const res = await httpRequest.get('admin/getListShop');
+        return res;
+    } catch (error) {
+        console.log(error);
+        return error.response && error.response.data;
+    }
+};
+export const addShop = async (address, latitude, longitude, image, isActive) => {
     const body = {
         address,
         latitude,
@@ -16,190 +39,193 @@ export const editShop = async (idShop, token, address, latitude, longitude, imag
         isActive,
     };
     try {
-        const res = await httpRequest.get('4880c9ba-59f9-46d9-bbce-d73be5c7be9f');
-        return res.data;
+        const res = await httpRequest.post(`admin/addShop`, body);
+        return res;
     } catch (error) {
         console.log(error);
         return error.response && error.response.data;
     }
 };
-export const getAllIngredient = async (token) => {
-    const config = {
-        headers: { access_token: token },
-    };
-
+export const editShop = async (body) => {
     try {
-        const res = await httpRequest.get(`7ac77bba-a8a4-4ea0-a5d8-fcd087d1e19d`, config);
-        return res.data;
+        const res = await httpRequest.patch(`shop`, body);
+        return res;
     } catch (error) {
         console.log(error);
         return error.response && error.response.data;
     }
 };
-export const addIngredient = async (name, image, unitName, token) => {
-    const config = {
-        headers: { access_token: token },
-    };
-    const body = {
-        name,
-        image,
-        unitName,
-    };
+export const getDataForChartByShop = async (idShop) => {
     try {
-        const res = await httpRequest.get('4880c9ba-59f9-46d9-bbce-d73be5c7be9f');
-        return res.data;
+        const res = await httpRequest.get(`admin/getDataForChart/${idShop}`);
+        return res;
     } catch (error) {
         console.log(error);
         return error.response && error.response.data;
     }
 };
-export const editIngredient = async (idIngredient, token, name, image, unitName, isActive) => {
-    const config = {
-        headers: { access_token: token },
-    };
-    const body = {
-        name,
-        image,
-        unitName,
-        isActive,
-    };
+export const getAllShopDataForChart = async () => {
     try {
-        const res = await httpRequest.get('4880c9ba-59f9-46d9-bbce-d73be5c7be9f');
-        return res.data;
+        const res = await httpRequest.get(`admin/getAllDataForChart`);
+        return res;
     } catch (error) {
         console.log(error);
         return error.response && error.response.data;
     }
 };
-export const getAllRecipe = async (idType, token) => {
+export const getAllIngredient = async (name) => {
+    try {
+        const config = { params: { name } };
+        const res = await httpRequest.get(`ingredient`, config);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return error.response && error.response.data;
+    }
+};
+export const addIngredient = async (body) => {
+    try {
+        const res = await httpRequest.post(`ingredient`, body);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return error.response && error.response.data;
+    }
+};
+export const editIngredient = async (id, body) => {
+    try {
+        console.log(id);
+        console.log(body);
+        const res = await httpRequest.patch(`ingredient/${id}`, body);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return error.response && error.response.data;
+    }
+};
+export const getAllRecipe = async (idType) => {
     const config = {
-        headers: { access_token: token },
         params: {
             idType,
         },
     };
 
     try {
-        const res = await httpRequest2.get(`admin/getListRecipe`, config);
+        const res = await httpRequest.get(`admin/getListRecipe`, config);
         return res;
     } catch (error) {
         console.log(error);
         return error.response && error.response.data;
     }
 };
-export const getDetailRecipe = async (idRecipe, token) => {
-    const config = {
-        headers: { access_token: token },
-    };
-
+export const getDetailRecipe = async (idRecipe) => {
     try {
-        const res = await httpRequest2.get(`admin/getDetailRecipe/${idRecipe}`, config);
+        const res = await httpRequest.get(`recipe/${idRecipe}`);
         return res;
     } catch (error) {
         console.log(error);
         return error.response && error.response.data;
     }
 };
-export const addRecipe = async (name, image, info, price, discount, idType, token) => {
-    const config = {
-        headers: { access_token: token },
-    };
+export const addRecipe = async (body) => {
+    try {
+        const res = await httpRequest.post(`recipe`, body);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return error.response && error.response.data;
+    }
+};
+export const editRecipe = async (idRecipe, body) => {
+    try {
+        const res = await httpRequest.patch(`recipe/${idRecipe}`, body);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return error.response && error.response.data;
+    }
+};
+export const changeRecipeActive = async (idRecipe) => {
+    try {
+        const res = await httpRequest.del(`recipe/${idRecipe}`);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return error.response && error.response.data;
+    }
+};
+export const addIngredientFromRecipe = async (body) => {
+    try {
+        const res = await httpRequest.post(`recipe-ingredient`, body);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return error.response && error.response.data;
+    }
+};
+export const editIngredientFromRecipe = async (body) => {
+    try {
+        const res = await httpRequest.patch(`recipe-ingredient`, body);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return error.response && error.response.data;
+    }
+};
+export const removeIngredientFromRecipe = async (body) => {
+    try {
+        const res = await httpRequest.del(`recipe-ingredient`, { data: body });
+        return res;
+    } catch (error) {
+        console.log(error);
+        return error.response && error.response.data;
+    }
+};
+export const getListToppingByType = async (idType) => {
+    try {
+        const res = await httpRequest.get(`recipe/type-topping/${idType}`);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return error.response && error.response.data;
+    }
+};
+export const addToppingToType = async (recipeId, typeId) => {
     const body = {
-        name,
-        image,
-        info,
-        price,
-        discount,
-        idType,
+        recipeId,
+        typeId,
     };
     try {
-        const res = await httpRequest.get('4880c9ba-59f9-46d9-bbce-d73be5c7be9f');
-        return res.data;
+        const res = await httpRequest.post(`recipe-type`, body);
+        return res;
     } catch (error) {
         console.log(error);
         return error.response && error.response.data;
     }
 };
-export const editRecipe = async (idRecipe, token, body) => {
-    const config = {
-        headers: { access_token: token },
-    };
-    try {
-        const res = await httpRequest.get('4880c9ba-59f9-46d9-bbce-d73be5c7be9f');
-        return res.data;
-    } catch (error) {
-        console.log(error);
-        return error.response && error.response.data;
-    }
-};
-export const editIngredientFromRecipe = async (idRecipe, idIngredient, quantity, token) => {
-    const config = {
-        headers: { access_token: token },
-    };
+export const delToppingFromType = async (recipeId, typeId) => {
     const body = {
-        idRecipe,
-        idIngredient,
-        quantity,
+        recipeId,
+        typeId,
     };
     try {
-        const res = await httpRequest.get('4880c9ba-59f9-46d9-bbce-d73be5c7be9f');
-        return res.data;
+        const res = await httpRequest.del(`recipe-type`, { data: body });
+        return res;
     } catch (error) {
         console.log(error);
         return error.response && error.response.data;
     }
 };
-export const getListToppingByType = async () => {
-    try {
-        const res = await httpRequest.get(`0cda3269-50df-4f8e-ae81-644ca5330427`);
-        return res.data;
-    } catch (error) {
-        console.log(error);
-        return error.response && error.response.data;
-    }
-};
-export const addToppingToType = async (idRecipe, idType, token) => {
+export const uploadFile = async (my_file) => {
     const config = {
-        headers: { access_token: token },
-    };
-    const body = {
-        idRecipe,
-        idType,
-    };
-    try {
-        const res = await httpRequest.get('4880c9ba-59f9-46d9-bbce-d73be5c7be9f');
-        return res.data;
-    } catch (error) {
-        console.log(error);
-        return error.response && error.response.data;
-    }
-};
-export const delToppingFromType = async (idRecipe, idType, token) => {
-    const config = {
-        headers: { access_token: token },
-    };
-    const body = {
-        idRecipe,
-        idType,
-    };
-    try {
-        const res = await httpRequest.get('4880c9ba-59f9-46d9-bbce-d73be5c7be9f');
-        return res.data;
-    } catch (error) {
-        console.log(error);
-        return error.response && error.response.data;
-    }
-};
-export const uploadFile = async (my_file, token) => {
-    const config = {
-        headers: { access_token: token, 'Content-Type': 'multipart/form-data' },
+        headers: { 'Content-Type': 'multipart/form-data' },
     };
     const body = {
         my_file,
     };
     try {
-        const res = await httpRequest.get(`0fb03573-c878-4818-a4c7-cef99030cc07`, body, config);
-        return res.data;
+        const res = await httpRequest.post(`auth/upload`, body, config);
+        return res;
     } catch (error) {
         console.log(error);
         return error.response && error.response.data;

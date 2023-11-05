@@ -6,7 +6,6 @@ import Input from '../../components/Input';
 import { Col, Form, Row } from 'react-bootstrap';
 import { useContext, useEffect, useState } from 'react';
 import { StoreContext, actions } from '../../store';
-import LocalStorageManager from '../../utils/LocalStorageManager';
 import * as shopService from '../../services/shopService';
 import * as mapService from '../../services/mapService';
 import * as adminService from '../../services/adminService';
@@ -32,9 +31,7 @@ function ShopForm({ data, onCloseModal = () => {} }) {
     const [valueChange, setValueChange] = useState(false);
     const [loading, setLoading] = useState(false);
     const [state, dispatch] = useContext(StoreContext);
-    const localStorageManage = LocalStorageManager.getInstance();
     const debouncedValue = useDebounce(address, 500);
-    const userRole = localStorageManage.getItem('userInfo').role;
     useEffect(() => {
         if (!debouncedValue.trim()) {
             setSearchResult([]);
@@ -63,34 +60,15 @@ function ShopForm({ data, onCloseModal = () => {} }) {
             });
             return;
         }
-        const token = localStorageManage.getItem('token');
-        if (token) {
-            setLoading(true);
-            const res = image && (await adminService.uploadFile(image));
-            const results = await shopService.editInfoShop(
-                { address, latitude, longitude, image: res && res.url },
-                token,
-            );
-            setLoading(false);
-            if (results && results.isSuccess) {
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: 'Cập nhật thông tin cửa hàng thành công',
-                        title: 'Thành công',
-                    }),
-                );
-                onCloseModal(true);
-            } else {
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: results.message || 'Cập nhật thất bại',
-                        title: 'Thất bại',
-                        type: 'error',
-                    }),
-                );
-            }
+
+        setLoading(true);
+        const res = image && (await adminService.uploadFile(image));
+        const results = await shopService.editInfoShop({ address, latitude, longitude, image: res && res.url });
+        setLoading(false);
+        if (results) {
+            state.showToast(results.message);
+
+            onCloseModal(true);
         }
     };
 

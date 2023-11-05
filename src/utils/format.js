@@ -9,6 +9,12 @@ export function priceFormat(number) {
             .replace(/\B(?=(\d{3})+(?!\d))/g, '.')
     );
 }
+export function priceFormatNoFixed(number) {
+    return typeof number === 'number' && number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+export function unitFormatL(unit) {
+    return unit === 'g' ? 'kg' : unit === 'ml' ? 'l' : 'pcs';
+}
 export function ingredientFormat(quantity, unit) {
     if (quantity >= 1000) {
         if (unit === 'g') {
@@ -25,7 +31,7 @@ export const onlyNumber = (input) => {
     var regex = /^(\d+(\.\d*)?|)$/;
     return regex.test(input);
 };
-export function formatPrice(number) {
+export function priceFormatReport(number) {
     // Kiểm tra nếu số nhỏ hơn 1000, không cần thay đổi
     if (typeof number !== 'number') {
         return 0;
@@ -67,7 +73,7 @@ export function formatNumber(number) {
 }
 export const timeGap = (date) => {
     const today = dayjs();
-    const pastDate = dayjs(date);
+    const pastDate = dayjs(date).subtract(7, 'hours');
     const timeDiff = today.diff(pastDate, 'minutes');
     if (timeDiff < 1) {
         return 'mới đây';
@@ -76,6 +82,6 @@ export const timeGap = (date) => {
     } else if (timeDiff / 60 < 24) {
         return `${Math.floor(timeDiff / 60)} giờ trước `;
     } else {
-        return `${Math.floor(timeDiff / 60 / 24)} ngày trước `;
+        return pastDate.format('HH:mm DD/MM/YYYY');
     }
 };

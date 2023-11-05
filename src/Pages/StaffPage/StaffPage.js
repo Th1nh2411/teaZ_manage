@@ -3,10 +3,10 @@ import classNames from 'classnames/bind';
 import Image from '../../components/Image';
 import Modal from '../../components/Modal';
 import Input from '../../components/Input';
+import dayjs from 'dayjs';
 import { Col, Form, Row } from 'react-bootstrap';
 import { useContext, useEffect, useState } from 'react';
 import { StoreContext, actions } from '../../store';
-import LocalStorageManager from '../../utils/LocalStorageManager';
 import * as shopService from '../../services/shopService';
 import { BsShop } from 'react-icons/bs';
 import { RiDeleteBin2Fill, RiEditCircleFill, RiImageAddFill, RiAddCircleFill } from 'react-icons/ri';
@@ -16,6 +16,7 @@ import Button from '../../components/Button';
 import StaffForm from '../../components/StaffForm';
 import ShopForm from './ShopForm';
 import ExportFile from '../../components/ExportFile/ExportFile';
+import { Popconfirm, Switch } from 'antd';
 const cx = classNames.bind(styles);
 
 function StaffPage() {
@@ -25,73 +26,45 @@ function StaffPage() {
     const [active, setActive] = useState();
     const [showStaffForm, setShowStaffForm] = useState();
     const [staffData, setStaffData] = useState();
-    const [showConfirmDelStaff, setShowConfirmDelStaff] = useState();
     const [showShopForm, setShowShopForm] = useState();
-    const localStorageManager = LocalStorageManager.getInstance();
-    const userRole = localStorageManager.getItem('userInfo').role;
     const [state, dispatch] = useContext(StoreContext);
+    const userRole = state.userInfo && state.userInfo.role;
     const getShopInfo = async () => {
-        const token = localStorageManager.getItem('token');
-        if (token) {
-            setLoading(true);
-            const results = await shopService.getInfoShop(token);
-            if (results) {
-                setShopInfo(results.shop);
-                setActive(results.shop.isActive);
-            }
-            setLoading(false);
+        setLoading(true);
+        const results = await shopService.getInfoShop();
+        if (results) {
+            setShopInfo(results.data);
+            setActive(results.data.isActive);
         }
+        setLoading(false);
     };
 
     const editShopInfo = async (isActive = shopInfo.isActive) => {
-        const token = localStorageManager.getItem('token');
-        if (token) {
-            const results = await shopService.editInfoShop({ isActive }, token);
-            if (results && results.isSuccess) {
-                setActive(isActive);
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: 'Cập nhật thông tin cửa hàng thành công',
-                        title: 'Thành công',
-                    }),
-                );
-            }
+        let results;
+        if (shopInfo.isActive) {
+            results = await shopService.editInfoShop({ isActive: 0 });
+        } else {
+            results = await shopService.editInfoShop({ isActive: 1 });
+        }
+        if (results) {
+            getShopInfo();
+            getListStaff();
+            setActive(isActive);
+            state.showToast(results.message);
         }
     };
     const getListStaff = async () => {
-        const token = localStorageManager.getItem('token');
-        if (token) {
-            setLoading(true);
-            const results = await shopService.getListStaff(token);
-            if (results && results.isSuccess) {
-                setListStaff(results.listStaffs);
-            }
-            setLoading(false);
+        setLoading(true);
+        const results = await shopService.getListStaff();
+        if (results) {
+            setListStaff(results.data.filter((item) => item.isActive));
         }
+        setLoading(false);
     };
-    const delStaff = async () => {
-        const token = localStorageManager.getItem('token');
-        if (token) {
-            const results = await shopService.deleteStaff(staffData.phone, token);
-            if (results && results.isSuccess) {
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: `Xóa thành công nhân viên ${staffData.name} `,
-                        title: 'Thành công',
-                    }),
-                );
-            } else {
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: results.message,
-                        title: 'Thất bại',
-                        type: 'error',
-                    }),
-                );
-            }
+    const delStaff = async (id) => {
+        const results = await shopService.deleteStaff(id);
+        if (results) {
+            state.showToast(results.message);
         }
         getListStaff();
     };
@@ -101,12 +74,12 @@ function StaffPage() {
     }, []);
     const handleCheckBoxActive = (e) => {
         if (e.target.checked) {
-            editShopInfo(true);
+            editShopInfo(0);
         } else {
-            editShopInfo(false);
+            editShopInfo(1);
         }
     };
-
+    console.log(listStaff);
     return (
         <div className={cx('wrapper')}>
             {showStaffForm && (
@@ -121,40 +94,7 @@ function StaffPage() {
                     }}
                 />
             )}
-            {showConfirmDelStaff && (
-                <Modal
-                    className={cx('edit-form-wrapper')}
-                    onCloseModal={() => {
-                        setShowConfirmDelStaff(false);
-                        setStaffData(null);
-                    }}
-                >
-                    <div className={cx('form-title')}>
-                        Bạn chắc chắn xóa nhân viên {staffData.name}?
-                        <div className={cx('form-actions', 'justify-content-center')}>
-                            <Button
-                                onClick={() => {
-                                    setShowConfirmDelStaff(false);
-                                    setStaffData(null);
-                                }}
-                            >
-                                Hủy
-                            </Button>
-                            <Button
-                                onClick={() => {
-                                    delStaff();
-                                    setShowConfirmDelStaff(false);
-                                    setStaffData(null);
-                                }}
-                                className={cx('confirm-btn')}
-                                primary
-                            >
-                                Xóa nhân viên
-                            </Button>
-                        </div>
-                    </div>
-                </Modal>
-            )}
+
             {showShopForm && (
                 <ShopForm
                     data={shopInfo}
@@ -197,20 +137,23 @@ function StaffPage() {
                                         </div>
                                         <div className={cx('shop-status')}>
                                             <span>Trạng thái :</span>
-                                            <Tippy
-                                                content={active ? 'Ngưng bán' : 'Mở bán'}
-                                                placement="bottom"
-                                                duration={0}
+
+                                            <Popconfirm
+                                                title={active ? 'Ngưng bán' : 'Mở bán'}
+                                                description={
+                                                    active ? 'Ngưng kinh doanh cửa hàng?' : 'Mở kinh doanh cửa hàng?'
+                                                }
+                                                onConfirm={handleCheckBoxActive}
+                                                okText={'Xác nhận'}
+                                                cancelText="Huỷ"
                                             >
-                                                <Form.Check
+                                                <Switch
                                                     className={cx('shop-active-check')}
                                                     checked={active}
-                                                    type="checkbox"
-                                                    isValid
-                                                    onChange={(e) => handleCheckBoxActive(e)}
                                                     disabled={userRole < 2}
+                                                    style={{}}
                                                 />
-                                            </Tippy>
+                                            </Popconfirm>
                                             {active ? 'Đang hoạt động' : 'Ngưng hoạt động'}
                                         </div>
                                     </div>
@@ -223,7 +166,7 @@ function StaffPage() {
                             <div className={cx('content-header')}>
                                 <div className={cx('content-title')}>
                                     <IoPeopleSharp className={cx('icon')} />
-                                    Danh sách nhân viên của quán
+                                    Danh sách nhân viên
                                 </div>
                                 <div className={cx('content-subtitle', 'd-flex')}>
                                     <ExportFile
@@ -252,7 +195,6 @@ function StaffPage() {
                                             <th>Họ và tên</th>
                                             <th className={cx('text-center')}>Chức danh</th>
                                             <th className={cx('text-center')}>Số điện thoại</th>
-                                            <th className={cx('text-center')}>Tài khoản gmail</th>
                                             <th className={cx('text-end')}>Hành động</th>
                                         </tr>
                                     </thead>
@@ -265,18 +207,12 @@ function StaffPage() {
                                                         <div
                                                             className={cx('staff-role', {
                                                                 blue: staff.role === 1,
-                                                                yellow: staff.role === 2,
                                                             })}
                                                         >
-                                                            {staff.role === 1
-                                                                ? 'Nhân viên'
-                                                                : staff.role === 2
-                                                                ? 'Quản lý'
-                                                                : 'Admin'}
+                                                            {staff.role === 1 ? 'Nhân viên' : 'Quản lý'}
                                                         </div>
                                                     </td>
                                                     <td className={cx('text-center')}>{staff.phone}</td>
-                                                    <td className={cx('text-center')}>{staff.mail}</td>
                                                     <td className={cx('text-end')}>
                                                         <div className={cx('staff-actions')}>
                                                             <Tippy content="Chỉnh sửa" placement="bottom" duration={0}>
@@ -290,18 +226,18 @@ function StaffPage() {
                                                                     <RiEditCircleFill />
                                                                 </div>
                                                             </Tippy>
-                                                            {staff.role < 2 && (
-                                                                <Tippy content="Xóa" placement="bottom" duration={0}>
-                                                                    <div
-                                                                        onClick={() => {
-                                                                            setShowConfirmDelStaff(true);
-                                                                            setStaffData(staff);
-                                                                        }}
-                                                                        className={cx('icon', 'red')}
-                                                                    >
+                                                            {staff.role === 1 && (
+                                                                <Popconfirm
+                                                                    title={'Xoá tài khoản'}
+                                                                    description={'Xoá tài khoản nhân viên này?'}
+                                                                    onConfirm={() => delStaff(staff.id)}
+                                                                    okText={'Xác nhận'}
+                                                                    cancelText="Huỷ"
+                                                                >
+                                                                    <div className={cx('icon', 'red')}>
                                                                         <RiDeleteBin2Fill />
                                                                     </div>
-                                                                </Tippy>
+                                                                </Popconfirm>
                                                             )}
                                                         </div>
                                                     </td>

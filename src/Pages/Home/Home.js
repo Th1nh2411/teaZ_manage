@@ -6,9 +6,8 @@ import { Col, Row } from 'react-bootstrap';
 import { useContext, useEffect, useState } from 'react';
 import * as orderService from '../../services/orderService';
 import { StoreContext, actions } from '../../store';
-import LocalStorageManager from '../../utils/LocalStorageManager';
 import { timeGap } from '../../utils/format';
-import { BsClipboardCheckFill, BsInfoCircle, BsXCircleFill } from 'react-icons/bs';
+import { BsClipboardCheckFill, BsFillCartCheckFill, BsInfoCircle, BsXCircleFill } from 'react-icons/bs';
 import { HiDocumentMinus } from 'react-icons/hi2';
 import { RiEBike2Fill } from 'react-icons/ri';
 import { FaFileInvoiceDollar } from 'react-icons/fa';
@@ -16,6 +15,7 @@ import { FaFileInvoiceDollar } from 'react-icons/fa';
 import Tippy from '@tippyjs/react';
 import InvoiceList from './InvoiceList';
 import ReceiptDetail from '../../components/ReceiptDetail/ReceiptDetail';
+import { Badge, Popconfirm } from 'antd';
 const cx = classNames.bind(styles);
 
 function Home() {
@@ -25,98 +25,66 @@ function Home() {
     const [showDetailReceipt, setShowDetailReceipt] = useState(false);
     const [receiptData, setReceiptData] = useState(false);
 
-    const localStorageManager = LocalStorageManager.getInstance();
-    const getAllOrder = async () => {
-        const token = localStorageManager.getItem('token');
-        if (token) {
-            const results = await orderService.getAllOrder(token);
-            if (results) {
-                setIncompleteOrders(results.invoices);
+    const getAllInvoice = async () => {
+        const results1 = await orderService.getAllUnConfirmedInvoice();
+        const results2 = await orderService.getAllConfirmedInvoice();
+        if (results1 && results2) {
+            if (results1.data) {
+                setIncompleteOrders([...results1.data]);
+            } else {
+                setIncompleteOrders([]);
+            }
+            if (results2.data) {
+                setIncompleteOrders((prev) => [...results2.data, ...prev]);
             }
         }
     };
-    const getAllOrderInTransit = async () => {
-        const token = localStorageManager.getItem('token');
-        if (token) {
-            const results = await orderService.getAllOrderInTransit(token);
-            if (results) {
-                setCompleteOrders(results.invoices);
-            }
+    const getAllInvoiceInTransit = async () => {
+        const results = await orderService.getAllInvoiceInTransit();
+        if (results) {
+            setCompleteOrders(results.data);
         }
     };
     const completeOrder = async (order) => {
-        setShowDetailReceipt(true);
-        setReceiptData(order);
-        const token = localStorageManager.getItem('token');
-        if (token) {
-            const results = await orderService.completeOrder(order.idInvoice, token);
-            if (results.isSuccess) {
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: 'Đã xác nhận đơn hàng',
-                        title: 'Thành công',
-                    }),
-                );
-            } else {
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: results.message,
-                        title: 'Huỷ đơn',
-                        type: 'info',
-                    }),
-                );
-            }
+        const results = await orderService.confirmInvoice(order.id);
+        if (results) {
+            state.showToast(results.message);
+
+            await getAllInvoice();
         }
-        getAllOrder();
-        getAllOrderInTransit();
     };
-    const completeShipping = async (idInvoice) => {
-        const token = localStorageManager.getItem('token');
-        if (token) {
-            const results = await orderService.completeInvoice(idInvoice, token);
-            if (results.isSuccess) {
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: 'Giao hàng thành công',
-                        title: 'Thành công',
-                    }),
-                );
-            } else {
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: results.message,
-                        title: 'Thất bại',
-                        type: 'error',
-                    }),
-                );
-            }
+    const donePreparedOrder = async (order) => {
+        const results = await orderService.doneCookInvoice(order.id);
+        if (results) {
+            state.showToast(results.message);
+
+            await getAllInvoice();
+            await getAllInvoiceInTransit();
         }
-        getAllOrderInTransit();
+    };
+    const completeShipping = async (id) => {
+        const results = await orderService.completeInvoice(id);
+        if (results) {
+            state.showToast(results.message);
+
+            await getAllInvoiceInTransit();
+        }
     };
     useEffect(() => {
-        getAllOrder();
-        getAllOrderInTransit();
+        getAllInvoice();
+        getAllInvoiceInTransit();
 
         const checkOrderInterval = setInterval(() => {
-            getAllOrder();
-        }, 10000);
+            getAllInvoice();
+        }, 50000);
 
         return () => clearInterval(checkOrderInterval);
     }, []);
-    const handleCancelInvoice = async (idInvoice) => {
-        const token = localStorageManager.getItem('token');
-        if (token) {
-            const results = await orderService.cancelInvoice(idInvoice, token);
-            if (results && results.isCancel) {
-                dispatch(actions.setToast({ show: true, title: 'Hủy đơn', content: results.message }));
-                getAllOrder();
-            } else {
-                dispatch(actions.setToast({ show: true, title: 'Hủy đơn', content: results.message, type: 'info' }));
-            }
+    const handleCancelInvoice = async (id) => {
+        const results = await orderService.cancelInvoice(id);
+        if (results) {
+            state.showToast('Hủy đơn', results.message);
+            getAllInvoice();
         }
     };
     return (
@@ -129,10 +97,10 @@ function Home() {
                             <div className={cx('content-header')}>
                                 <div className={cx('content-title')}>
                                     <HiDocumentMinus className={cx('icon', 'warning')} />
-                                    Đơn hàng chưa hoàn thành
+                                    Đơn hàng chưa xác nhận
                                 </div>
                                 <div className={cx('content-subtitle')}>
-                                    {incompleteOrders && incompleteOrders.length} đơn
+                                    {incompleteOrders ? incompleteOrders.length : 0} đơn
                                 </div>
                             </div>
                             <div className={cx('content-body')}>
@@ -141,7 +109,7 @@ function Home() {
                                         <div key={index} className={cx('order-list')}>
                                             <div className={cx('order-header')}>
                                                 <div className={cx('order-title')}>
-                                                    Đơn {order.idInvoice} - {timeGap(order.date)}{' '}
+                                                    Đơn {order.id} - {timeGap(order.date)}{' '}
                                                     <BsInfoCircle
                                                         className={cx('icon')}
                                                         onClick={() => {
@@ -150,46 +118,104 @@ function Home() {
                                                         }}
                                                     />
                                                 </div>
+
                                                 <div className={cx('d-flex', 'align-items-center')}>
-                                                    <Tippy content="Hoàn thành đơn" placement="bottom" duration={0}>
-                                                        <div
-                                                            onClick={() => completeOrder(order)}
-                                                            className={cx('order-item-actions')}
-                                                        >
-                                                            <BsClipboardCheckFill />
-                                                        </div>
-                                                    </Tippy>
-                                                    <Tippy content="Huỷ đơn" placement="bottom" duration={0}>
-                                                        <div
-                                                            onClick={async () => {
-                                                                if (window.confirm('Xác nhận huỷ đơn này?')) {
-                                                                    await handleCancelInvoice(order.idInvoice);
-                                                                }
+                                                    <Popconfirm
+                                                        title="Xác nhận"
+                                                        description={
+                                                            order.status === 0
+                                                                ? 'Xác nhận đơn đặt này?'
+                                                                : 'Xác nhận hoàn thành pha chế đơn này?'
+                                                        }
+                                                        onConfirm={() =>
+                                                            order.status === 0
+                                                                ? completeOrder(order)
+                                                                : donePreparedOrder(order)
+                                                        }
+                                                        okText="Xác nhận"
+                                                        cancelText="Huỷ"
+                                                    >
+                                                        <span className={cx('order-item-actions')}>
+                                                            {order.status === 0 ? (
+                                                                <BsFillCartCheckFill />
+                                                            ) : (
+                                                                <BsClipboardCheckFill />
+                                                            )}
+                                                        </span>
+                                                    </Popconfirm>
+                                                    {order.status === 0 && (
+                                                        <Popconfirm
+                                                            title="Huỷ đơn"
+                                                            description={'Huỷ đơn hàng này?'}
+                                                            onConfirm={async () => {
+                                                                await handleCancelInvoice(order.id);
                                                             }}
-                                                            style={{ color: 'red' }}
-                                                            className={cx('order-item-actions')}
+                                                            okText="Xác nhận"
+                                                            cancelText="Huỷ"
                                                         >
-                                                            <BsXCircleFill />
-                                                        </div>
-                                                    </Tippy>
+                                                            <span
+                                                                style={{ color: 'red' }}
+                                                                className={cx('order-item-actions')}
+                                                            >
+                                                                <BsXCircleFill />
+                                                            </span>
+                                                        </Popconfirm>
+                                                    )}
                                                 </div>
                                             </div>
-                                            {order.products.map((item, index) => (
-                                                <div key={index} className={cx('order-item-wrapper')}>
-                                                    <Image src={item.image} className={cx('order-item-img')} />
-                                                    <div className={cx('order-item-info')}>
-                                                        <div className={cx('order-item-name')}>
-                                                            {item.name}({item.size ? 'L' : 'M'}) x{item.quantity}
+                                            {order.description && (
+                                                <h4 style={{ marginBottom: 0, color: '#333' }}>
+                                                    <span style={{ fontWeight: 600, textDecoration: 'underline' }}>
+                                                        Ghi chú :
+                                                    </span>{' '}
+                                                    {order.description}
+                                                </h4>
+                                            )}
+                                            <Badge
+                                                status={
+                                                    order.status === 0
+                                                        ? 'error'
+                                                        : order.status === 1
+                                                        ? 'warning'
+                                                        : order.status === 2
+                                                        ? 'processing'
+                                                        : order.status === 3
+                                                        ? 'success'
+                                                        : 'default'
+                                                }
+                                                text={
+                                                    order.status === 0
+                                                        ? 'Chưa xác nhận'
+                                                        : order.status === 1
+                                                        ? 'Đã xác nhận'
+                                                        : order.status === 2
+                                                        ? 'Đang giao'
+                                                        : order.status === 3
+                                                        ? 'Đã giao'
+                                                        : 'Đã huỷ đơn'
+                                                }
+                                            />
+
+                                            <div style={{ marginTop: 5 }}>
+                                                {order.products &&
+                                                    order.products.map((item, index) => (
+                                                        <div key={index} className={cx('order-item-wrapper')}>
+                                                            <Image src={item.image} className={cx('order-item-img')} />
+                                                            <div className={cx('order-item-info')}>
+                                                                <div className={cx('order-item-name')}>
+                                                                    {item.name}({item.size ? 'L' : 'M'}) x
+                                                                    {item.quantity}
+                                                                </div>
+                                                                <div className={cx('order-item-topping')}>
+                                                                    Topping :{' '}
+                                                                    {item.toppings
+                                                                        .map((topping) => topping.name)
+                                                                        .join(', ') || 'Không'}
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                        <div className={cx('order-item-topping')}>
-                                                            Topping :{' '}
-                                                            {item.listTopping
-                                                                .map((topping) => topping.name)
-                                                                .join(', ') || 'Không'}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))}
+                                                    ))}
+                                            </div>
                                         </div>
                                     ))
                                 ) : (
@@ -209,7 +235,7 @@ function Home() {
                                     Đơn hàng đang giao
                                 </div>
                                 <div className={cx('content-subtitle')}>
-                                    {completeOrders && completeOrders.length} đơn
+                                    {completeOrders ? completeOrders.length : 0} đơn
                                 </div>
                             </div>
                             <div className={cx('content-body')}>
@@ -218,7 +244,7 @@ function Home() {
                                         <div key={index} className={cx('order-list')}>
                                             <div className={cx('order-header')}>
                                                 <div className={cx('order-title')}>
-                                                    Đơn {order.idInvoice} - {timeGap(order.date)}
+                                                    Đơn {order.id} - {timeGap(order.date)}
                                                     <BsInfoCircle
                                                         className={cx('icon')}
                                                         onClick={() => {
@@ -227,31 +253,68 @@ function Home() {
                                                         }}
                                                     />
                                                 </div>
-                                                <Tippy content="Hoàn thành giao" placement="bottom" duration={0}>
-                                                    <div
-                                                        onClick={() => completeShipping(order.idInvoice)}
-                                                        className={cx('order-item-actions')}
-                                                    >
+                                                <Popconfirm
+                                                    title="Giao hàng"
+                                                    description={'Xác nhận giao xong đơn hàng này?'}
+                                                    onConfirm={() => completeShipping(order.id)}
+                                                    okText="Xác nhận"
+                                                    cancelText="Huỷ"
+                                                >
+                                                    <div className={cx('order-item-actions')}>
                                                         <BsClipboardCheckFill />
                                                     </div>
-                                                </Tippy>
+                                                </Popconfirm>
                                             </div>
-                                            {order.products.map((item, index) => (
-                                                <div key={index} className={cx('order-item-wrapper')}>
-                                                    <Image src={item.image} className={cx('order-item-img')} />
-                                                    <div className={cx('order-item-info')}>
-                                                        <div className={cx('order-item-name')}>
-                                                            {item.name}({item.size ? 'L' : 'M'}) x{item.quantity}
-                                                        </div>
-                                                        <div className={cx('order-item-topping')}>
-                                                            Topping :{' '}
-                                                            {item.listTopping
-                                                                .map((topping) => topping.name)
-                                                                .join(', ') || 'Không'}
+                                            {order.description && (
+                                                <h4 style={{ marginBottom: 0, color: '#333' }}>
+                                                    <span style={{ fontWeight: 600, textDecoration: 'underline' }}>
+                                                        Ghi chú :
+                                                    </span>{' '}
+                                                    {order.description}
+                                                </h4>
+                                            )}
+                                            <Badge
+                                                status={
+                                                    order.status === 0
+                                                        ? 'error'
+                                                        : order.status === 1
+                                                        ? 'warning'
+                                                        : order.status === 2
+                                                        ? 'processing'
+                                                        : order.status === 3
+                                                        ? 'success'
+                                                        : 'default'
+                                                }
+                                                text={
+                                                    order.status === 0
+                                                        ? 'Chưa xác nhận'
+                                                        : order.status === 1
+                                                        ? 'Đã xác nhận'
+                                                        : order.status === 2
+                                                        ? 'Đang giao'
+                                                        : order.status === 3
+                                                        ? 'Đã giao'
+                                                        : 'Đã huỷ đơn'
+                                                }
+                                            />
+                                            <div style={{ marginTop: 5 }}>
+                                                {order.products.map((item, index) => (
+                                                    <div key={index} className={cx('order-item-wrapper')}>
+                                                        <Image src={item.image} className={cx('order-item-img')} />
+                                                        <div className={cx('order-item-info')}>
+                                                            <div className={cx('order-item-name')}>
+                                                                {item.name}({item.size ? 'L' : 'M'}) x{item.quantity}
+                                                            </div>
+                                                            <div className={cx('order-item-topping')}>
+                                                                Topping :{' '}
+                                                                {item.toppings
+                                                                    .map((topping) => topping.name)
+                                                                    .join(', ') || 'Không'}
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            ))}
+                                                ))}
+                                            </div>
                                         </div>
                                     ))
                                 ) : (
@@ -264,7 +327,7 @@ function Home() {
                         </div>
                     </Col>
                     <Col>
-                        <InvoiceList />
+                        <InvoiceList invoiceChange={[incompleteOrders, completeOrders]} />
                     </Col>
                 </Row>
             </div>

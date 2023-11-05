@@ -2,12 +2,10 @@ import styles from './ReportPage.module.scss';
 import classNames from 'classnames/bind';
 import Image from '../../components/Image';
 import images from '../../assets/images';
-import { Col, Row } from 'react-bootstrap';
 import { useContext, useEffect, useState } from 'react';
 import * as reportService from '../../services/reportService';
 import { StoreContext, actions } from '../../store';
-import LocalStorageManager from '../../utils/LocalStorageManager';
-import { formatNumber, formatPrice, priceFormat, timeGap } from '../../utils/format';
+import { formatNumber, priceFormatReport, priceFormat, timeGap } from '../../utils/format';
 
 import Tippy from '@tippyjs/react';
 import dayjs, { Dayjs } from 'dayjs';
@@ -24,40 +22,34 @@ import {
     BarChartIcon,
 } from '../../components/Icons/Icons';
 import { BsClipboardCheckFill } from 'react-icons/bs';
-import OrderItem from '../../components/OrderItem';
 import ProfitTracker from './ProfitTracker';
 import IngredientTracker from './IngredientTracker';
 import Button from '../../components/Button/Button';
 import ExportFile from '../../components/ExportFile';
-import { DatePicker } from 'antd';
+import { Col, DatePicker, Row } from 'antd';
 const cx = classNames.bind(styles);
+const { RangePicker } = DatePicker;
 
 function ReportPage() {
     const [reports, setReports] = useState();
-    const [date, setDate] = useState(dayjs().format('YYYY-MM-DD'));
-    const [type, setType] = useState(2);
+    const [fromdate, setFromdate] = useState();
+    const [todate, setTodate] = useState();
 
     const [loading, setLoading] = useState(false);
-    const localStorageManager = LocalStorageManager.getInstance();
     const getReport = async () => {
-        const token = localStorageManager.getItem('token');
-        if (token) {
-            setLoading(true);
-            const results = await reportService.getReportByDate(
-                date,
-                token,
-                10,
-                type === 1 ? 'day' : type === 2 ? 'month' : 'year',
-            );
-            setLoading(false);
-            if (results) {
-                setReports(results);
-            }
+        setLoading(true);
+        const results = await reportService.getReportByDate(
+            fromdate && fromdate.format('YYYY-MM-DD'),
+            todate && todate.format('YYYY-MM-DD'),
+        );
+        setLoading(false);
+        if (results) {
+            setReports(results);
         }
     };
     useEffect(() => {
         getReport();
-    }, [date, type]);
+    }, [fromdate, todate]);
     return (
         <div className={cx('wrapper')}>
             {loading ? (
@@ -68,55 +60,49 @@ function ReportPage() {
             ) : (
                 <>
                     <div className={cx('header')}>
-                        <div className={cx('header-title')}>Thống kê theo :</div>
-                        <div className={cx('header-actions')}>
-                            <Button primary={type === 1} onClick={() => setType(1)}>
-                                Ngày
-                            </Button>
-                            <Button primary={type === 2} onClick={() => setType(2)}>
-                                Tháng
-                            </Button>
-                            <Button primary={type === 3} onClick={() => setType(3)}>
-                                Năm
-                            </Button>
-                        </div>
-                        <DatePicker
-                            picker={type === 1 ? 'date' : type === 2 ? 'month' : 'year'}
-                            size="large"
-                            value={dayjs(date)}
-                            onChange={(date) => {
-                                if (date) setDate(date.format('YYYY-MM-DD'));
+                        <div className={cx('header-title')}>Chọn thời gian :</div>
+
+                        <RangePicker
+                            disabledDate={(current) => {
+                                return current && current > dayjs().endOf('day');
                             }}
+                            size="large"
+                            value={[fromdate, todate]}
+                            onChange={(dates) => {
+                                setFromdate(dates ? dates[0] : null);
+                                setTodate(dates ? dates[1] : null);
+                            }}
+                            format="DD/MM/YYYY"
                         />
                     </div>
-                    <Row>
-                        <Col md={6} xl={3}>
+                    <Row gutter={[15]}>
+                        <Col md={12} xl={6} xs={24}>
                             <div className={cx('content-wrapper')}>
                                 <div className={cx('report-wrapper')}>
                                     <ProfitIcon height="8rem" width="8rem" />
                                     <div className={cx('report-info')}>
                                         <div className={cx('report-title')}>Doanh thu</div>
                                         <div className={cx('report-num')}>
-                                            {formatPrice(reports ? reports.total : 0)}
+                                            {priceFormatReport(reports ? reports.revenue : 0)}
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </Col>
-                        <Col md={6} xl={3}>
+                        <Col md={12} xl={6} xs={24}>
                             <div className={cx('content-wrapper')}>
                                 <div className={cx('report-wrapper')}>
                                     <DrinkIcon height="8rem" width="8rem" />
                                     <div className={cx('report-info')}>
                                         <div className={cx('report-title')}>Sản phẩm bán ra</div>
                                         <div className={cx('report-num')}>
-                                            {formatNumber(reports ? reports.countProducts : 0)}
+                                            {formatNumber(reports ? reports.countRecipes : 0)}
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </Col>
-                        <Col md={6} xl={3}>
+                        <Col md={12} xl={6} xs={24}>
                             <div className={cx('content-wrapper')}>
                                 <div className={cx('report-wrapper')}>
                                     <JellyIcon height="8rem" width="8rem" />
@@ -129,7 +115,7 @@ function ReportPage() {
                                 </div>
                             </div>
                         </Col>
-                        <Col md={6} xl={3}>
+                        <Col md={12} xl={6} xs={24}>
                             <div className={cx('content-wrapper')}>
                                 <div className={cx('report-wrapper')}>
                                     <TruckDeliveryIcon height="8rem" width="8rem" />
@@ -143,8 +129,8 @@ function ReportPage() {
                             </div>
                         </Col>
                     </Row>
-                    <Row>
-                        <Col lg={6}>
+                    <Row gutter={15}>
+                        <Col lg={12} xs={24}>
                             <div className={cx('content-wrapper')}>
                                 <div className={cx('content-header')}>
                                     <div className={cx('content-title')}>
@@ -164,13 +150,7 @@ function ReportPage() {
                                                     };
                                                 })
                                             }
-                                            fileName={
-                                                type === 1
-                                                    ? 'TopSellProduct' + dayjs(date).format('DD/MM/YYYY')
-                                                    : type === 2
-                                                    ? 'TopSellProduct' + dayjs(date).format('MM/YYYY')
-                                                    : 'TopSellProduct' + dayjs(date).format('YYYY')
-                                            }
+                                            fileName={'TopSellProduct'}
                                         />
                                     </div>
                                 </div>
@@ -210,7 +190,7 @@ function ReportPage() {
                                 </div>
                             </div>
                         </Col>
-                        <Col lg={6}>
+                        <Col lg={12} xs={24}>
                             <div className={cx('content-wrapper')}>
                                 <div className={cx('content-header')}>
                                     <div className={cx('content-title')}>
@@ -230,13 +210,7 @@ function ReportPage() {
                                                     };
                                                 })
                                             }
-                                            fileName={
-                                                type === 1
-                                                    ? 'TopSellTopping' + dayjs(date).format('DD/MM/YYYY')
-                                                    : type === 2
-                                                    ? 'TopSellTopping' + dayjs(date).format('MM/YYYY')
-                                                    : 'TopSellTopping' + dayjs(date).format('YYYY')
-                                            }
+                                            fileName={'TopSellTopping'}
                                         />
                                     </div>
                                 </div>
@@ -277,8 +251,8 @@ function ReportPage() {
                             </div>
                         </Col>
                     </Row>
-                    <Row>
-                        <Col>
+                    <Row gutter={15}>
+                        <Col lg={12} xs={24}>
                             <div className={cx('content-wrapper')}>
                                 <div className={cx('content-header')}>
                                     <div className={cx('content-title')}>
@@ -288,11 +262,11 @@ function ReportPage() {
                                     <div className={cx('content-subtitle')}></div>
                                 </div>
                                 <div className={cx('content-body')}>
-                                    <ProfitTracker />
+                                    <ProfitTracker reportData={reports} />
                                 </div>
                             </div>
                         </Col>
-                        <Col>
+                        <Col lg={12} xs={24}>
                             <div className={cx('content-wrapper')}>
                                 <div className={cx('content-header')}>
                                     <div className={cx('content-title')}>
@@ -302,7 +276,10 @@ function ReportPage() {
                                     <div className={cx('content-subtitle')}></div>
                                 </div>
                                 <div className={cx('content-body')}>
-                                    <IngredientTracker date={date} type={type} />
+                                    <IngredientTracker
+                                        reportData={reports && reports.importExportIngredients}
+                                        date={fromdate}
+                                    />
                                 </div>
                             </div>
                         </Col>

@@ -123,6 +123,10 @@ a[href] {
 .ml-16 {
     margin-left: 16px;
 }
+.content-end {
+    justify-content: end;
+    display: flex;
+}
 .sep {
     &::before {
         content: '';
@@ -136,6 +140,10 @@ a[href] {
 // Custom tippy tool tip
 .ant-message {
     z-index: 10000000;
+}
+
+.ant-btn-primary {
+    background-color: var(--primary-color);
 }
 body {
     .tippy-box {

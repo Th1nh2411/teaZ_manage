@@ -104,7 +104,7 @@
     justify-content: space-between;
     background-color: white;
     border-radius: 8px;
-    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
     padding: 15px;
     transition: 0.2s all ease-in-out;
     position: relative;
@@ -117,7 +117,7 @@
         left: -5px;
         height: 100%;
         width: 100%;
-        background-color: rgb(255 255 255 / 70%);
+        background-color: rgb(255 255 255 / 60%);
         pointer-events: none;
         z-index: 100;
     }
@@ -165,6 +165,21 @@
     margin-left: 10px;
     color: var(--primary-color);
     font-size: 2rem;
+    &:hover {
+        cursor: pointer;
+        opacity: 0.8;
+    }
+}
+.recipe-del {
+    color: #fff;
+    background-color: #da4453;
+    font-size: 2rem;
+    padding: 4px;
+    margin-right: 10px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     &:hover {
         cursor: pointer;
         opacity: 0.8;
@@ -328,5 +343,12 @@
     justify-content: end;
     .confirm-btn {
         margin-left: 10px;
+    }
+}
+@media (max-width: 792px) {
+    .content-header {
+        flex-direction: column;
+        gap: 10px;
+        padding: 20px 10px;
     }
 }

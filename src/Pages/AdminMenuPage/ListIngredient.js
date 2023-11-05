@@ -7,7 +7,6 @@ import Button from '../../components/Button';
 import { Col, Form, Row } from 'react-bootstrap';
 import { MdOutlineAddShoppingCart } from 'react-icons/md';
 import { useContext, useEffect, useState } from 'react';
-import LocalStorageManager from '../../utils/LocalStorageManager';
 import * as adminService from '../../services/adminService';
 import Tippy from '@tippyjs/react';
 import { MdOutlineInfo } from 'react-icons/md';
@@ -15,6 +14,7 @@ import { onlyNumber, priceFormat } from '../../utils/format';
 import { StoreContext, actions } from '../../store';
 import { RiAddCircleFill, RiCloseCircleFill } from 'react-icons/ri';
 import HeadlessTippy from '@tippyjs/react/headless';
+import { Popconfirm } from 'antd';
 
 const cx = classNames.bind(styles);
 
@@ -22,41 +22,45 @@ function ListIngredient({ detailRecipe, onUpdateIngredient = () => {} }) {
     const [showAllIngredient, setShowAllIngredient] = useState();
     const [allIngredient, setAllIngredient] = useState();
     const [state, dispatch] = useContext(StoreContext);
-    const localStorageManage = LocalStorageManager.getInstance();
-    const updateIngredientQuantity = async (idIngredient, quantity) => {
-        const token = localStorageManage.getItem('token');
-        if (token) {
-            const results = await adminService.editIngredientFromRecipe(
-                detailRecipe.idRecipe,
-                idIngredient,
-                quantity,
-                token,
-            );
-            if (results && results.isSuccess) {
-                dispatch(
-                    actions.setToast({
-                        show: true,
-                        content: 'Cập nhật thành công',
-                        title: 'Thành công',
-                    }),
-                );
-            }
+    const createIngredientRecipe = async (ingredientId, quantity) => {
+        const results = await adminService.addIngredientFromRecipe({
+            recipeId: detailRecipe.id,
+            ingredientId,
+            quantity,
+        });
+        if (results) {
+            state.showToast(results.message);
+        }
+    };
+    const updateIngredientQuantity = async (ingredientId, quantity) => {
+        const results = await adminService.editIngredientFromRecipe({
+            recipeId: detailRecipe.id,
+            ingredientId,
+            quantity,
+        });
+        if (results) {
+            state.showToast(results.message);
+        }
+    };
+    const removeIngredientQuantity = async (ingredientId) => {
+        const results = await adminService.removeIngredientFromRecipe({
+            recipeId: detailRecipe.id,
+            ingredientId,
+        });
+        if (results) {
+            state.showToast(results.message);
         }
     };
     const getIngredients = async () => {
-        const token = localStorageManage.getItem('token');
-        if (token) {
-            const results = await adminService.getAllIngredient(token);
-            if (results && results.listIngredient) {
-                setAllIngredient(
-                    results.listIngredient.filter(
-                        (item) =>
-                            !detailRecipe.ingredients.some(
-                                (ingredientRecipe) => ingredientRecipe.idIngredient === item.idIngredient,
-                            ),
-                    ),
-                );
-            }
+        const results = await adminService.getAllIngredient();
+        if (results) {
+            setAllIngredient(
+                results.data.filter(
+                    (item) =>
+                        detailRecipe.ingredients &&
+                        !detailRecipe.ingredients.some((ingredientRecipe) => ingredientRecipe.id === item.id),
+                ),
+            );
         }
     };
     return (
@@ -73,19 +77,20 @@ function ListIngredient({ detailRecipe, onUpdateIngredient = () => {} }) {
                         <div className={cx('all-ingredients')}>
                             {allIngredient &&
                                 allIngredient.map((item, index) => (
-                                    <div
-                                        onClick={async () => {
-                                            await updateIngredientQuantity(item.idIngredient, 20);
-                                            setAllIngredient((prev) =>
-                                                prev.filter((item2) => item.idIngredient !== item2.idIngredient),
-                                            );
+                                    <Popconfirm
+                                        key={index}
+                                        title="Thêm nguyên liệu"
+                                        description="Bạn chắc chắn muốn thêm nguyên liệu vào công thức?"
+                                        onConfirm={async () => {
+                                            await createIngredientRecipe(item.id, 20);
+                                            setAllIngredient((prev) => prev.filter((item2) => item.id !== item2.id));
                                             onUpdateIngredient();
                                         }}
-                                        key={index}
-                                        className={cx('ingredient-item')}
+                                        okText="Thêm"
+                                        cancelText="Huỷ"
                                     >
-                                        {item.name}
-                                    </div>
+                                        <div className={cx('ingredient-item')}>{item.name}</div>
+                                    </Popconfirm>
                                 ))}
                         </div>
                     )}
@@ -108,15 +113,18 @@ function ListIngredient({ detailRecipe, onUpdateIngredient = () => {} }) {
                             <div className={cx('ingredient-wrapper')}>
                                 <div className={cx('ingredient-img-wrapper')}>
                                     <Image className={cx('ingredient-img')} src={ingredient.image} />
-                                    <RiCloseCircleFill
-                                        onClick={async () => {
-                                            if (window.confirm('Remove the item?')) {
-                                                await updateIngredientQuantity(ingredient.idIngredient, 0);
-                                                onUpdateIngredient();
-                                            }
+                                    <Popconfirm
+                                        title="Xoá nguyên liệu"
+                                        description="Bạn chắc chắn muốn xoá nguyên liệu ra khỏi công thức?"
+                                        onConfirm={async () => {
+                                            await removeIngredientQuantity(ingredient.id);
+                                            onUpdateIngredient();
                                         }}
-                                        className={cx('del-icon')}
-                                    />
+                                        okText="Xoá"
+                                        cancelText="Huỷ"
+                                    >
+                                        <RiCloseCircleFill className={cx('del-icon')} />
+                                    </Popconfirm>
                                 </div>
 
                                 <div className={cx('ingredient-name')}>
@@ -125,7 +133,7 @@ function ListIngredient({ detailRecipe, onUpdateIngredient = () => {} }) {
                                         // value={ingredient.quantity}
                                         defaultValue={ingredient.quantity}
                                         onChange={(event) => {
-                                            updateIngredientQuantity(ingredient.idIngredient, event.target.value);
+                                            updateIngredientQuantity(ingredient.id, event.target.value);
                                         }}
                                     >
                                         {[...Array(999).keys()].map((value) => (

@@ -7,7 +7,6 @@ import { useContext, useEffect, useState } from 'react';
 import * as adminService from '../../services/adminService';
 import * as menuService from '../../services/menuService';
 import { StoreContext, actions } from '../../store';
-import LocalStorageManager from '../../utils/LocalStorageManager';
 import HeadlessTippy from '@tippyjs/react/headless';
 import RecipeItem from './RecipeItem';
 import { RiAddCircleFill, RiCloseCircleFill } from 'react-icons/ri';
@@ -19,6 +18,8 @@ import { priceFormat } from '../../utils/format';
 import Tippy from '@tippyjs/react';
 import ExportFile from '../../components/ExportFile/ExportFile';
 import Input from '../../components/Input/Input';
+import { Popconfirm } from 'antd';
+import { MdDeleteForever, MdDeleteOutline } from 'react-icons/md';
 const cx = classNames.bind(styles);
 
 function AdminMenuPage() {
@@ -27,26 +28,39 @@ function AdminMenuPage() {
     const [menuType2, setMenuType2] = useState([]);
     const [menuType3, setMenuType3] = useState([]);
     const [menuType4, setMenuType4] = useState([]);
+    const [topping1, setTopping1] = useState();
+    const [topping2, setTopping2] = useState();
+    const [topping3, setTopping3] = useState();
+    const [topping4, setTopping4] = useState();
     const [allTopping, setAllTopping] = useState();
-    const [showEditForm, setShowEditForm] = useState();
+    const [editType, setShowEditForm] = useState();
     const [selectedRecipe, setSelectedRecipe] = useState();
-    const localStorageManage = LocalStorageManager.getInstance();
-    const [listToppingByType, setListToppingByType] = useState();
     const getMenuDataByType = async (idType) => {
-        const token = localStorageManage.getItem('token');
-        if (token) {
-            setLoading(true);
-            const results = await menuService.getMenuByType(idType, token);
-            if (results && results.isSuccess) {
-                idType === 1
-                    ? setMenuType1(results.menu)
-                    : idType === 2
-                    ? setMenuType2(results.menu)
-                    : idType === 3
-                    ? setMenuType3(results.menu)
-                    : setMenuType4(results.menu);
-            }
-            setLoading(false);
+        setLoading(true);
+        const results = await menuService.getMenuByType(idType);
+        if (results) {
+            idType === 1
+                ? setMenuType1(results.data)
+                : idType === 2
+                ? setMenuType2(results.data)
+                : idType === 3
+                ? setMenuType3(results.data)
+                : idType === 4
+                ? setMenuType4(results.data)
+                : setAllTopping(results.data);
+        }
+        setLoading(false);
+    };
+    const getListToppingByType = async (idType) => {
+        const results = await adminService.getListToppingByType(idType);
+        if (results) {
+            idType === 1
+                ? setTopping1(results.data)
+                : idType === 2
+                ? setTopping2(results.data)
+                : idType === 3
+                ? setTopping3(results.data)
+                : setTopping4(results.data);
         }
     };
     useEffect(() => {
@@ -54,42 +68,23 @@ function AdminMenuPage() {
         getMenuDataByType(2);
         getMenuDataByType(3);
         getMenuDataByType(4);
+        getMenuDataByType(5);
+        getListToppingByType(1);
+        getListToppingByType(2);
+        getListToppingByType(3);
+        getListToppingByType(4);
     }, []);
 
-    const getAllTopping = async () => {
-        const token = localStorageManage.getItem('token');
-        if (token) {
-            const results = await menuService.getMenuByType(5, token);
-            if (results && results.isSuccess) {
-                setAllTopping(results.menu);
-            }
-        }
-    };
-    useEffect(() => {
-        getAllTopping();
-    }, []);
-    const getListToppingByType = async () => {
-        const results = await adminService.getListToppingByType();
-        if (results && results.isSuccess) {
-            setListToppingByType(results.listType);
-        }
-    };
-    useEffect(() => {
-        getListToppingByType();
-    }, []);
     return (
         <div className={cx('wrapper')}>
-            {showEditForm && (
+            {editType && (
                 <RecipeForm
-                    idRecipe={selectedRecipe.idRecipe}
-                    onCloseModal={(updated) => {
-                        if (updated) {
-                            getMenuDataByType(1);
-                            getMenuDataByType(2);
-                            getMenuDataByType(3);
-                            getMenuDataByType(4);
+                    id={selectedRecipe.id}
+                    type={editType}
+                    onCloseModal={(idUpdated) => {
+                        if (idUpdated) {
+                            getMenuDataByType(idUpdated);
                             // getListToppingByType();
-                            getAllTopping();
                         }
                         setShowEditForm(false);
                         setSelectedRecipe(false);
@@ -106,16 +101,14 @@ function AdminMenuPage() {
                     <Col xxl={6}>
                         <ContentWrapper
                             allTopping={allTopping || []}
-                            onUpdateTopping={async () => await getListToppingByType()}
+                            onUpdateTopping={async () => await getListToppingByType(1)}
                             idType={1}
                             titleIcon={<SiBuymeacoffee className={cx('icon')} />}
-                            topping={
-                                listToppingByType && listToppingByType.find((type) => type.idType === 1).listToppings
-                            }
+                            topping={topping1}
                             menuData={menuType1}
                             title="Trà sữa"
                             onShowEditForm={(data) => {
-                                setShowEditForm(true);
+                                setShowEditForm(1);
                                 setSelectedRecipe(data);
                             }}
                         />
@@ -123,16 +116,14 @@ function AdminMenuPage() {
                     <Col xxl={6}>
                         <ContentWrapper
                             allTopping={allTopping || []}
-                            onUpdateTopping={async () => await getListToppingByType()}
+                            onUpdateTopping={async () => await getListToppingByType(2)}
                             idType={2}
                             titleIcon={<GiCoffeeBeans className={cx('icon')} />}
-                            topping={
-                                listToppingByType && listToppingByType.find((type) => type.idType === 2).listToppings
-                            }
+                            topping={topping2}
                             menuData={menuType2}
                             title="Cà phê"
                             onShowEditForm={(data) => {
-                                setShowEditForm(true);
+                                setShowEditForm(2);
                                 setSelectedRecipe(data);
                             }}
                         />
@@ -140,16 +131,14 @@ function AdminMenuPage() {
                     <Col xxl={6}>
                         <ContentWrapper
                             allTopping={allTopping || []}
-                            onUpdateTopping={async () => await getListToppingByType()}
+                            onUpdateTopping={async () => await getListToppingByType(3)}
                             idType={3}
                             titleIcon={<TbPaperBag className={cx('icon')} />}
-                            topping={
-                                listToppingByType && listToppingByType.find((type) => type.idType === 3).listToppings
-                            }
+                            topping={topping3}
                             menuData={menuType3}
                             title="Trà trái cây"
                             onShowEditForm={(data) => {
-                                setShowEditForm(true);
+                                setShowEditForm(3);
                                 setSelectedRecipe(data);
                             }}
                         />
@@ -157,16 +146,14 @@ function AdminMenuPage() {
                     <Col xxl={6}>
                         <ContentWrapper
                             allTopping={allTopping || []}
-                            onUpdateTopping={async () => await getListToppingByType()}
+                            onUpdateTopping={async () => await getListToppingByType(4)}
                             idType={4}
                             titleIcon={<SiCakephp className={cx('icon')} />}
-                            topping={
-                                listToppingByType && listToppingByType.find((type) => type.idType === 4).listToppings
-                            }
+                            topping={topping4}
                             menuData={menuType4}
                             title="Bakery"
                             onShowEditForm={(data) => {
-                                setShowEditForm(true);
+                                setShowEditForm(4);
                                 setSelectedRecipe(data);
                             }}
                         />
@@ -178,7 +165,7 @@ function AdminMenuPage() {
                             menuData={allTopping}
                             title="Topping"
                             onShowEditForm={(data) => {
-                                setShowEditForm(true);
+                                setShowEditForm(5);
                                 setSelectedRecipe(data);
                             }}
                         />
@@ -201,29 +188,26 @@ function ContentWrapper({
     const [tab, setTab] = useState(0);
     const [menu, setMenu] = useState(menuData || []);
     const [searchValue, setSearchValue] = useState('');
-    const localStorageManage = LocalStorageManager.getInstance();
     const [showAllTopping, setShowAllTopping] = useState(false);
+    const [state, dispatch] = useContext(StoreContext);
     useEffect(() => {
         setMenu(menuData);
     }, [menuData]);
     const listAddToppingFiltered =
-        allTopping &&
-        topping &&
-        allTopping.filter((item) => !topping.some((item2) => item2.idRecipe === item.idRecipe));
-    const addToppingToType = async (idRecipe) => {
-        const token = localStorageManage.getItem('token');
-        if (token) {
-            const results = await adminService.addToppingToType(idRecipe, idType, token);
-            if (results && results.isSuccess) {
-            }
+        allTopping && topping && allTopping.filter((item) => !topping.some((item2) => item2.id === item.id));
+    const addToppingToType = async (id) => {
+        const results = await adminService.addToppingToType(id, idType);
+        if (results) {
+            state.showToast(results.message);
+            onUpdateTopping();
+            setShowAllTopping();
         }
     };
-    const deleteToppingFromType = async (idRecipe) => {
-        const token = localStorageManage.getItem('token');
-        if (token) {
-            const results = await adminService.delToppingFromType(idRecipe, idType, token);
-            if (results && results.isSuccess) {
-            }
+    const deleteToppingFromType = async (id) => {
+        const results = await adminService.delToppingFromType(id, idType);
+        if (results) {
+            state.showToast(results.message);
+            onUpdateTopping();
         }
     };
     return (
@@ -257,7 +241,7 @@ function ContentWrapper({
                             menu &&
                             menu.map((item) => {
                                 return {
-                                    id: item.idRecipe,
+                                    id: item.id,
                                     Tên: item.name,
                                     'Mô tả': item.info,
                                     Giá: item.price,
@@ -286,17 +270,17 @@ function ContentWrapper({
                             <div className={cx('all-ingredients')}>
                                 {listAddToppingFiltered &&
                                     listAddToppingFiltered.map((item, index) => (
-                                        <div
-                                            onClick={async () => {
-                                                await addToppingToType(item.idRecipe);
-                                                setShowAllTopping(false);
-                                                onUpdateTopping();
-                                            }}
+                                        <Popconfirm
+                                            title={'Thêm topping'}
+                                            description={'Thêm topping này vào danh sách?'}
+                                            onConfirm={() => addToppingToType(item.id)}
+                                            okText={'Xác nhận'}
+                                            cancelText="Huỷ"
                                             key={index}
-                                            className={cx('ingredient-item')}
+                                            zIndex={10000}
                                         >
-                                            {item.name}
-                                        </div>
+                                            <div className={cx('ingredient-item')}>{item.name}</div>
+                                        </Popconfirm>
                                     ))}
                             </div>
                         )}
@@ -349,19 +333,17 @@ function ContentWrapper({
                                     </div>
                                 </div>
                                 <div className={cx('recipe-actions')}>
-                                    <Tippy content="Xóa khỏi danh sách" placement="bottom" duration={0}>
-                                        <div
-                                            onClick={async () => {
-                                                if (window.confirm('Remove the item?')) {
-                                                    await deleteToppingFromType(item.idRecipe);
-                                                    onUpdateTopping();
-                                                }
-                                            }}
-                                            className={cx('recipe-edit')}
-                                        >
-                                            <RiCloseCircleFill />
+                                    <Popconfirm
+                                        title={'Xoá topping'}
+                                        description={'Xoá topping này ra khỏi danh sách?'}
+                                        onConfirm={() => deleteToppingFromType(item.id)}
+                                        okText={'Xác nhận'}
+                                        cancelText="Huỷ"
+                                    >
+                                        <div className={cx('recipe-del')}>
+                                            <MdDeleteForever />
                                         </div>
-                                    </Tippy>
+                                    </Popconfirm>
                                 </div>
                             </div>
                         ))
